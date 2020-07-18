@@ -1,0 +1,419 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+{% block body %}
+
+    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
+    <style>
+        #leftsidebar {
+            display: none;
+        }
+                section.content {
+            margin-left: 15px;
+        }
+
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+                position: relative;
+                min-height: 1px;
+                padding-right: 0px !important;
+                padding-left: 0px !important;
+            }
+
+            .buttondown {
+                margin-bottom: 10px;
+            }
+        }
+
+        .dt-buttons {
+            padding-top: 10px;
+        }
+
+        .datepicker {
+            top: 200px !important;
+            left: 45px;
+            z-index: 10;
+            display: block;
+        }
+
+
+    </style>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row clearfix">
+
+
+                <div class="col-md-4 col-sm-8 col-xs-6">
+                    <label for="">Company</label>
+                    <select class="form-control show-tick" id="companyID" onchange="ChangeCompany()">
+                        {% for comp in company %}
+                            <option value="{{ comp.pk }}">{{ comp.name }}</option>
+                        {% endfor %}
+
+
+                    </select>
+
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-4 col-xs-offset-1">
+                    <div class="form-group ">
+                        <label for="cc-number" class="control-label mb-1">Date</label>
+                        <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="gDate"
+                               id="gDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}"
+                               onchange="ChangeCompany()">
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-12 col-xs-12" style="margin-top: 26px;text-align: center!important;">
+                    <a id="reportUrlCollection" href="{% url 'invoiceApp:generate_collection_report_admin' %}"
+                       style="background-color: #b54fb5;color: white;" type="button" class="btn  waves-effect "
+                    >Generate Collection Report
+                    </a>
+                </div>
+
+
+
+            </div>
+            <div class="row clearfix" style="margin-top: 5px;">
+
+
+                <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
+                    <div class="form-group ">
+                        <label for="cc-number" class="control-label mb-1">Start Date</label>
+                        <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="startDate"
+                               id="startDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                        <span></span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-6" style="padding-left: 2px!important;">
+                    <div class="form-group  ">
+                        <label for="cc-number" class="control-label mb-1">End Date</label>
+                        <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="endDate"
+                               id="endDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                        <span></span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label for="">Staff</label>
+                    <select class="form-control show-tick" id="staff">
+                        <option value="all">All</option>
+                        {% for user in users %}
+                            <option value="{{ user.pk }}">{{ user.name }}</option>
+                        {% endfor %}
+
+
+                    </select>
+
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12 buttondown "
+                     style="margin-top: 26px;text-align: center!important;">
+                    <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
+                            onclick="getData()">Search
+                    </button>
+
+
+                </div>
+
+            </div>
+
+
+          <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                COLLECTION
+                            </h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="collectionTableCollect"
+                                       class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>CustomerName</th>
+                                        <th>Company</th>
+                                        <th>CollectedBy</th>
+                                        <th>CollectedOn</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>CustomerName</th>
+                                        <th>Company</th>
+                                        <th>CollectedBy</th>
+                                        <th>CollectedOn</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                               CC
+                            </h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="collectionTableCollectCash"
+                                       class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>CustomerName</th>
+                                        <th>Company</th>
+                                        <th>CollectedBy</th>
+                                        <th>CollectedOn</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>CustomerName</th>
+                                        <th>Company</th>
+                                        <th>CollectedBy</th>
+                                        <th>CollectedOn</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="ChangePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: lightgrey;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">Change Password</h4>
+            </div>
+            <form id="PasswordForm"> {% csrf_token %}
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="nPass" class="control-label">New Password: <span
+                                style="color: grey;font-size: 10px;"> Note - Password should be at least 5 character long.</span></label>
+                        <input autocomplete="off" type="password" class="form-control" id="nPass">
+                    </div>
+                    <div class="form-group">
+                        <label for="rPass" class="control-label">Confirm New Password:</label>
+                        <input autocomplete="off" type="password" class="form-control" id="rPass">
+                    </div>
+
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="ChangePassword()">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<ul style="    position: fixed;top: 20px;right: 20px;padding-bottom: 20px;z-index: 100; text-align: center">
+                <a href="{% url 'mamtaApp:logout' %}"
+                   style="width:100%;padding-right: 10px;background-color: #3aabfb!important; color: white!important;"
+                   type="button" class="btn ">Logout</a>
+                <a style="color: white;font-size: 13px;cursor: pointer;" data-toggle="modal"
+                   data-target="#ChangePasswordModal"
+                   data-whatever="@mdo">
+                    <strong>Change Password</strong>
+                </a>
+            </ul>
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
+
+    <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
+
+
+    <script>
+        $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+        $('.datepicker').datepicker({});
+
+
+    </script>
+
+    <script>
+        var etab;
+        var etabCash;
+
+
+        $(document).ready(function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var staff = $('#staff').val();
+
+
+
+            etab = $('#collectionTableCollect').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel', 'print'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "amount", "targets": 1, "orderable": true},
+                    {"name": "customerName", "targets": 2, "orderable": true},
+                    {"name": "companyID", "targets": 3, "orderable": true},
+                    {"name": "createdBy", "targets": 4, "orderable": true},
+                    {"name": "datetime", "targets": 5, "orderable": true},
+                ],
+                aaSorting: [[5, 'desc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'invoiceApp:CollectionListJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
+
+            });
+
+
+             etabCash = $('#collectionTableCollectCash').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel', 'print'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "amount", "targets": 1, "orderable": true},
+                    {"name": "customerName", "targets": 2, "orderable": true},
+                    {"name": "companyID", "targets": 3, "orderable": true},
+                    {"name": "createdBy", "targets": 4, "orderable": true},
+                    {"name": "datetime", "targets": 5, "orderable": true},
+                ],
+                aaSorting: [[5, 'desc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'invoiceApp:CashCollectionListJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
+
+            });
+            // ...
+        });
+
+        function getData() {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var staff = $('#staff').val();
+
+
+            etab.api().ajax.url('{% url "invoiceApp:CollectionListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
+            etabCash.api().ajax.url('{% url "invoiceApp:CashCollectionListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
+        }
+
+
+
+        $(ChangeCompany());
+        function ChangeCompany() {
+            var comp = $('#companyID').val();
+            var gDate = $('#gDate').val();
+            $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+
+        }
+         function ChangePassword() {
+        var nPass = $('#nPass').val();
+        var rPass = $('#rPass').val();
+
+
+        data = new FormData();
+        data.append('nPass', nPass);
+
+        if (nPass === "" || rPass === "") {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+
+        }
+        else if (nPass != rPass) {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Password not matched. Please try again.').fadeIn().fadeOut(2000);
+
+        }
+        else if (nPass.length < 5) {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Password should be atleast 5 character long.').fadeIn().fadeOut(2000);
+
+        }
+
+        else {
+            $.ajax({
+                type: 'post',
+                url: '{% url 'invoiceApp:change_password_for_sales_user' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+
+
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Password Changed Successfully').fadeIn().fadeOut(2000);
+                        $('#PasswordForm')[0].reset();
+                        $('#ChangePasswordModal').modal('hide');
+
+                    }
+
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error').fadeIn().fadeOut(2000);
+                    }
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+        }
+
+    }
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,585 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+{% block body %}
+
+    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
+
+    <style>
+        #leftsidebar {
+            display: none;
+        }
+
+        .bars {
+            display: none !important;
+        }
+
+        section.content {
+            margin-left: 15px;
+        }
+
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+                position: relative;
+                min-height: 1px;
+                padding-right: 0px !important;
+                padding-left: 0px !important;
+            }
+
+            .buttondown {
+                margin-bottom: 10px;
+            }
+        }
+
+        .dt-buttons {
+            padding-top: 10px;
+        }
+
+        .datepicker {
+            top: 200px !important;
+            left: 45px;
+            z-index: 10;
+            display: block;
+        }
+
+        @media (max-width: 767px) {
+            .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
+                margin-left: 0 !important;
+                width: 73%;
+            }
+        }
+
+
+    </style>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                MY TODAY COLLECTIONS
+                            </h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="collectionTableCollect"
+                                       class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>Party_Name</th>
+                                        <th>Amount(₹)</th>
+                                        <th>Mode</th>
+                                        <th>Remark</th>
+                                        <th>CollectedOn</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>Party_Name</th>
+                                        <th>Amount(₹)</th>
+                                        <th>Mode</th>
+                                        <th>Remark</th>
+                                        <th>CollectedOn</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <button style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal"
+                data-target="#CollectionModal"
+                class="btn btn-success btn-circle-lg waves-effect waves-circle waves-float">
+            <i class="material-icons">add</i>
+        </button>
+    </section>
+
+      <div class="modal fade" id="ProfileModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" id="PasswordForm"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Welcome {{ user.name|capfirst }},</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">remove_red_eye</i>
+                                        </span>
+                                    <div class="form-line">
+                                      <span
+                                        style="color: grey;font-size: 10px;"> Note - Password should be at least 5 character long.</span>
+                                <input autocomplete="off" type="password" class="form-control" id="nPass" placeholder="New Password">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">remove_red_eye</i>
+                                        </span>
+                                    <div class="form-line">
+                                <input autocomplete="off" type="password" class="form-control" id="rPass" placeholder="Confirm Password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="ChangePassword()">Save</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    <div class="image" style="position: fixed; top: 2rem;right: 5em;z-index: 100;cursor: pointer" data-toggle="modal"
+         data-target="#ProfileModal">
+        <img style="border-radius: 50%" src="{{ user.photo.url }}" width="40" height="40" alt="User">
+    </div>
+
+    <button onclick="logoutBtn()" type="button" style=" position: fixed;top: 1.5em;right: 1em;z-index: 100;"
+            class="btn bg-light-blue btn-circle waves-effect waves-circle waves-float">
+        <i class="material-icons">power_settings_new</i>
+    </button>
+
+
+    <div class="modal fade" id="CollectionModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" id="CollectionForm"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Take New Collection</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">person</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <select class="form-control show-tick" id="CustomerCol" name="CustomerCol">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">attach_money</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="number" class="form-control date"
+                                               name="AmountCol" id="AmountCol"
+                                               placeholder="Amount *">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">merge_type</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <select class="form-control show-tick" id="PayMethodCol" name="PayMethodCol">
+                                            <option value="Cash">Cash</option>
+                                            <option value="Cheque">Cheque</option>
+
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">receipt</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="text" class="form-control date" id="RemarkCol"
+                                               name="RemarkCol" placeholder="Any Remark">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="AddParty()">Add New Party</button>
+                        <button type="button" class="btn btn-link waves-effect" onclick="TakePayment()">Save</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="modal fade" id="AddPartyModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" id="AddPartyForm"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Add New Party</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">person</i>
+                                        </span>
+                                    <div class="form-line">
+                                       <input type="text" class="form-control date"
+                                               name="PartyAdd" id="PartyAdd"
+                                               placeholder="Party Name *">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">phone</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="number" class="form-control date"
+                                               name="PhoneAdd" id="PhoneAdd"
+                                               placeholder="Phone Number">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row clearfix">
+
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">add_location</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="text" class="form-control date" id="AddressAdd"
+                                               name="AddressAdd" placeholder="Address">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="addPartyPost()">Save</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
+
+
+
+    <script>
+        var etab;
+
+
+        $(document).ready(function () {
+
+            etab = $('#collectionTableCollect').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "buyerID", "targets": 1, "orderable": true},
+                    {"name": "amount", "targets": 2, "orderable": true},
+                    {"name": "paymentMode", "targets": 3, "orderable": true},
+                    {"name": "remark", "targets": 4, "orderable": true},
+                    {"name": "datetime", "targets": 5, "orderable": true}
+                ],
+                aaSorting: [[5, 'desc']],
+                "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
+                "pageLength": 8,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:SupplierCollectionListJson' %}"
+
+            });
+
+
+        });
+
+
+        function ChangePassword() {
+            var nPass = $('#nPass').val();
+            var rPass = $('#rPass').val();
+
+
+            data = new FormData();
+            data.append('nPass', nPass);
+
+            if (nPass === "" || rPass === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else if (nPass != rPass) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password not matched. Please try again.').fadeIn().fadeOut(2000);
+
+            }
+            else if (nPass.length < 5) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password should be atleast 5 character long.').fadeIn().fadeOut(2000);
+
+            }
+
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:change_password_for_sales_user' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Password Changed Successfully').fadeIn().fadeOut(2000);
+                            $('#PasswordForm')[0].reset();
+                            $('#ChangePasswordModal').modal('hide');
+
+                        }
+
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error').fadeIn().fadeOut(2000);
+                        }
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+
+        }
+
+        function logoutBtn() {
+            window.location.href = "{% url 'mamtaApp:logout' %}"
+
+
+        }
+
+        $(getBuyerList());
+        function getBuyerList() {
+            $('#CustomerCol').html('');
+            $.ajax({
+                type: 'get',
+                url: "{% url 'invoiceApp:get_buyer_list' %}",
+                success: function (response) {
+
+                    $('#CustomerCol').append('<option  value="" selected>Search Party</option>');
+
+                    for (i in response.data) {
+                        $('#CustomerCol').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+
+                    }
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+
+        }
+
+
+        function TakePayment() {
+            var CustomerCol = $('#CustomerCol').val();
+            var AmountCol = $('#AmountCol').val();
+            var PayMethodCol = $('#PayMethodCol').val();
+            var RemarkCol = $('#RemarkCol').val();
+
+
+            if (CustomerCol === "" || AmountCol === "" || PayMethodCol === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+
+            }
+
+            else {
+                data = new FormData();
+                data.append('CustomerCol', CustomerCol);
+                data.append('AmountCol', AmountCol);
+                data.append('PayMethodCol', PayMethodCol);
+                data.append('RemarkCol', RemarkCol);
+
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'mamtaApp:take_collection_supplier_api' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            etab.api().ajax.reload();
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Collection Taken Successfully').fadeIn().fadeOut(2000);
+                            $('#CollectionForm')[0].reset();
+                            $('#CollectionModal').modal('hide');
+
+
+                        }
+
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error').fadeIn().fadeOut(2000);
+                        }
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+
+        }
+function AddParty() {
+            $('#CollectionModal').modal('hide');
+            $('#AddPartyModal').modal('show');
+
+}
+
+  function addPartyPost() {
+        var pName = $('#PartyAdd').val();
+        var pAddress = $('#AddressAdd').val();
+        var pPhone = $('#PhoneAdd').val();
+        if (pAddress === '') {
+            pAddress = 'N/A'
+        }
+        if (pPhone === '') {
+            pPhone = 'N/A'
+        }
+        data = new FormData();
+        data.append('pName', pName);
+        data.append('pAddress', pAddress);
+        data.append('pPhone', pPhone);
+
+        if (pName === "") {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Party name is required.').fadeIn().fadeOut(2000);
+
+        }
+        else {
+            $.ajax({
+                type: 'post',
+                url: '{% url 'invoiceApp:add_party_from_sales' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+
+
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('New Party Added.').fadeIn().fadeOut(2000);
+                        $('#AddPartyForm')[0].reset();
+                        $('#AddPartyModal').modal('hide');
+                        getBuyerList();
+
+                    }
+
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Party already exist').fadeIn().fadeOut(2000);
+
+                    }
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+        }
+
+    }
+
+    </script>
+
+
+{% endblock %}

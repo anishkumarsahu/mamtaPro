@@ -1,0 +1,403 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+
+{% block body %}
+
+    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
+    <style>
+        .zoom {
+
+            transition: transform .2s; /* Animation */
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        .zoom:hover {
+            transform: scale(3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+        }
+
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
+
+        .dt-buttons {
+            padding-top: 10px;
+        }
+
+        .hidePadding {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    </style>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="block-header">
+
+                <div style="float: right">
+                    {% if not request.user|has_group:"Moderator" %}
+
+
+                        <button style="background-color: #3F51B5;color: white;margin-bottom: 10px" type="button"
+                                class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">Add Credit
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                BUYER DETAILS
+                            </h2>
+                            <button onclick="goBack()" title="back" style="    background-color: #2196f3;color: white;top: 12px;position: absolute;right: 10px;
+    border-radius: 32%;" type="button"
+                                    class="btn  waves-effect ">
+                                <i class="material-icons">arrow_back</i></button>
+
+                        </div>
+
+                        <div class="body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <span> <strong>Name:</strong> {{ instance.name }} </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span> <strong>Phone No:</strong> {{ instance.phoneNumber }} </span>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <span> <strong>Closing Balance :</strong> Rs. {{ instance.closingBalance }} </span>
+                                </div>
+                                <div class="col-md-8">
+                                    <span> <strong>Address:</strong> {{ instance.address }} </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                CREDIT HISTORY
+                            </h2>
+
+                        </div>
+
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="buyerCreditTable" class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>Remark</th>
+                                        <th>Datetime</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>Remark</th>
+                                        <th>Datetime</th>
+
+
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                DEBIT HISTORY
+                            </h2>
+
+                        </div>
+
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="buyerDebitTable" class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>Collected By</th>
+                                        <th>Payment Mode</th>
+                                        <th>Remark</th>
+                                        <th>Collected On</th>
+                                        <th>Detail</th>
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>Collected By</th>
+                                        <th>Payment Mode</th>
+                                        <th>Remark</th>
+                                        <th>Collected On</th>
+                                        <th>Detail</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Add Credit</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'mamtaApp:add_money_to_be_collected_api' %}" id="AddCreditForm"
+                          method="post"> {% csrf_token %}
+                        <div class="row clearfix">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="card">
+
+                                    <div class="body">
+                                        <input type="hidden" name="buyerID" value="{{ instance.pk }}">
+
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">attach_money</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                        <input type="number" class="form-control date"
+                                                               placeholder="Amount" name="amount" id="amount">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">event_note</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                        <input type="text" class="form-control" placeholder="Remark"
+                                                               name="remark" id="remark">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link waves-effect" onclick="AddCredit()">Submit</button>
+                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+     <div class="modal fade" id="defaultModalImage" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Cheque Image</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="" alt="" id="cImage" style="height: 300px;width: 100%;object-fit: contain;">
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="defaultModalMap" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Location</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="map" style="height: 300px;width: 100%;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#buyerCreditTable').dataTable({
+                dom: 'Blfrtip',
+                buttons: [{
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3]
+                    }
+                }, {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3]
+                    }
+                }
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "amount", "targets": 1, "orderable": true},
+                    {"name": "remark", "targets": 2, "orderable": true},
+                    {"name": "datetime", "targets": 3, "orderable": true},
+
+                ],
+                aaSorting: [[3, 'desc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:CreditListJson' %}?id={{ instance.pk }}"
+            });
+            $('#buyerDebitTable').dataTable({
+                dom: 'Blfrtip',
+                buttons: [{
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4]
+                    }
+                }, {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4]
+                    }
+                }
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "amount", "targets": 1, "orderable": true},
+                    {"name": "collectedBy.name", "targets": 2, "orderable": true},
+                    {"name": "paymentMode", "targets": 3, "orderable": true},
+                    {"name": "remark", "targets": 4, "orderable": true},
+                    {"name": "datetime", "targets": 5, "orderable": true},
+                    {"name": "action", "targets": 6, "orderable": false},
+
+
+                ],
+                aaSorting: [[4, 'desc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:DebitListJson' %}?id={{ instance.pk }}"
+            });
+        });
+
+
+    </script>
+
+    <script>
+        function AddCredit() {
+            var amount = $('#amount').val();
+
+
+            if (amount === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $('#AddCreditForm').submit();
+
+            }
+        }
+
+         function getImage(url) {
+
+            $('#cImage').attr("src", url);
+        }
+    </script>
+       <script>
+        function getLocation(lat, long) {
+            initMap(lat, long)
+        }
+      function initMap(l, lo) {
+        var myLatLng = {lat: parseFloat(l), lng: parseFloat(lo)};
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: myLatLng
+        });
+
+        var marker = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          title: 'Location'
+        });
+      }
+    </script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsXUGTFS09pLVdsYEE9YrO2y4IAncAO2U&callback=initMap">
+    </script>
+{% endblock %}

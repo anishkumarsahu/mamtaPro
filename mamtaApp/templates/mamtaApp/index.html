@@ -1,0 +1,404 @@
+﻿{% load staticfiles %}
+{% load pwa %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    {% progressive_web_app_meta %}
+    <title>123DACN</title>
+    <link rel="icon" href="{% static 'images/fevicon.png' %}" type="image/x-icon">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet"
+          type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+
+    <link href="{% static 'plugins/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+
+    <link href="{% static 'plugins/node-waves/waves.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'plugins/animate-css/animate.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'plugins/morrisjs/morris.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/themes/all-themes.css' %}" rel="stylesheet"/>
+
+    <style>
+        .validate_data {
+            position: fixed;
+            float: left;
+            background-color: #e91e63;
+            width: 100%;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            border-radius: 2px;
+            top: 0px;
+            left: 0px;
+            z-index: 10000;
+            height: 70px;
+            padding: 30px;
+            text-align: center;
+            -webkit-transition: opacity 3s ease-in-out;
+            -moz-transition: opacity 3s ease-in-out;
+            -ms-transition: opacity 3s ease-in-out;
+            -o-transition: opacity 3s ease-in-out;
+        }
+
+        .btn:not(.btn-link):not(.btn-circle) {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16), 0 2px 10px rgba(0, 0, 0, 0.12);
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+            border: none;
+            font-size: 13px;
+            outline: none;
+            padding: 5px;
+        }
+
+    </style>
+</head>
+
+<body class="theme-red">
+<!-- Page Loader -->
+{% if messages %}
+    {% for message in messages %}
+        <span class="validate_data" id="name_status">{{ message }}</span>
+    {% endfor %}
+
+{% endif %}
+<span id="name_status"></span>
+
+
+<div class="page-loader-wrapper">
+    <div class="loader">
+        <div class="preloader">
+            <div class="spinner-layer pl-red">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+        <p>Please wait...</p>
+    </div>
+</div>
+
+
+<div class="overlay"></div>
+<nav class="navbar">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            {#                <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>#}
+            <a href="javascript:void(0);" class="bars"></a>
+            <a class="navbar-brand" href="/" style="cursor: pointer">123DACN</a>
+        </div>
+
+    </div>
+</nav>
+<!-- #Top Bar -->
+<section>
+    <!-- Left Sidebar -->
+    <aside id="leftsidebar" class="sidebar">
+        <!-- User Info -->
+        {% comment %} <div class="user-info">
+            <div class="image">
+                <img src="{% static 'images/user.png' %}" width="48" height="48" alt="User"/>
+            </div>
+            <div class="info-container">
+                <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Welcome,</div>
+                <div class="email">Admin</div>
+
+            </div>
+        </div>{% endcomment %}
+        <!-- #User Info -->
+        <!-- Menu -->
+        <div class="menu">
+            <ul class="list" id="navUL">
+                <li class="header">MAIN NAVIGATION</li>
+
+
+                <li {% if request.session.nav == '1' %} class="active" {% endif %}>
+                    <a href="{% url 'mamtaApp:home' %}">
+                        <i class="material-icons">home</i>
+                        <span>Home</span>
+                    </a>
+                </li>
+
+                <li {% if request.session.nav == 'company1' %} class="active" {% endif %}>
+                    <a href="{% url 'mamtaApp:manage_company' %}">
+                        <i class="material-icons">location_city</i>
+                        <span>Manage Company</span>
+                    </a>
+                </li>
+
+
+                <li {% if request.session.nav == '2' %} class="active" {% endif %} >
+                    <a href="{% url 'mamtaApp:staff' %}">
+                        <i class="material-icons">people</i>
+                        <span>Manage Staffs</span>
+                    </a>
+                </li>
+
+                <li
+                        {% if request.session.nav == 'atten1' or request.session.nav == 'atten2' or request.session.nav == 'atten3' %}
+                            class="active" {% endif %} >
+                    <a href="#" class="menu-toggle waves-effect waves-block">
+                        <i class="material-icons">person_add</i>
+                        <span>Manage Attendance</span>
+                    </a>
+                    <ul class="ml-menu">
+                        <li {% if request.session.nav == 'atten1' %} class="active" {% endif %}>
+                            <a href="{% url 'attendanceApp:loginSystem' %}">
+
+                                <span>Manage Login System</span>
+                            </a>
+                        </li>
+                        <li {% if request.session.nav == 'atten2' %} class="active" {% endif %}>
+                            <a href="{% url 'attendanceApp:manageEmployee' %}">
+                                <span>Manage Employees</span>
+                            </a>
+                        </li>
+                        <li {% if request.session.nav == 'atten3' %} class="active" {% endif %}>
+                            <a href="{% url 'attendanceApp:attendanceReport' %}">
+                                <span>Attendance Report</span>
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </li>
+
+
+                <li {% if request.session.nav == '55' or request.session.nav == '3' or request.session.nav == '4' or request.session.nav == '5' %}
+                    class="active" {% endif %} >
+                    <a href="#" class="menu-toggle waves-effect waves-block">
+                        <i class="material-icons">attach_money</i>
+                        <span>Manage Collections</span>
+                    </a>
+                    <ul class="ml-menu">
+                        <li {% if request.session.nav == '3' %} class="active" {% endif %}>
+                            <a href="{% url 'mamtaApp:buyers' %}">
+
+                                <span>Manage Buyers</span>
+                            </a>
+                        </li>
+                        <li {% if request.session.nav == '4' %} class="active" {% endif %}>
+                            <a href="{% url 'mamtaApp:manage_credits' %}">
+                                <span>Manage Credits</span>
+                            </a>
+                        </li>
+                        <li {% if request.session.nav == '5' %} class="active" {% endif %}>
+                            <a href="{% url 'mamtaApp:report' %}">
+                                <span>Collection Report</span>
+                            </a>
+                        </li>
+                        <li {% if request.session.nav == '55' %} class="active" {% endif %}>
+                            <a href="{% url 'mamtaApp:supplier_collection_report' %}">
+                                <span>Supply Collection Report</span>
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </li>
+                <li {% if request.session.nav == '8' or request.session.nav == '9' %} class="active" {% endif %} >
+                    <a href="#" class="menu-toggle waves-effect waves-block">
+                        <i class="material-icons">receipt</i>
+                        <span>Manage Invoices</span>
+                    </a>
+                    <ul class="ml-menu">
+                        <li {% if request.session.nav == '8' %} class="active" {% endif %}>
+                            <a href="{% url 'invoiceApp:manage_invoice' %}">
+
+                                <span>Manage Invoice Series</span>
+                            </a>
+                        </li>
+                        <li {% if request.session.nav == '9' %} class="active" {% endif %}>
+                            <a href="{% url 'invoiceApp:invoice_report' %}">
+                                <span>Invoice Report</span>
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </li>
+
+
+                <li {% if request.session.nav == '6' %} class="active" {% endif %} >
+                    <a href="{% url 'mamtaApp:profile' %}">
+                        <i class="material-icons">settings</i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li {% if request.session.nav == '7' %} class="active" {% endif %} >
+                    <a href="{% url 'mamtaApp:logout' %}">
+                        <i class="material-icons">eject</i>
+                        <span>Log Out</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+        <!-- #Menu -->
+        <!-- Footer -->
+        <div class="legal">
+            <div class="copyright">
+                &copy; 2019 - 2020 <a target="_blank" href="https://zivainfotech.com">Designed & Developed By <br>Ziva Infotech
+                </a>.
+            </div>
+            <div class="version">
+                <b>Version: </b> 2.1.1
+            </div>
+        </div>
+        <!-- #Footer -->
+    </aside>
+    <!-- #END# Left Sidebar -->
+
+</section>
+{% block body %}
+    <section class="content">
+        <div class="container-fluid">
+            <div class="block-header">
+                <h2>DASHBOARD</h2>
+            </div>
+
+            <!-- Widgets -->
+            <div class="row clearfix">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-pink hover-expand-effect">
+                        <div class="icon">
+                            <i class="material-icons">perm_identity</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">TOTAL STAFF</div>
+                            <div class="number count-to" data-from="0" data-to="{{ staff }}" data-speed="15"
+                                 data-fresh-interval="20"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-cyan hover-expand-effect">
+                        <div class="icon">
+                            <i class="material-icons">face</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">TOTAL BUYERS</div>
+                            <div class="number count-to" data-from="0" data-to="{{ buyer }}" data-speed="1000"
+                                 data-fresh-interval="20"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-light-green hover-expand-effect">
+                        <div class="icon">
+                            <i class="material-icons">attach_money</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">TODAY COLLECTION</div>
+                            <div class="number count-to" data-from="0" data-to="{{ credit }}" data-speed="1000"
+                                 data-fresh-interval="20"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-orange hover-expand-effect">
+                        <div class="icon">
+                            <i class="material-icons">sms</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">SMS BALANCE</div>
+                            <div class="number count-to" data-from="0" data-to="{{ sms }}" data-speed="1000"
+                                 data-fresh-interval="20"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row clearfix">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="card">
+                        <div class="header">
+                            <div class="row clearfix">
+                                <div class="col-xs-12 col-sm-6">
+                                    <h2>LAST 10 DAYS COLLECTION</h2>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="body">
+                            <canvas id="myChart" class="dashboard-flot-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+{% endblock %}
+
+<script src="{% static 'plugins/bootstrap/js/bootstrap.js' %}"></script>
+
+<script src="{% static 'plugins/jquery-slimscroll/jquery.slimscroll.js' %}"></script>
+
+<script src="{% static 'plugins/node-waves/waves.js' %}"></script>
+
+<script src="{% static 'plugins/jquery-countto/jquery.countTo.js' %}"></script>
+
+<script src="{% static 'plugins/raphael/raphael.min.js' %}"></script>
+<script src="{% static 'plugins/morrisjs/morris.js' %}"></script>
+
+<script src="{% static 'js/admin.js' %}"></script>
+<script src="{% static 'js/pages/index.js' %}"></script>
+
+<!-- Demo Js -->
+<script src="{% static 'js/demo.js' %}"></script>
+<script>
+
+    $('#name_status').fadeIn().fadeOut(2000);
+    function goBack() {
+        window.history.back();
+    }
+</script>
+
+{% block js %}
+    <!-- ChartJs -->
+    <script src="{% static 'plugins/chartjs/Chart.min.js' %}"></script>
+    <script>
+        new Chart(document.getElementById("myChart"), {
+            type: 'line',
+            data: {
+                labels: [ {% for d in dates %} '{{ d }}', {% endfor %}],
+                datasets: [{
+                    data: [{% for c in c_list %} {{ c }}, {% endfor %}],
+                    label: "Amount Rs.",
+                    borderColor: "#3e95cd",
+                    fill: false
+                }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Collected Amount (in Rs.) '
+                }
+            }
+        });
+
+    </script>
+{% endblock %}
+
+</body>
+
+</html>

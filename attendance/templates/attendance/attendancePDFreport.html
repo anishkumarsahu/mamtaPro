@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <style>
+        {% comment %}body {
+            -weasy-hyphens: auto;
+        }{% endcomment %}
+        @page {
+            size:A4 landscape;
+            margin: .3cm;
+        }
+
+        section {
+            columns: 1;
+        }
+
+        .skip {
+            columns: 7;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <span style="font-size: 10px;">Generated On: {{ today|date }}</span>
+    </div>
+
+</div>
+  {% for d in data %}
+<p style="font-size: 10px; margin: 2px;">For {{ d.month }}</p>
+  <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">1</th>
+                <th scope="col">2</th>
+                <th scope="col">3</th>
+                <th scope="col">4</th>
+                <th scope="col">5</th>
+                <th scope="col">6</th>
+                <th scope="col">7</th>
+                <th scope="col">8</th>
+                <th scope="col">9</th>
+                <th scope="col">10</th>
+                <th scope="col">11</th>
+                <th scope="col">12</th>
+                <th scope="col">13</th>
+                <th scope="col">14</th>
+                <th scope="col">15</th>
+                <th scope="col">16</th>
+                <th scope="col">17</th>
+                <th scope="col">18</th>
+                <th scope="col">19</th>
+                <th scope="col">20</th>
+                <th scope="col">21</th>
+                <th scope="col">22</th>
+                <th scope="col">23</th>
+                <th scope="col">24</th>
+                <th scope="col">25</th>
+                <th scope="col">26</th>
+                <th scope="col">27</th>
+                <th scope="col">28</th>
+                <th scope="col">29</th>
+                <th scope="col">30</th>
+                <th scope="col">31</th>
+                <th scope="col">P's</th>
+                <th scope="col">A's</th>
+                <th scope="col">H's</th>
+
+            </tr>
+            </thead>
+            <tbody>
+
+{% for e in d.emp %}
+
+                <tr>
+                <td>{{ e.Name|truncatechars:10 }}</td>
+                    {% for aa in e.attendance %}
+                <td>{{ aa }}</td>
+                        {% endfor %}
+
+                <td>{{ e.A }}</td>
+                <td>{{ e.P }}</td>
+                <td>{{ e.NA }}</td>
+
+
+                </tr>
+    {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+{% endfor %}
+</body>
+</html>

@@ -1,0 +1,191 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+
+
+
+
+{% block body %}
+    <style>
+        .zoom {
+
+            transition: transform .2s; /* Animation */
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        .zoom:hover {
+            transform: scale(3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+        }
+
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
+
+        .dt-buttons {
+            padding-top: 10px;
+        }
+
+        .hidePadding {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    </style>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="block-header">
+
+
+            </div>
+
+
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                ADMIN PROFILE
+                            </h2>
+
+                        </div>
+
+                        <div class="body">
+                            <div class="row" style="text-align: center">
+
+
+                                <div class="image">
+                                    <img src="/static/images/user.png"
+                                         style="width: 100px;height: 100px;border-radius: 50%" alt="User">
+                                </div>
+                                <div class="info-container">
+                                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                         style="font-weight: bold">123DACN</div>
+                                    <div class="email">Admin</div>
+
+                                </div>
+
+                                <div style="margin-top: 40px;">
+
+                                    <button style="background-color: #3F51B5;color: white;margin-bottom: 10px"
+                                            type="button"
+                                            class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">
+                                        Change Password
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Change Password</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'mamtaApp:change_password_api' %}" id="ChangePasswordForm"
+                          method="post"> {% csrf_token %}
+                        <div class="row clearfix">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="card">
+
+                                    <div class="body">
+
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">remove_red_eye</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                        <input autocomplete="false" type="password"
+                                                               class="form-control date"
+                                                               placeholder="New Password" name="password" id="password">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">remove_red_eye</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                        <input autocomplete="false" type="password" class="form-control"
+                                                               placeholder="Confirm Password"
+                                                               name="cpassword" id="cpassword">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link waves-effect" onclick="changePassword()">Submit</button>
+                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script>
+        function changePassword() {
+            var pass = $('#password').val();
+            var passc = $('#cpassword').val();
+
+
+            if (pass === '' || passc === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+
+            else {
+                if (pass !== passc) {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('Password not matched');
+                    $('#name_status').fadeIn().fadeOut(2000);
+                }
+                else if (pass.length < 8) {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('Password should be atleast 8 characters long.');
+                    $('#name_status').fadeIn().fadeOut(2000);
+
+                }
+                else {
+                    $('#ChangePasswordForm').submit();
+                }
+            }
+        }
+    </script>
+{% endblock %}

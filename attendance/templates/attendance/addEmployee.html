@@ -1,0 +1,337 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+
+
+
+
+{% block body %}
+
+    <style>
+        .zoom {
+
+            transition: transform .2s; /* Animation */
+            width: 30px;
+            height: 30px;
+            margin: 0 auto;
+        }
+
+        .zoom:hover {
+            transform: scale(4);
+        }
+
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
+    .gj-timepicker{
+        margin-bottom: 0!important;
+    }
+
+    </style>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link href="https://cdn.jsdelivr.net/npm/gijgo@1.9.10/css/gijgo.min.css" rel="stylesheet" type="text/css"/>
+    <style>
+        .avatar-upload {
+            position: relative;
+            max-width: 205px;
+            margin: 50px auto;
+        }
+
+        .avatar-upload .avatar-edit {
+            position: absolute;
+            right: 12px;
+            z-index: 1;
+            top: 10px;
+        }
+
+        .avatar-upload .avatar-edit input {
+            display: none;
+        }
+
+        .avatar-upload .avatar-edit input + label {
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 0;
+            border-radius: 100%;
+            background: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            font-weight: normal;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .avatar-upload .avatar-edit input + label:hover {
+            background: #f1f1f1;
+            border-color: #d6d6d6;
+        }
+
+        .avatar-upload .avatar-edit input + label:after {
+            content: "\f040";
+            font-family: 'FontAwesome';
+            color: #757575;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            margin: auto;
+        }
+
+        .avatar-upload .avatar-preview {
+            width: 192px;
+            height: 192px;
+            position: relative;
+            border-radius: 100%;
+            border: 6px solid #F8F8F8;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-upload .avatar-preview > div {
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+    </style>
+
+    <!-- #Top Bar -->
+
+
+    <section class="content">
+        <div class="container-fluid">
+
+
+            <!-- Striped Rows -->
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-right: 0;padding-left: 0">
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                ADD NEW EMPLOYEE
+                            </h2>
+                            <button onclick="goBack()" title="back" style="    background-color: #2196f3;color: white;top: 12px;position: absolute;right: 10px;
+    border-radius: 32%;" type="button"
+                                    class="btn  waves-effect ">
+                                <i class="material-icons">arrow_back</i></button>
+                        </div>
+                        <div class="body table-responsive ">
+                            <form action="{% url 'attendanceApp:add_employee_api' %}" enctype="multipart/form-data"
+                                  id="AddStaffForm" style="text-align: center;" method="post"> {% csrf_token %}
+
+                                <div class="row clearfix">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="card">
+
+                                            <div class="body">
+
+                                                <div class="row clearfix">
+                                                    <div class="col-md-12">
+                                                        <div class="avatar-upload">
+                                                            <div class="avatar-edit">
+                                                                <input type='file' id="imageUpload" name="photo"
+                                                                       accept=".png, .jpg, .jpeg"/>
+                                                                <label for="imageUpload"></label>
+                                                            </div>
+                                                            <div class="avatar-preview">
+                                                                <div id="imagePreview"
+                                                                     style="background-image: url(http://i.pravatar.cc/500?img=7);">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div style="text-align: center">
+                                                            <span style="font-weight: bolder">Upload Photo *</span>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                                <div class="row clearfix">
+                                                    <div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">person</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <input type="text" class="form-control date" id="name"
+                                                                       name="name" placeholder="Name *">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">local_phone</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <input type="number" class="form-control date"
+                                                                       name="phone" id="phone"
+                                                                       placeholder="Phone Number *">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="row clearfix">
+
+                                                    <div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">public</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <input type="text" class="form-control"
+                                                                       placeholder="Address *" name="address"
+                                                                       id="address">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">remove_red_eye</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <input type="text" class="form-control"
+                                                                       placeholder="Password *" name="password"
+                                                                       id="password">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+
+                                                <div class="row clearfix">
+
+                                                    <div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">watch_later</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <input type="text" class=" form-control"
+
+                                                                       placeholder="In-Time *" name="inTime"
+                                                                       id="inTime">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">watch_later</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <input type="text" class="form-control"
+                                                                       placeholder="Out-Time *" name="outTime"
+                                                                       id="outTime">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" style="background-color: #cabdbd"
+                                        class="btn btn-link waves-effect " onclick="AddStaff()">SAVE
+                                </button>
+
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- #END# Striped Rows -->
+
+
+        </div>
+    </section>
+
+
+
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gijgo@1.9.10/js/gijgo.min.js" type="text/javascript"></script>
+
+
+    <script>
+
+
+        $('#inTime').timepicker({
+            uiLibrary: 'bootstrap',
+            format: 'hh:MM tt'
+        });
+
+
+        $('#outTime').timepicker({
+            uiLibrary: 'bootstrap',
+            format: 'hh:MM tt'
+        })
+
+    </script>
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                    $('#imagePreview').hide();
+                    $('#imagePreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#imageUpload").change(function () {
+            readURL(this);
+        });
+
+
+        function AddStaff() {
+            var name = $('#name').val();
+            var phone = $('#phone').val();
+            var address = $('#address').val();
+            var password = $('#password').val();
+            var inTime = $('#inTime').val();
+            var outTime = $('#outTime').val();
+
+
+            if (name === "" || phone === ""
+                || address === "" || password === "" || inTime === ""|| outTime === ""
+                || document.getElementById("imageUpload").files.length === 0) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $('#AddStaffForm').submit();
+
+            }
+
+        }
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,1387 @@
+{% load staticfiles %}
+{% load pwa %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+    {% progressive_web_app_meta %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static 'plugins/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+</head>
+<body>
+{% if messages %}
+    {% for message in messages %}
+        <span class="validate_data" id="name_status">{{ message }}</span>
+    {% endfor %}
+{% endif %}
+<span id="name_status"></span>
+<style>
+    .validate_data {
+        position: fixed;
+        float: left;
+        background-color: #e91e63;
+        width: 100%;
+        color: white;
+        font-family: monospace;
+        font-size: 12px;
+        border-radius: 2px;
+        top: 0px;
+        left: 0px;
+        z-index: 10000;
+        height: 70px;
+        padding: 30px;
+        text-align: center;
+        -webkit-transition: opacity 3s ease-in-out;
+        -moz-transition: opacity 3s ease-in-out;
+        -ms-transition: opacity 3s ease-in-out;
+        -o-transition: opacity 3s ease-in-out;
+    }
+
+    .invoiceStyle {
+        padding: 8px;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    .tabs-left {
+        border-bottom: none;
+        border-right: 1px solid #ddd;
+    }
+
+    .tabs-left > li {
+        float: none;
+        margin: 0px;
+
+    }
+
+    .tabs-left > li.active > a,
+    .tabs-left > li.active > a:hover,
+    .tabs-left > li.active > a:focus {
+        border-bottom-color: #ddd;
+        border-right-color: transparent;
+        background: #f90;
+        border: none;
+        border-radius: 0px;
+        margin: 0px;
+    }
+
+    .nav-tabs > li > a:hover {
+        /* margin-right: 2px; */
+        line-height: 1.42857143;
+        border: 1px solid transparent;
+        /* border-radius: 4px 4px 0 0; */
+    }
+
+    .tabs-left > li.active > a::after {
+        content: "";
+        position: absolute;
+        top: 10px;
+        right: -10px;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+
+        border-left: 10px solid #f90;
+        display: block;
+        width: 0;
+    }
+
+    @media screen {
+        #printDiv {
+            display: none;
+        }
+
+        #nonPrintDiv {
+            display: block;
+        }
+    }
+
+    @media print {
+        body {
+            width: 80mm;
+            height: 297mm;
+            margin-left: 3mm;
+            margin-bottom: 3mm;
+        }
+
+        #nonPrintDiv {
+            display: none;
+        }
+
+        #printDiv {
+            display: block;
+        }
+
+    }
+
+    .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
+        color: #fff;
+        text-decoration: none;
+        background-color: #337ab7;
+        outline: 0;
+        height: 30px !important;
+    }
+
+    .bootstrap-select {
+        width: 100% !important;
+    }
+</style>
+<div id="nonPrintDiv">
+    <div class="col-md-12">
+        <h4>123DACN</h4>
+
+        <ul style="    position: fixed;top: 5px;right: 30%; width: 30%;" class="nav">
+            <h4>Username : {{ user.name|capfirst }}</h4>
+        </ul>
+
+        <ul style="    position: fixed;top: 7px;right: 2%; width: 10%;" class="nav">
+
+            <a href="{% url 'invoiceApp:generate_collection_report' %}"
+               style="font-weight: bold;width:100%;padding-right: 10px;background-color: #9C27B0;border-color:#9C27B0"
+               type="button" class="btn btn-warning">Collection Report</a>
+        </ul>
+        <ul style="    position: fixed;top: 7px;right: 15%; width: 10%;" class="nav">
+
+            <a href="{% url 'invoiceApp:generate_net_report' %}"
+               style="font-weight: bold;width:100%;padding-right: 10px;background-color: #9C27B0;border-color:#9C27B0"
+               type="button" class="btn btn-warning">Invoice Report</a>
+        </ul>
+
+        <hr/>
+        <div class="col-md-1 col-sm-3 col-xs-12">
+            <ul class="nav nav-tabs tabs-left sideways tabClass">
+                {% for InvoiceSery in InvoiceSeries %}
+
+                    <li id="s{{ InvoiceSery.SeriesID }}" onclick="getInvoiceList('{{ InvoiceSery.SeriesID }}')"><a
+                            href="#10"
+
+                            data-toggle="tab"> {{ InvoiceSery.Series }} </a>
+                    </li>
+
+                {% endfor %}
+
+
+            </ul>
+            <ul style="position: fixed;bottom: 0;width:14%;padding-bottom: 20px" class="nav">
+                <span style="color: grey;font-size: 12px;">{{ user.companyID.name }}</span>
+                <a href="{% url 'mamtaApp:logout' %}"
+                   style="font-weight: bold;width:100%;padding-right: 10px;background-color: #2d4760;border-color: #2d4760"
+                   type="button" class="btn btn-warning">Logout</a>
+                <a style="color: #b54f3d;font-size: 13px;cursor: pointer;" data-toggle="modal"
+                   data-target="#ChangePasswordModal"
+                   data-whatever="@mdo">
+                    <stong>Change Password</stong>
+                </a>
+            </ul>
+        </div>
+
+        <div class="col-md-7 col-sm-7 col-xs-12">
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane active" id="10">
+                    {% comment %}
+
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+
+                        <div class="form-group">
+
+                            <div style="padding-top: 35px">
+
+                                <label style="color: #0178fc" for="billNumber">Bill No.</label>
+                                <input readonly type="text" class="form-control" id="billNumber" aria-describedby=""
+                                       placeholder="Enter No">
+                            </div>
+
+                            <input type="hidden" id="SeriesID" name="SeriesID">
+                            <input type="hidden" id="MainNumber" name="MainNumber">
+                            <input type="hidden" id="MainSeries" name="MainSeries">
+
+                        </div>
+
+
+                    </div>
+{% endcomment %}
+
+                    <div class="col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 40px">
+
+
+                        <ul id="myTabs" class="nav nav-pills nav-justified" role="tablist" data-tabs="tabs">
+                            <li style="background-color: #e6eaff;" onclick="changeTab('cash')" class="active"><a
+                                    href="#Commentary" data-toggle="tab">Cash</a>
+                            </li>
+                            <li style="background-color: #e6eaff;" onclick="changeTab('credit')"><a href="#Videos"
+                                                                                                    data-toggle="tab">Credit</a>
+                            </li>
+                            <li style="background-color: #e6eaff;" onclick="changeTab('collection')"><a
+                                    href="#Collection"
+                                    data-toggle="tab">Collection</a>
+                            </li>
+                            <li style="background-color: #e6eaff;" onclick="changeTab('return')"><a
+                                    href="#Return"
+                                    data-toggle="tab">Return</a>
+                            </li>
+                            <li style="background-color: #e6eaff;" onclick="changeTab('commission')"><a
+                                    href="#Commission"
+                                    data-toggle="tab">Commission</a>
+                            </li>
+
+                        </ul>
+                        <div class="tab-content">
+                            <form id="SalesForm"> {% csrf_token %}
+                                <input type="hidden" id="billType" value="Cash">
+                                <div role="tabpanel" class="tab-pane fade in active" id="Commentary">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-6" id="CashTab">
+                                            <div class="form-group"><br>
+
+                                                <div>
+
+                                                    <input readonly type="text" class="form-control" id="billNumber"
+                                                           aria-describedby=""
+                                                           placeholder="Enter Invoice No">
+                                                </div>
+
+                                                <input type="hidden" id="SeriesID" name="SeriesID">
+                                                <input type="hidden" id="MainNumber" name="MainNumber">
+                                                <input type="hidden" id="MainSeries" name="MainSeries">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="cash" aria-describedby=""
+                                                       placeholder="Rs.">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="Videos" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-xs-4" id="CreditTab" >
+
+                                        </div>
+                                        <div class="col-sm-4 col-xs-4">
+                                            <div class="form-group"><br>
+                                                <input type="text" class="form-control" id="name" aria-describedby=""
+                                                       onkeypress="return checkCustomer(event)"
+                                                       placeholder="Customer Name"
+                                                       autocomplete="off">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-xs-4">
+                                            <div class="form-group"><br>
+                                                <input readonly type="number" class="form-control" id="credit"
+                                                       aria-describedby=""
+                                                       placeholder="Rs." value="0">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="Collection" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="form-group"><br>
+
+                                                <select id="partyName" class="selectpicker" data-show-subtext="true"
+                                                        data-live-search="true">
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="partyAmount"
+                                                       aria-describedby=""
+                                                       placeholder="Rs." value="0">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="Return" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+
+                                            <div class="form-group"><br>
+                                                <select class="form-control" id="sIDReturn"
+                                                        style="padding: 2px!important;cursor: pointer">
+
+                                                    {% for InvoiceSery in InvoiceSeries %}
+                                                        <option value="{{ InvoiceSery.Series }}">{{ InvoiceSery.Series }}</option>
+                                                    {% endfor %}
+
+
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-5">
+
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="invoiceNumberReturn"
+                                                       aria-describedby=""
+                                                       placeholder="Invoice Number">
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-4 col-xs-4">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="AmountReturn"
+                                                       aria-describedby=""
+                                                       placeholder="Rs." value="0">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="Commission" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <div class="form-group"><br>
+                                                <select class="form-control" id="sIDCommission"
+                                                        style="padding: 2px!important;cursor: pointer">
+
+                                                    {% for InvoiceSery in InvoiceSeries %}
+                                                        <option value="{{ InvoiceSery.Series }}">{{ InvoiceSery.Series }}</option>
+                                                    {% endfor %}
+
+
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="invoiceNumberCommission"
+                                                       aria-describedby=""
+                                                       placeholder="Invoice Number">
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-4 col-xs-4">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="AmountCommission"
+                                                       aria-describedby=""
+                                                       placeholder="Rs." value="0">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="text-align: center;">
+                                    <button style="padding-right: 30px;padding-left: 30px" type="button"
+                                            class="btn btn-primary" onclick="postSales()">Save
+                                    </button>
+                                    <button style="padding-right: 30px;padding-left: 30px" type="button"
+                                            class="btn btn-danger" onclick="resetForm()">Reset
+                                    </button>
+                                    <button id="collectionBtn" type="button"
+                                            style="padding-right: 10px;padding-left: 10px;display: none"
+                                            class="btn btn-success" data-toggle="modal" data-target="#addPartyModal"
+                                            data-whatever="@mdo">Add Party
+                                    </button>
+
+
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+
+                        <div style="height: 330px;overflow-y: scroll">
+                            <div style="padding-top: 20px">
+                                <label style="color: #0178fc">Un-Used Bills</label> <br>
+                                <div style="width: 100%;overflow-x: scroll;height: 50px;overflow-y: hidden">
+                        <span id="unuse">
+
+                         </span>
+                                </div>
+                            </div>
+                            <div style="padding-top: 20px">
+                                <label style="color: #0178fc">Used Bills</label> <br>
+                                <div style="width: 100%;overflow-x: scroll;height: 50px;overflow-y: hidden">
+                        <span id="used">
+
+                         </span>
+                                </div>
+                            </div>
+                            <div style="padding-top: 20px">
+                                <label style="color: #0178fc">Today's Collection</label> <br>
+                                <div style="width: 100%;overflow-x: scroll;height: 50px;overflow-y: hidden">
+                        <span id="todayCollection">
+
+                         </span>
+                                </div>
+                            </div>
+
+                            <div style="padding-top: 20px">
+                                <label style="color: #0178fc">Today's Returns</label> <br>
+                                <div style="width: 100%;overflow-x: scroll;height: 50px;overflow-y: hidden">
+                        <span id="todayReturn">
+
+                         </span>
+                                </div>
+                            </div>
+                            <div style="padding-top: 20px">
+                                <label style="color: #0178fc">Today's Commission</label> <br>
+                                <div style="width: 100%;overflow-x: scroll;height: 50px;overflow-y: hidden">
+                        <span id="todayCommission">
+
+                         </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+                        <label style="color: #0178fc"> Last Three (3) Recent Invoices</label> <br>
+                        <div style="padding-top: 20px;height: 300px;overflow-y: scroll;overflow-x: scroll">
+
+                            <div style="width: 100%;">
+                    <span id="recent">
+
+                     </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 col-sm-4 col-xs-12">
+
+
+            <div class="form-group">
+
+                <div style="padding-top: 35px">
+                    <form method="post" id="SearchForm"> {% csrf_token %}
+
+                        <div class="col-sm-4">
+                            <label style="color: #0178fc" for="sID">Series</label>
+                            <select class="form-control" id="sID"
+                                    style="padding: 2px!important;cursor: pointer">
+
+                                {% for InvoiceSery in InvoiceSeries %}
+                                    <option value="{{ InvoiceSery.SeriesID }}">{{ InvoiceSery.Series }}</option>
+                                {% endfor %}
+
+
+                            </select>
+
+                        </div>
+                        <div class="col-sm-8">
+                            <label style="color: #0178fc" for="searchID">Search Invoice</label>
+                            <input type="number" class="form-control" id="searchID" aria-describedby=""
+                                   placeholder="Search Invoice Number">
+
+                        </div>
+
+                        <div class="col-sm-12" style="text-align: center;margin-top: 15px;">
+
+                            <button style="padding-right: 10px;padding-left: 10px" type="button"
+                                    class="btn btn-primary" onclick="searchSales()">Search
+                            </button>
+                            <button style="padding-right: 10px;padding-left: 10px" type="button"
+                                    class="btn btn-danger" onclick="searchReset()">Reset
+                            </button>
+
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div style="padding-top: 30px;display: none;" id="resultDiv">
+                <label style="color: #0178fc">Search Result of - <strong id="s0"></strong></label> <br>
+                <div id="result" style="color: grey">
+                    <span>Sales Type: <strong id="s1"></strong></span> <br>
+                    <span>Amount: ₹  <strong id="s2"></strong></span><br>
+                    <span>Customer Name:<strong id="s3"></strong></span><br>
+                    <span>Datetime:<strong id="s4"></strong></span><br>
+                </div>
+            </div>
+            <div style="padding-top: 30px;display: none;" id="noresultDiv">
+                <p>Result not Found.</p>
+                <span id="useNow"></span>
+            </div>
+
+            <div id="demo" class="collapse" style="padding-top: 10px;">
+                <span style="color: grey;font-weight: bold;margin-bottom: 10px;margin-top: 10px;">Skipped Invoice Numbers</span>
+                <div style="height: 250px;overflow-y: scroll;overflow-x: hidden;">
+                    <div class="row" id="skipped"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <a data-toggle="collapse" data-target="#demo" onclick="skippedInvoiceDetails()"
+       style="font-weight: bold;padding-right: 10px;background-color: #E91E63;border-color: #E91E63;right: 2%;bottom: 2%;position: fixed"
+       type="button" class="btn btn-warning">Skipped Invoice Numbers</a>
+</div>
+
+
+<div class="modal fade" id="addPartyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">Add New Party</h4>
+            </div>
+            <form id="PartyForm"> {% csrf_token %}
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="pName" class="control-label">Name:</label>
+                        <input autocomplete="off" type="text" class="form-control" id="pName">
+                    </div>
+                    <div class="form-group">
+                        <label for="pPhone" class="control-label">Phone Number:</label>
+                        <input autocomplete="off" type="number" class="form-control" id="pPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="pAddress" class="control-label">Address:</label>
+                        <textarea autocomplete="off" class="form-control" id="pAddress"></textarea>
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="addParty()">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ChangePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">Change Password</h4>
+            </div>
+            <form id="PasswordForm"> {% csrf_token %}
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="nPass" class="control-label">New Password: <span
+                                style="color: grey;font-size: 10px;"> Note - Password should be at least 5 character long.</span></label>
+                        <input autocomplete="off" type="password" class="form-control" id="nPass">
+                    </div>
+                    <div class="form-group">
+                        <label for="rPass" class="control-label">Confirm New Password:</label>
+                        <input autocomplete="off" type="password" class="form-control" id="rPass">
+                    </div>
+
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="ChangePassword()">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</div>
+<div id="printDiv" style="width: 80mm;height: 297mm;padding: 2mm;">
+    <style>
+        .wavy {
+            text-decoration-line: underline;
+            text-decoration-style: dashed;
+            text-decoration-color: grey;
+
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0px;
+        }
+
+        ul li span {
+            float: left;
+            width: 27mm;
+            font-size: 13px;
+        }
+
+        .val {
+            float: left;
+            width: 40mm;
+            font-size: 13px;
+        }
+    </style>
+    <p><span class="wavy"
+             style="width: 100% ;text-align: center;text-transform: uppercase;">{{ user.companyID.name }}</span><br>
+    <ul>
+        <li><span>Created By:</span><span id="p1" class="val">N/A</span></li>
+        <li><span>Amount (&#8377):</span><span id="p2" class="val">N/A</span></li>
+        <li><span>Bill No.:</span><span id="p3" class="val">N/A</span></li>
+        <li style="padding-bottom: 5mm"><span>Datetime:</span><span id="p4" class="val">N/A</span></li>
+    </ul>
+    </p>
+</div>
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap/js/bootstrap.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+
+<script>
+    var id = 'None';
+    function getInvoiceList(nid) {
+        getInvoiceDetails(nid);
+        return id = nid
+    }
+
+
+    $('#name_status').fadeIn().fadeOut(2000);
+    $(getInvoiceDetails(id));
+
+    function getInvoiceDetails(id) {
+        $('#unuse').html('');
+        $('#used').html('');
+
+
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_invoice_series' %}?id=" + id,
+            success: function (response) {
+
+
+                for (i in response.data.Used) {
+                    Used = '<span class="label label-success invoiceStyle" ><strong>' + response.data.Used[i].Serial + ' </strong></span>'
+
+                    $('#used').append(Used)
+                }
+
+                for (i in response.data.UnUsed) {
+                    unuse = '<span class="label label-danger invoiceStyle" onclick="inputData(\'' + response.data.UnUsed[i].Serial + '\',' + response.data.UnUsed[i].SeriesID + ',' + response.data.UnUsed[i].MainNumber + ',\'' + response.data.UnUsed[i].MainSeries + '\')"><strong>' + response.data.UnUsed[i].Serial + ' </strong></span>'
+
+                    $('#unuse').append(unuse)
+                }
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
+    function inputData(Serial, SeriesID, MainNumber, MainSeries) {
+        $('#billNumber').val(Serial);
+        $('#SeriesID').val(SeriesID);
+        $('#MainNumber').val(MainNumber);
+        $('#MainSeries').val(MainSeries);
+
+    }
+
+    function changeTab(t) {
+        var bill = '<div class="form-group"><br><div><input readonly type="text" class="form-control" id="billNumber"aria-describedby=""placeholder="Enter Invoice No"></div><input type="hidden" id="SeriesID" name="SeriesID"><input type="hidden" id="MainNumber" name="MainNumber"><input type="hidden" id="MainSeries" name="MainSeries"></div>'
+
+        if (t === 'cash') {
+            $('#Commentary').css('display', '');
+            $('#Videos').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', 'none');
+            $('#billType').val('Cash');
+            $('#collectionBtn').css('display', 'none');
+            $('#CashTab').html(bill);
+            $('#CreditTab').html('');
+        }
+        if (t === 'credit') {
+            $('#Commentary').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#Videos').css('display', '');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', 'none');
+            $('#billType').val('Credit');
+            $('#collectionBtn').css('display', 'none');
+             $('#CashTab').html('');
+            $('#CreditTab').html(bill);
+        }
+        if (t === 'collection') {
+            $('#Commentary').css('display', 'none');
+            $('#Videos').css('display', 'none');
+            $('#Collection').css('display', '');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', 'none');
+            $('#billType').val('Collection');
+            $('#collectionBtn').css('display', '');
+
+
+        }
+        if (t === 'return') {
+            $('#Commentary').css('display', 'none');
+            $('#Videos').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#Return').css('display', '');
+            $('#Commission').css('display', 'none');
+            $('#billType').val('Return');
+            $('#collectionBtn').css('display', 'none');
+
+
+        }
+        if (t === 'commission') {
+            $('#Commentary').css('display', 'none');
+            $('#Videos').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', '');
+            $('#billType').val('Commission');
+            $('#collectionBtn').css('display', 'none');
+
+
+        }
+
+    }
+
+
+    $('#SalesForm').keypress(function (e) {
+        if (e.which == 13) {
+            postSales();
+        }
+    });
+
+    function postSales() {
+
+
+        var billType = $('#billType').val();
+        var SeriesID = $('#SeriesID').val();
+        var MainNumber = $('#MainNumber').val();
+        var MainSeries = $('#MainSeries').val();
+        var billNumber = $('#billNumber').val();
+        var csrfmiddlewaretoken = $("input[name='csrfmiddlewaretoken']").val();
+        if (billType === 'Cash') {
+
+            var amount = $('#cash').val();
+            data = new FormData();
+            data.append('SalesType', billType);
+            data.append('BillNumber', billNumber);
+            data.append('CustomerName', 'N/A');
+            data.append('Amount', amount);
+            data.append('SeriesID', SeriesID);
+            data.append('MainNumber', MainNumber);
+            data.append('MainSeries', MainSeries);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (billNumber === "" || amount === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:create_invoice' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+                            $(getInvoiceDetails(id));
+                            getRecentThreeInvoices();
+                            $('#billNumber').val('');
+                            $('.collapse').collapse('hide');
+                            $('#p1').html(response.data['createdBy']);
+                            $('#p2').html(response.data['amount']);
+                            $('#p3').html(response.data['billNo']);
+                            $('#p4').html(response.data['datetime']);
+                            window.print();
+                        }
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html(response.message).fadeIn().fadeOut(2000);
+
+                        }
+
+                        $('#SearchForm')[0].reset();
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+        }
+        if (billType === 'Credit') {
+            var amountCredit = $('#credit').val();
+            var name = $('#name').val();
+            data = new FormData();
+            data.append('SalesType', billType);
+            data.append('BillNumber', billNumber);
+            data.append('CustomerName', name);
+            data.append('Amount', amountCredit);
+            data.append('SeriesID', SeriesID);
+            data.append('MainNumber', MainNumber);
+            data.append('MainSeries', MainSeries);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (billNumber === "" || amountCredit === "" || name === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:create_invoice' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+                            $(getInvoiceDetails(id));
+                            getRecentThreeInvoices();
+                            $('#billNumber').val('');
+                            $('.collapse').collapse('hide')
+                        }
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html(response.message).fadeIn().fadeOut(2000);
+
+                        }
+
+                        $('#SearchForm')[0].reset();
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+        }
+
+        if (billType === 'Collection') {
+            var partyName = $('#partyName').val();
+            var partyAmount = $('#partyAmount').val();
+            data = new FormData();
+            data.append('partyName', partyName);
+            data.append('partyAmount', partyAmount);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (partyName === "" || partyAmount === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:take_collection' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Collection Created.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+
+
+                        }
+
+                        $('#SearchForm')[0].reset();
+                        getCollectionDetails();
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+        }
+
+        if (billType === 'Return') {
+            var sIDReturn = $('#sIDReturn').val();
+            var invoiceNumberReturn = $('#invoiceNumberReturn').val();
+            var AmountReturn = $('#AmountReturn').val();
+            data = new FormData();
+            data.append('sIDReturn', sIDReturn);
+            data.append('invoiceNumberReturn', invoiceNumberReturn);
+            data.append('AmountReturn', AmountReturn);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (invoiceNumberReturn === "" || AmountReturn === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:return_collection' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Return Added.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+
+
+                        }
+                        getReturnDetails();
+                        $('#SearchForm')[0].reset();
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+        }
+
+        if (billType === 'Commission') {
+            var sIDReturn = $('#sIDCommission').val();
+            var invoiceNumberReturn = $('#invoiceNumberCommission').val();
+            var AmountReturn = $('#AmountCommission').val();
+            data = new FormData();
+            data.append('sIDReturn', sIDReturn);
+            data.append('invoiceNumberReturn', invoiceNumberReturn);
+            data.append('AmountReturn', AmountReturn);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (invoiceNumberReturn === "" || AmountReturn === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:commission_collection' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Commission Added.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+
+
+                        }
+
+                        $('#SearchForm')[0].reset();
+                        getCommissionDetails();
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+        }
+
+
+    }
+
+
+    function resetForm() {
+
+        $('#SalesForm')[0].reset();
+        $('#billNumber').val('');
+    }
+    $(".tabClass li:first").addClass("active");
+
+    function searchSales() {
+
+        var sID = $('#sID').val();
+        var searchID = $('#searchID').val();
+        var csrfmiddlewaretoken = $("input[name='csrfmiddlewaretoken']").val();
+
+        data = new FormData();
+        data.append('sID', sID);
+        data.append('searchID', searchID);
+        data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+        if (searchID === "") {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Search fields is required.').fadeIn().fadeOut(2000);
+
+        }
+        else {
+            $.ajax({
+                type: 'post',
+                url: '{% url 'invoiceApp:search_invoice' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+
+
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#resultDiv').css('display', '');
+                        $('#noresultDiv').css('display', 'none');
+                        $('#s0').html(response.data['BillNumber']);
+                        $('#s1').html(response.data['SalesType']);
+                        $('#s2').html(response.data['Amount']);
+                        $('#s3').html(response.data['CustomerName']);
+                        $('#s4').html(response.data['Datetime']);
+                        {#                        $('#s5').html(response.data['CreatedBy']);#}
+
+                    }
+                    else if (response.message === 'notFound') {
+                        $('#useNow').html('');
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('No Invoice Detail Found.').fadeIn().fadeOut(2000);
+                        $('#resultDiv').css('display', 'none');
+                        $('#noresultDiv').css('display', '');
+
+                        $('#useNow').append('<span class="label label-danger invoiceStyle" onclick="inputData(\'' + response.dataNew.Serial + '\',' + response.dataNew.SeriesID + ',' + response.dataNew.MainNumber + ',\'' + response.dataNew.MainSeries + '\')"><strong> Use Now - ' + response.dataNew.Serial + ' </strong></span>');
+
+                    }
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Invalid Invoice Number Input').fadeIn().fadeOut(2000);
+                        $('#resultDiv').css('display', 'none');
+                        $('#noresultDiv').css('display', 'none');
+                    }
+
+                    return response;
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+        }
+
+
+    }
+    function searchReset() {
+        $('#SearchForm')[0].reset();
+        $('#resultDiv').css('display', 'none');
+        $('#noresultDiv').css('display', 'none');
+    }
+    function checkCustomer(event) {
+        var key = event.keyCode;
+        return ((key >= 97 && key <= 122) || (key >= 65 && key <= 90) || key == 8 || key == 32);
+
+    }
+
+    function skippedInvoiceDetails() {
+        $('#skipped').html('');
+
+
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:skipped_invoice' %}",
+            success: function (response) {
+
+
+                for (i in response.data.skipped) {
+                    skip = '<span class="col-xs-2 label label-warning invoiceStyle" onclick="inputData(\'' + response.data.skipped[i].Serial + '\',' + response.data.skipped[i].SeriesID + ',' + response.data.skipped[i].MainNumber + ',\'' + response.data.skipped[i].MainSeries + '\')"><strong>' + response.data.skipped[i].Serial + ' </strong></span>'
+
+                    $('#skipped').append(skip)
+                }
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
+
+    $(getCollectionDetails());
+    function getCollectionDetails() {
+        $('#todayCollection').html('');
+
+
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_today_collection_by_company' %}",
+            success: function (response) {
+
+
+                for (i in response.data) {
+
+
+                    todayCollection = '<span class="label label-primary invoiceStyle" ><strong>' + response.data[i].Customer + ' - ₹ ' + response.data[i].Amount + '  </strong></span>';
+
+                    $('#todayCollection').append(todayCollection)
+                }
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
+    function addParty() {
+        var pName = $('#pName').val();
+        var pAddress = $('#pAddress').val();
+        var pPhone = $('#pPhone').val();
+        if (pAddress === '') {
+            pAddress = 'N/A'
+        }
+        if (pPhone === '') {
+            pPhone = 'N/A'
+        }
+        data = new FormData();
+        data.append('pName', pName);
+        data.append('pAddress', pAddress);
+        data.append('pPhone', pPhone);
+
+        if (pName === "") {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Party name is required.').fadeIn().fadeOut(2000);
+
+        }
+        else {
+            $.ajax({
+                type: 'post',
+                url: '{% url 'invoiceApp:add_party_from_sales' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+
+
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('New Party Added.').fadeIn().fadeOut(2000);
+                        $('#PartyForm')[0].reset();
+                        $('#addPartyModal').modal('hide');
+                        getBuyerList();
+
+                    }
+
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Party already exist').fadeIn().fadeOut(2000);
+                        $('#SalesForm')[0].reset();
+                    }
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+        }
+
+    }
+    $(getBuyerList())
+    function getBuyerList() {
+        $('#partyName').html('');
+
+
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_buyer_list' %}",
+            success: function (response) {
+
+                $('#partyName').append('<option  value="" selected>Search Party</option>');
+
+                for (i in response.data) {
+                    $('#partyName').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                    $("#partyName").selectpicker('refresh');
+                }
+
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
+
+    function ChangePassword() {
+        var nPass = $('#nPass').val();
+        var rPass = $('#rPass').val();
+
+
+        data = new FormData();
+        data.append('nPass', nPass);
+
+        if (nPass === "" || rPass === "") {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+
+        }
+        else if (nPass != rPass) {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Password not matched. Please try again.').fadeIn().fadeOut(2000);
+
+        }
+        else if (nPass.length < 5) {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Password should be atleast 5 charater long.').fadeIn().fadeOut(2000);
+
+        }
+
+        else {
+            $.ajax({
+                type: 'post',
+                url: '{% url 'invoiceApp:change_password_for_sales_user' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+
+
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Password Changed Successfully').fadeIn().fadeOut(2000);
+                        $('#PasswordForm')[0].reset();
+                        $('#ChangePasswordModal').modal('hide');
+
+                    }
+
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error').fadeIn().fadeOut(2000);
+                    }
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+        }
+
+    }
+    $(getRecentThreeInvoices())
+    function getRecentThreeInvoices() {
+        $('#recent').html('');
+
+
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_last_three_invoices' %}",
+            success: function (response) {
+                console.log(response)
+
+
+                for (i in response.data.Used) {
+                    recent = '<span class="label label-success invoiceStyle" ><strong>' + response.data.Used[i].Serial + ' </strong></span>'
+                    if ((i + 1) % 3 === 0) {
+                        recent = recent + '<br><br>'
+                    }
+                    $('#recent').append(recent)
+                }
+
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
+
+
+    $(getReturnDetails())
+    function getReturnDetails() {
+        $('#todayReturn').html('');
+
+
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_today_return_by_company' %}",
+            success: function (response) {
+
+
+                for (i in response.data) {
+
+
+                    todayReturn = '<span class="label label-info invoiceStyle" ><strong>' + response.data[i].InvoiceNumber + ' - ₹ ' + response.data[i].Amount + '  </strong></span>';
+
+                    $('#todayReturn').append(todayReturn)
+                }
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
+
+    $(getCommissionDetails())
+    function getCommissionDetails() {
+        $('#todayCommission').html('');
+
+
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_today_commission_by_company' %}",
+            success: function (response) {
+
+
+                for (i in response.data) {
+
+
+                    todayCommission = '<span class="label label-warning invoiceStyle" ><strong>' + response.data[i].InvoiceNumber + ' - ₹ ' + response.data[i].Amount + '  </strong></span>';
+
+                    $('#todayCommission').append(todayCommission)
+                }
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
+</script>
+</body>
+</html>

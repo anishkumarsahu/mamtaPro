@@ -1,0 +1,543 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+  <title>Employee Attendance</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{% static 'attendance/webcam.min.js' %}"></script>
+</head>
+
+<style>
+	body{
+		background-color: #17a2b8;
+	}
+
+		form {
+			margin-top: 15px;
+		}
+     .modal-body{
+         padding: 02px;
+     }
+     .modal-title{
+         line-height: 1.4rem !important;
+        margin-bottom: 0rem;
+     }
+     p.a{
+         font-family: "Times New Roman", Times, serif;
+         font-style: italic;
+         margin-bottom: 1px;
+     }
+
+    #my_camera {
+        float: none;
+        width: 100%!important;
+        transform: none !important;
+        overflow: initial !important;
+    }
+    #results {
+        margin:20px;
+        padding:10px;
+        border:1px solid;
+        background:#ccc;
+    }
+    .btn{
+       padding: 02px 15px;
+        text-align: center;
+    }
+    .table td{
+        vertical-align: center !important;
+        padding: .30rem;
+    }
+    .table{
+        text-align:center ;
+    }
+    #my_camera_out {
+        float: none;
+        width: 100%!important;
+        transform: none !important;
+        overflow: initial !important;
+    }
+    #results_out {
+        margin:20px;
+        padding:10px;
+        border:1px solid;
+        background:#ccc;
+    }
+    input[type=text], input[type=password] {
+      width: 96%;
+      padding: 07px 15px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+}
+    input[type=text]:focus, input[type=password]:focus {
+  outline: none;
+}
+.cancelbtn {
+  padding: 05px 10px;
+  background-color: #ff0500;
+}
+.signupbtn{
+     padding: 05px 10px;
+  background-color:#007bff;
+}
+
+/* Float cancel and signup buttons and add an equal width */
+.cancelbtn, .signupbtn {
+  width: 48%;
+}
+    /* Clear floats */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Change styles for cancel button and signup button on extra small screens */
+@media screen and (max-width: 300px) {
+  .cancelbtn, .signupbtn {
+     width: 100%;
+  }
+}
+</style>
+
+
+<body>
+<nav class="navbar bg-danger navbar-dark text-white">
+    <a class="navbar-brand" href="#">123 DACN</a>
+    <h5 style="text-align: center">123DACN LIST OF THE EMPLOYEE</h5>
+  <form class="form-inline">
+	  <a href="#" class="p-3 text-decoration-none text-white"> <span class="fas fa-desktop" style="padding-right: 10px"></span>SYSTEM-1</a>
+  </form>
+</nav>
+
+<br>
+
+<div class="container">
+		<div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr >
+                            <th>
+                            Sl. No.
+                          </th>
+                          <th>
+                            User
+                          </th>
+                          <th>
+                            Full Name
+                          </th>
+                          <th>
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="table-danger">
+                            <td>1</td>
+                          <td class="py-1">
+                            <img src="../../img/11.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Herman Beck
+                          </td>
+                          <td>
+                             <button type="button" class="btn btn-primary" id="myBtn">LOGIN</button>
+                                <div class="modal fade" id="myModal">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                      <div class="modal-content">
+
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                          <h4 class="modal-title">LIVE CAM FACE RECOGNITION (LOG_IN)</h4>
+                                          <button type="button" class="close" data-dismiss="modal">×</button>
+                                        </div>
+
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                             <P class="a">Please look at Camera and make sure it is clear and distinct</P>
+                                                <div id="my_photo_booth" style="text-align: center;">
+                                                    <div id="my_camera" style="text-align: center!important;"></div>
+
+                                                    <!-- A button for taking snaps -->
+                                                    <form>
+                                                        <div id="pre_take_buttons">
+                                                            <!-- This button is shown before the user takes a snapshot -->
+                                                            <button type=button class="btn btn-primary" value="Take Snapshot" onClick="preview_snapshot()" style="padding: 10px">Take Snapshot</button>
+                                                        </div>
+                                                        <div id="post_take_buttons" style="display:none">
+                                                            <!-- These buttons are shown after a snapshot is taken -->
+                                                            <button type=button class="btn btn-primary" value="&lt; Take Another" onClick="cancel_preview()" style="padding: 10px">Take Another </button>
+                                                        </div>
+                                                        <div>
+                                                            <input type="password" placeholder="Password" name="psw" required style="background-color: #cccccc; width: 96%">
+                                                            <textarea placeholder="Comment..." style="width: 96%; background-color: #cccccc; padding: 22px 15px"></textarea>
+                                                        </div>
+                                                         <div class="clearfix">
+                                                          <button type="button" class="cancelbtn">Cancel</button>
+                                                          <button type="submit" class="signupbtn">Submit</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                <div id="results" style="display: none">
+                                                    <!-- Your captured image will appear here... -->
+                                                </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                 </div>
+                             <button type="button" class="btn btn-danger" id="myBtn_out">LOGOUT</button>
+                              <div class="modal fade" id="myModal_out">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                      <div class="modal-content">
+
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                          <h4 class="modal-title">LIVE CAM FACE RECOGNITION (LOGOUT)</h4>
+
+                                          <button type="button" class="close" data-dismiss="modal">×</button>
+                                        </div>
+
+                                        <!-- Modal body -->
+                                        <div class="modal-body">
+                                             <P class="a">Please look at Camera and make sure it is clear and distinct</P>
+                                                <div id="my_photo_booth_out" style="text-align: center;">
+                                                    <div id="my_camera_out" style="text-align: center!important;"></div>
+
+                                                    <!-- A button for taking snaps -->
+                                                    <form>
+                                                        <div id="pre_take_buttons_out">
+                                                            <!-- This button is shown before the user takes a snapshot -->
+                                                            <button type=button class="btn btn-primary" value="Take Snapshot" onClick="preview_snapshot_out()" style="padding: 10px">Take Snapshot</button>
+                                                        </div>
+                                                        <div id="post_take_buttons_out" style="display:none">
+                                                            <!-- These buttons are shown after a snapshot is taken -->
+                                                            <button type=button class="btn btn-primary" value="&lt; Take Another" onClick="cancel_preview_out()" style="padding: 10px">Take Another</button>
+                                                            <!--<button type=button class="btn btn-primary" value="Save Photo &gt;" onClick="save_photo_out()" style="font-weight:bold;padding: 10px">Save Photo</button>-->
+                                                        </div>
+
+                                                        <div>
+                                                            <input type="password" placeholder="Password" name="psw" required style="background-color: #cccccc">
+                                                            <textarea placeholder="Comment..." style="width: 96%; background-color: #cccccc; padding: 22px 15px"></textarea>
+                                                        </div>
+                                                         <div class="clearfix">
+                                                          <button type="button" class="cancelbtn">Cancel</button>
+                                                          <button type="submit" class="signupbtn">Submit</button>
+                                                        </div>
+
+                                                    </form>
+                                                </div>
+
+                                                <div id="results_out" style="display: none">
+                                                    <!-- Your captured image will appear here... -->
+                                                </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                 </div>
+                          </td>
+                        </tr>
+                        <tr class="table-info">
+                            <td>2</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face2.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                              <button type="button" class="btn btn-primary" id="11">LOGIN</button>
+                              <button type="button" class="btn btn-danger"id="22">LOGOUT</button>
+                          </td>
+                        </tr>
+                      <tr class="table-warning">
+                          <td>3</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face2.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                             <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                      <tr class="table-info">
+                          <td>4</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face2.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                             <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                      <tr class="table-danger">
+                          <td>5</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face2.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                             <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                      <tr class="table-info">
+                          <td>6</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face2.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                             <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                      <tr class="table-warning">
+                          <td>7</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face1.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Herman Beck
+                          </td>
+                          <td>
+                              <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                        <tr class="table-info">
+                            <td>8</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face2.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                             <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                      <tr class="table-danger">
+                          <td>9</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face1.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Herman Beck
+                          </td>
+                          <td>
+                              <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td>10</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face2.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                              <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                      <tr class="table-warning">
+                          <td>11</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face1.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Herman Beck
+                          </td>
+                          <td>
+                             <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td>12</td>
+                          <td class="py-1">
+                            <img src="../../images/faces/face2.jpg" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                             <button type="button" class="btn btn-primary" >LOGIN</button>
+                              <button type="button" class="btn btn-danger" >LOGOUT</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                </div>
+		</div>
+</div>
+
+
+  <script>
+$(document).ready(function(){
+  $("#myBtn").click(function(){
+    $("#myModal").modal();
+  });
+});
+</script>
+<!-- Configure a few settings and attach camera -->
+<script language="JavaScript">
+    Webcam.set({
+        // live preview size
+        width: 320,
+        height: 240,
+
+        // device capture size
+        dest_width: 340,
+        dest_height: 280,
+
+        // final cropped size
+        crop_width: 380,
+        crop_height: 280,
+
+        // format and quality
+        image_format: 'jpeg',
+        jpeg_quality: 90,
+
+        // flip horizontal (mirror mode)
+        flip_horiz: true
+    });
+    Webcam.attach('#my_camera');
+</script>
+
+	<!-- Code to handle taking the snapshot and displaying it locally -->
+<script language="JavaScript">
+    function preview_snapshot() {
+
+        // freeze camera so user can preview current frame
+        Webcam.freeze();
+
+        // swap button sets
+			document.getElementById('pre_take_buttons').style.display = 'none';
+			document.getElementById('post_take_buttons').style.display = '';
+		}
+
+		function cancel_preview() {
+			// cancel preview freeze and return to live camera view
+			Webcam.unfreeze();
+
+
+			// swap buttons back to first set
+			document.getElementById('pre_take_buttons').style.display = '';
+			document.getElementById('post_take_buttons').style.display = 'none';
+		}
+	</script>
+
+<!-- JS for log out Part--->
+ <script>
+$(document).ready(function(){
+  $("#myBtn_out").click(function(){
+    $("#myModal_out").modal();
+  });
+});
+</script>
+<!-- Configure a few settings and attach camera -->
+<script language="JavaScript">
+    Webcam.set({
+        // live preview size
+        width: 320,
+        height: 240,
+
+        // device capture size
+        dest_width: 340,
+        dest_height: 280,
+
+        // final cropped size
+        crop_width: 380,
+        crop_height: 280,
+
+        // format and quality
+        image_format: 'jpeg',
+        jpeg_quality: 90,
+
+        // flip horizontal (mirror mode)
+        flip_horiz: true
+    });
+    Webcam.attach( '#my_camera_out' );
+</script>
+
+<script language="JavaScript">
+		// preload shutter audio clip
+		var shutter = new Audio();
+		shutter.autoplay = false;
+		shutter.src = navigator.userAgent.match(/Firefox/) ? 'shutter.ogg' : 'shutter.mp3';
+
+		function preview_snapshot_out() {
+			// play sound effect
+			try { shutter.currentTime = 0; } catch(e) {;} // fails in IE
+			shutter.play();
+
+			// freeze camera so user can preview current frame
+			Webcam.freeze();
+
+			// swap button sets
+			document.getElementById('pre_take_buttons_out').style.display = 'none';
+			document.getElementById('post_take_buttons_out').style.display = '';
+		}
+
+		function cancel_preview_out() {
+
+
+		    // cancel preview freeze and return to live camera view
+			Webcam.unfreeze();
+
+
+			// swap buttons back to first set
+			document.getElementById('pre_take_buttons_out').style.display = '';
+			document.getElementById('post_take_buttons_out').style.display = 'none';
+		}
+
+		function save_photo_out() {
+			// actually snap photo (from preview freeze) and display it
+			Webcam.snap( function(data_uri) {
+				// display results in page
+				document.getElementById('results_out').innerHTML =
+					'<h2>Your Image:</h2>' +
+					'<img src="'+data_uri+'"/><br/></br>' +
+					'<a href="'+data_uri+'"></a>';
+
+				// shut down camera, stop capturing
+				Webcam.reset();
+
+				// show results, hide photo booth
+				document.getElementById('results_out').style.display = '';
+				document.getElementById('my_photo_booth_out').style.display = 'none';
+			} );
+		}
+</script>
+
+<!-- Code to handle taking the snapshot and displaying it locally -->
+</body>
+</html>

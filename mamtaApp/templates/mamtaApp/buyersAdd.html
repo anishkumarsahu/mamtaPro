@@ -1,0 +1,132 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+
+
+
+
+{% block body %}
+    <style>
+    .hidePadding{
+        padding-left: 0!important;
+        padding-right: 0!important;
+    }
+    </style>
+
+    <section class="content">
+        <div class="container-fluid">
+
+            <!-- Input -->
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                ADD NEW BUYER
+
+                            </h2>
+                            <button onclick="goBack()" title="back" style="    background-color: #2196f3;color: white;top: 12px;position: absolute;right: 10px;
+    border-radius: 32%;" type="button"
+                                    class="btn  waves-effect ">
+                                <i class="material-icons">arrow_back</i></button>
+
+                        </div>
+                        <div class="body">
+                            <form id="AddBuyerForm" action="{% url 'mamtaApp:add_buyer_api' %}" method="post" style="text-align: center">
+                                {% csrf_token %}
+                                <div class="row clearfix">
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">assignment_ind</i>
+                                        </span>
+                                            <div class="form-line">
+                                                <input type="text" class="form-control"
+                                                       placeholder="Name *" name="name"
+                                                       id="name">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                                                        <span class="input-group-addon">
+                                                                        <i class="material-icons">contact_phone</i>
+                                                                        </span>
+                                            <div class="form-line">
+                                                <input type="number" class="form-control"
+                                                       placeholder="Phone Number *" name="phone"
+                                                       id="phone">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">location_on</i>
+                                        </span>
+                                            <div class="form-line">
+                                                <input type="text" class="form-control"
+                                                       placeholder="Address *" name="address"
+                                                       id="address">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">monetization_on</i>
+                                        </span>
+                                            <div class="form-line">
+                                                <input type="text" class="form-control"
+                                                       placeholder="Closing Balance *" name="balance"
+                                                       id="balance" value="0.0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" style="background-color: #cabdbd"
+                                            class="btn btn-link waves-effect " onclick="AddBuyer()">SAVE
+                                    </button>
+                                </div>
+
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- #END# Input -->
+
+        </div>
+    </section>
+
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        function AddBuyer() {
+            var name = $('#name').val();
+            var phone = $('#phone').val();
+            var address = $('#address').val();
+            var balance = $('#balance').val();
+
+
+            if (name === "" || phone === ""
+                || address === "" || balance === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $('#AddBuyerForm').submit();
+
+            }
+
+        }
+
+
+    </script>
+{% endblock %}

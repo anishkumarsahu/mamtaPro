@@ -1,0 +1,635 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+
+
+{% block body %}
+    <style>
+        #leftsidebar {
+            display: none;
+        }
+
+        section.content {
+            margin-left: 15px;
+        }
+
+        .imageTable {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+        }
+
+        #buyerCreditTable_filter {
+            float: right;
+        }
+
+        .table-bordered tbody tr td {
+            padding: 2px !important;
+            border: 1px solid #eee;
+        }
+
+        .zoom {
+
+            transition: transform .2s; /* Animation */
+            width: 30px;
+            height: 30px;
+            margin: 0 auto;
+        }
+
+        .zoom:hover {
+            transform: scale(4); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+        }
+    </style>
+
+    <style>
+
+
+        form {
+            margin-top: 15px;
+        }
+
+        .modal-body {
+            padding: 02px;
+        }
+
+        .modal-title {
+            line-height: 1.4rem !important;
+            margin-bottom: 0rem;
+        }
+
+        p.a {
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+            margin-bottom: 1px;
+        }
+
+        #my_camera {
+            float: none;
+            width: 100% !important;
+            transform: none !important;
+            overflow: initial !important;
+        }
+
+        #results {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid;
+            background: #ccc;
+        }
+
+        .btn {
+            padding: 02px 15px;
+            text-align: center;
+        }
+
+        .table td {
+            vertical-align: center !important;
+            padding: .30rem;
+        }
+
+        .table th {
+            text-align: center;
+        }
+
+        .table {
+            text-align: center;
+        }
+
+        #my_camera_out {
+            float: none;
+            width: 100% !important;
+            transform: none !important;
+            overflow: initial !important;
+        }
+
+        #results_out {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid;
+            background: #ccc;
+        }
+
+        input[type=text], input[type=password] {
+            width: 96%;
+            padding: 07px 15px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type=text]:focus, input[type=password]:focus {
+            outline: none;
+        }
+
+        /* Clear floats */
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        /* Change styles for cancel button and signup button on extra small screens */
+        @media screen and (max-width: 300px) {
+            .cancelbtn, .signupbtn {
+                width: 100%;
+            }
+        }
+    </style>
+
+
+    <section class="content">
+        <div class="container-fluid">
+
+
+            <!-- Striped Rows -->
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-right: 0;padding-left: 0">
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                LIST OF THE EMPLOYEES ( {{ date }} )
+                            </h2>
+                        </div>
+                        <div class="body table-responsive ">
+
+                            <table id="buyerCreditTable" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Photo</th>
+                                    <th>Name</th>
+                                    <th>InTime</th>
+                                    <th>OutTime</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                                <tfoot>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Photo</th>
+                                    <th>Name</th>
+                                    <th>InTime</th>
+                                    <th>OutTime</th>
+                                    <th>Action</th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- #END# Striped Rows -->
+
+
+        </div>
+    </section>
+
+
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">LIVE CAM FACE RECOGNITION (LOG_IN)</h4>
+                    <button type="button" class="close" data-dismiss="modal">×
+                    </button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <P class="a">Please look at Camera and make sure it is clear and
+                        distinct</P>
+                    <div id="my_photo_booth" style="text-align: center;">
+                        <div id="my_camera"
+                             style="text-align: center!important;"></div>
+
+                        <!-- A button for taking snaps -->
+                        <form>
+                            <div id="login_pre_take_buttons">
+                                <!-- This button is shown before the user takes a snapshot -->
+                                <button type=button class="btn btn-warning"
+                                        value="Take Snapshot"
+                                        onClick="login_preview_snapshot()"
+                                        style="padding: 10px">Take Snapshot
+                                </button>
+                            </div>
+                            <div id="login_post_take_buttons" style="display:none">
+                                <!-- These buttons are shown after a snapshot is taken -->
+                                <button type=button class="btn btn-primary"
+                                        value="&lt; Take Another"
+                                        onClick="login_cancel_preview()"
+                                        style="padding: 10px">Take Another
+                                </button>
+                            </div>
+                            <div>
+                                <input type="hidden" id="loginEmpID">
+                                <input type="password" placeholder="Password"
+                                       name="psw" id="loginPassword" required
+                                       style="background-color: #cccccc; width: 96%">
+                                <textarea id="loginRemark" placeholder="Comment..."
+                                          style="width: 96%; background-color: #cccccc; padding: 22px 15px"></textarea>
+
+                                <img src="NaN" alt="" id="loginImg" style="display: none">
+                            </div>
+                            <div class="clearfix">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="LoginPost()">Submit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results" style="display: none">
+                                                    <!-- Your captured image will appear here... -->
+                                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal_out">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">LIVE CAM FACE RECOGNITION (LOGOUT)</h4>
+
+                    <button type="button" class="close" data-dismiss="modal">×
+                    </button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <P class="a">Please look at Camera and make sure it is clear and
+                        distinct</P>
+                    <div id="my_photo_booth_out" style="text-align: center;">
+                        <div id="my_camera_out"
+                             style="text-align: center!important;"></div>
+
+                        <!-- A button for taking snaps -->
+                        <form>
+                            <div id="logout_pre_take_buttons_out">
+                                <!-- This button is shown before the user takes a snapshot -->
+                                <button type=button class="btn btn-warning"
+                                        value="Take Snapshot"
+                                        onClick="logout_preview_snapshot_out()"
+                                        style="padding: 10px">Take Snapshot
+                                </button>
+                            </div>
+                            <div id="logout_post_take_buttons_out" style="display:none">
+                                <!-- These buttons are shown after a snapshot is taken -->
+                                <button type=button class="btn btn-primary"
+                                        value="&lt; Take Another"
+                                        onClick="logout_cancel_preview_out()"
+                                        style="padding: 10px">Take Another
+                                </button>
+                                <!--<button type=button class="btn btn-primary" value="Save Photo &gt;" onClick="save_photo_out()" style="font-weight:bold;padding: 10px">Save Photo</button>-->
+                            </div>
+
+                            <div>
+                             <input type="hidden" id="logoutEmpID">
+
+                                <input type="password" placeholder="Password" id="logoutPassword"
+                                       name="psw" required
+                                       style="background-color: #cccccc">
+                                <textarea placeholder="Comment..."
+                                          style="width: 96%; background-color: #cccccc; padding: 22px 15px" id="logoutRemark"></textarea>
+                                 <img src="NaN" alt="" id="logoutImg" style="display: none">
+                            </div>
+                            <div class="clearfix">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="LogoutPost()">Submit
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div id="results_out" style="display: none">
+                                                    <!-- Your captured image will appear here... -->
+                                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+
+
+    <script type="text/javascript" src="{% static 'attendance/webcam.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
+    <script src="{% static 'js/pages/ui/modals.js' %}"></script>
+
+    <script language="JavaScript">
+
+        function loginModal(id) {
+            $('#loginEmpID').val(id)
+            login_cancel_preview();
+            Webcam.set({
+                // live preview size
+                width: 320,
+                height: 240,
+
+                // device capture size
+                dest_width: 340,
+                dest_height: 280,
+
+                // final cropped size
+                crop_width: 380,
+                crop_height: 280,
+
+                // format and quality
+                image_format: 'jpeg',
+                jpeg_quality: 90,
+
+                // flip horizontal (mirror mode)
+                flip_horiz: false
+            });
+            Webcam.attach('#my_camera');
+
+        }
+
+        function logoutModal(id) {
+            $('#logoutEmpID').val(id)
+            logout_cancel_preview_out();
+            Webcam.set({
+                // live preview size
+                width: 320,
+                height: 240,
+
+                // device capture size
+                dest_width: 340,
+                dest_height: 280,
+
+                // final cropped size
+                crop_width: 380,
+                crop_height: 280,
+
+                // format and quality
+                image_format: 'jpeg',
+                jpeg_quality: 90,
+
+                // flip horizontal (mirror mode)
+                flip_horiz: false
+            });
+            Webcam.attach('#my_camera_out');
+
+
+        }
+
+
+        function login_preview_snapshot() {
+            Webcam.snap(function (data_uri) {
+                // display results in page
+                $('#loginImg').attr("src", data_uri);
+
+                // shut down camera, stop capturing
+
+            });
+            // freeze camera so user can preview current frame
+            Webcam.freeze();
+
+            // swap button sets
+            document.getElementById('login_pre_take_buttons').style.display = 'none';
+            document.getElementById('login_post_take_buttons').style.display = '';
+            $('video').css('display', 'none')
+
+
+        }
+
+        function login_cancel_preview() {
+            // cancel preview freeze and return to live camera view
+            Webcam.unfreeze();
+            $('#loginImg').attr("src", 'NaN');
+
+
+            // swap buttons back to first set
+            document.getElementById('login_pre_take_buttons').style.display = '';
+            document.getElementById('login_post_take_buttons').style.display = 'none';
+            $('video').css('display', '')
+
+        }
+
+
+        function logout_preview_snapshot_out() {
+ Webcam.snap(function (data_uri) {
+                // display results in page
+                $('#logoutImg').attr("src", data_uri);
+
+                // shut down camera, stop capturing
+
+            });
+            // freeze camera so user can preview current frame
+            Webcam.freeze();
+
+
+            // swap button sets
+            document.getElementById('logout_pre_take_buttons_out').style.display = 'none';
+            document.getElementById('logout_post_take_buttons_out').style.display = '';
+            $('video').css('display', 'none')
+
+
+        }
+
+        function logout_cancel_preview_out() {
+
+
+            // cancel preview freeze and return to live camera view
+            Webcam.unfreeze();
+            $('#logoutImg').attr("src", 'NaN');
+
+
+
+
+            // swap buttons back to first set
+            document.getElementById('logout_pre_take_buttons_out').style.display = '';
+            document.getElementById('logout_post_take_buttons_out').style.display = 'none';
+            $('video').css('display', '')
+        }
+
+        function save_photo_out() {
+            // actually snap photo (from preview freeze) and display it
+            Webcam.snap(function (data_uri) {
+                // display results in page
+                document.getElementById('results_out').innerHTML =
+                    '<h2>Your Image:</h2>' +
+                    '<img src="' + data_uri + '"/><br/></br>' +
+                    '<a href="' + data_uri + '"></a>';
+
+                // shut down camera, stop capturing
+                Webcam.reset();
+
+                // show results, hide photo booth
+                document.getElementById('results_out').style.display = '';
+                document.getElementById('my_photo_booth_out').style.display = 'none';
+            });
+        }
+
+        var empList;
+        $(document).ready(function () {
+            empList = $('#buyerCreditTable').dataTable({
+                "paging": false,
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "photo", "targets": 1, "orderable": true},
+                    {"name": "name", "targets": 2, "orderable": true},
+                    {"name": "inTime", "targets": 3, "orderable": true},
+                    {"name": "outTime", "targets": 4, "orderable": true},
+                    {"name": "action", "targets": 5, "orderable": false},
+
+                ],
+                aaSorting: [[2, 'asc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 20,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'attendanceApp:EmployeeListForAttendanceJson' %}"
+            });
+        });
+
+
+        function LoginPost() {
+
+            var loginEmpID = $('#loginEmpID').val();
+            var loginPassword = $('#loginPassword').val();
+            var loginRemark = $('#loginRemark').val();
+            var photo = $('#loginImg').attr('src');
+
+
+            if (loginPassword === '' || photo === 'NaN') {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password and Snap is required. ');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                var form_data = new FormData();
+                form_data.append('loginEmpID', loginEmpID);
+                form_data.append('loginPassword', loginPassword);
+                form_data.append('loginRemark', loginRemark);
+                form_data.append('photo', photo);
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url "attendanceApp:login_post_api" %}',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.response === 'ok') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Login done successfully.');
+                            $('#name_status').fadeIn().fadeOut(2000);
+                            empList.api().ajax.reload();
+                            $('#myModal').modal('toggle');
+                        }
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html("Invalid password. Please try again.");
+                            $('#name_status').fadeIn().fadeOut(2000);
+
+                        }
+
+                        return response;
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Error. Please try again. ');
+                        $('#name_status').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+
+
+        }
+
+        function LogoutPost() {
+
+            var logoutEmpID = $('#logoutEmpID').val();
+            var logoutPassword = $('#logoutPassword').val();
+            var logoutRemark = $('#logoutRemark').val();
+            var photo = $('#logoutImg').attr('src');
+
+
+            if (logoutPassword === '' || photo === 'NaN') {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password and Snap is required. ');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                var form_data = new FormData();
+                form_data.append('logoutEmpID', logoutEmpID);
+                form_data.append('logoutPassword', logoutPassword);
+                form_data.append('logoutRemark', logoutRemark);
+                form_data.append('photo', photo);
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url "attendanceApp:logout_post_api" %}',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.response === 'ok') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Logout done successfully.');
+                            $('#name_status').fadeIn().fadeOut(2000);
+                            empList.api().ajax.reload();
+                            $('#myModal_out').modal('toggle');
+                        }
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html("Invalid password. Please try again.");
+                            $('#name_status').fadeIn().fadeOut(2000);
+
+                        }
+
+                        return response;
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Error. Please try again. ');
+                        $('#name_status').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+
+
+        }
+
+
+
+    </script>
+
+
+
+
+
+{% endblock %}
+
+
+{% block js %}
+
+
+{% endblock %}
