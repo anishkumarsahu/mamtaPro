@@ -56,3 +56,9 @@ class SupplyCollectionAdmin(admin.ModelAdmin):
     list_display = ['buyerID','collectedBy','amount','remark','datetime']
 
 admin.site.register(SupplierCollection,SupplyCollectionAdmin)
+
+
+class LoginAndLogoutAdmin(admin.ModelAdmin):
+    list_display = ['userID','statusType','isDeleted','datetime']
+
+admin.site.register(LoginAndLogoutStatus,LoginAndLogoutAdmin)

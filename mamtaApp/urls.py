@@ -6,6 +6,8 @@ from .views import *
 
 urlpatterns = [
     # buyer
+    url(r'^LoginListJson/$', LoginListJson.as_view(), name='LoginListJson'),
+    url(r'^LogoutListJson/$', LogoutListJson.as_view(), name='LogoutListJson'),
     url(r'^buyerList/$', BuyerListJson.as_view(), name='BuyerListJson'),
     url(r'^ManageCreditListJson/$', ManageCreditListJson.as_view(), name='ManageCreditListJson'),
     url(r'^CreditListJson/$', CreditListJson.as_view(), name='CreditListJson'),
@@ -73,4 +75,9 @@ urlpatterns = [
     url(r'^take_collection_supplier_api/$', take_collection_supplier_api, name='take_collection_supplier_api'),
     url(r'^approve_collection_supplier_api/$', approve_collection_supplier_api, name='approve_collection_supplier_api'),
 
+    # username exist?
+    url(r'^user_name_exist/$', user_name_exist, name='user_name_exist'),
+
+    # login logout report
+    url(r'^login_and_logout_report/$', login_and_logout_report, name='login_and_logout_report'),
 ]

@@ -122,3 +122,11 @@ class SupplierCollection(models.Model):
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
     isApproved = models.BooleanField(default=False)
 
+
+class LoginAndLogoutStatus(models.Model):
+    userID = models.ForeignKey(User, blank=True, null=True)
+    statusType = models.CharField(max_length=100, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    companyID = models.ForeignKey(Company, blank=True, null=True)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)

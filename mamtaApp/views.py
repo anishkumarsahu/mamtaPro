@@ -31,6 +31,13 @@ def Balance():
     return (fr)
 
 
+def login_or_logout(request, type):
+    data = LoginAndLogoutStatus()
+    data.statusType = type
+
+    data.userID_id = request.user.pk
+    if request.user.username !='anish':
+        data.save()
 
 
 
@@ -54,6 +61,71 @@ def check_group(group_name):
         return wrapper
 
     return _check_group
+
+
+class LoginListJson(BaseDatatableView):
+    order_columns = ['id', 'userID', 'statusType', 'datetime', ]
+
+    def get_initial_queryset(self):
+
+        return LoginAndLogoutStatus.objects.filter(isDeleted__exact=False, statusType__exact='Login')
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(userID__username__icontains=search) | Q(statusType__icontains=search) | Q(datetime__icontains=search) , isDeleted__exact=False)
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+
+            json_data.append([
+                escape(i),
+                escape(item.userID.username),  # escape HTML for security reasons
+                escape(item.statusType),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+
+
+            ])
+            i = i + 1
+        return json_data
+
+
+class LogoutListJson(BaseDatatableView):
+    order_columns = ['id', 'userID', 'statusType', 'datetime', ]
+
+    def get_initial_queryset(self):
+
+        return LoginAndLogoutStatus.objects.filter(isDeleted__exact=False, statusType__exact='Logout')
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(userID__username__icontains=search) | Q(statusType__icontains=search) | Q(datetime__icontains=search),
+                isDeleted__exact=False)
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            json_data.append([
+                escape(i),
+                escape(item.userID.username),  # escape HTML for security reasons
+                escape(item.statusType),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+
+            ])
+            i = i + 1
+        return json_data
 
 
 class BuyerListJson(BaseDatatableView):
@@ -707,6 +779,8 @@ def add_staff_user_api(request):
             phoneNumber = request.POST.get('phone')
             staffType = request.POST.get('staffType')
             companyID = request.POST.get('companyID')
+            username = request.POST.get('username')
+            password = request.POST.get('password')
             photo = request.FILES['photo']
             idProof = request.FILES['idProof']
 
@@ -719,19 +793,15 @@ def add_staff_user_api(request):
             staff.idProof = idProof
             staff.companyID_id = int(companyID)
 
-            username = 'MAMTA' + get_random_string(length=4, allowed_chars='1234567890')
-            while User.objects.filter(username__exact=username).count() > 0:
-                username = 'MAMTA' + get_random_string(length=4, allowed_chars='1234567890')
-            else:
-                password = get_random_string(length=10, allowed_chars='1234567890')
-                new_user = User()
-                new_user.username = username
-                new_user.set_password(password)
+            staff.username = username
+            staff.password = password
+            new_user = User()
+            new_user.username = username
+            new_user.set_password(password)
 
-                new_user.save()
-                staff.username = username
-                staff.password = password
-                staff.userID_id = new_user.pk
+            new_user.save()
+
+            staff.userID_id = new_user.pk
             if staffType == '1':
                 try:
                     g = Group.objects.get(name='Staff')
@@ -1172,8 +1242,8 @@ def loginApp(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            login_or_logout(request, 'Login')
             if 'Sales' in request.user.groups.values_list('name', flat=True):
-
                 return redirect('/invoice/')
             if 'Accountant' in request.user.groups.values_list('name', flat=True):
                 return redirect('/invoice/collection_report_accountant/')
@@ -1194,6 +1264,7 @@ def loginApp(request):
 
 def logout_user(request):
     request.session['nav'] = '7'
+    login_or_logout(request, 'Logout')
     logout(request)
     return redirect('/')
 
@@ -1370,3 +1441,21 @@ def approve_collection_supplier_api(request):
 
         except:
             return JsonResponse({'message': 'fail'})
+
+
+def user_name_exist(request, *args, **kwargs):
+    username = request.GET.get('q')
+    try:
+
+        user = User.objects.get(username__iexact = username)
+        return JsonResponse({'message': 'Username already taken. Please try some other name.','canUse':'No'})
+    except:
+        return JsonResponse({'message': 'Username available.','canUse':'Yes'})
+
+@check_group('Both')
+def login_and_logout_report(request):
+    request.session['nav'] = '10'
+
+    return render(request, 'mamtaApp/loginAndLogoutReport.html')
+
+

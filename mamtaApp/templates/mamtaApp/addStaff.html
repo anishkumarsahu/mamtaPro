@@ -16,7 +16,8 @@
         }
 
         .zoom:hover {
-            transform: scale(4);}
+            transform: scale(4);
+        }
 
         .card {
             background: #fff;
@@ -209,14 +210,15 @@
                                         <i class="material-icons">person</i>
                                         </span>
                                                             <div class="form-line">
-                                                                 <select class="form-control show-tick" id="staffType" name="staffType">
-                                                                <option value="all">Select Staff Type</option>
-                                                                {% for user in types %}
-                                                                    <option value="{{ user.pk }}">{{ user.name }}</option>
-                                                                {% endfor %}
+                                                                <select class="form-control show-tick" id="staffType"
+                                                                        name="staffType">
+                                                                    <option value="all">Select Staff Type</option>
+                                                                    {% for user in types %}
+                                                                        <option value="{{ user.pk }}">{{ user.name }}</option>
+                                                                    {% endfor %}
 
 
-                                                            </select>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -233,20 +235,49 @@
                                                         </div>
                                                     </div>
 
-                                                  <div class="col-md-12 col-sm-12">
+                                                    <div class="col-md-12 col-sm-12">
                                                         <div class="input-group">
                                         <span class="input-group-addon">
                                         <i class="material-icons">location_city</i>
                                         </span>
                                                             <div class="form-line">
-                                                                 <select class="form-control show-tick" id="companyID" name="companyID">
-                                                                <option value="all">Select Company</option>
-                                                                {% for comp in company %}
-                                                                    <option value="{{ comp.pk }}">{{ comp.name }}</option>
-                                                                {% endfor %}
+                                                                <select class="form-control show-tick" id="companyID"
+                                                                        name="companyID">
+                                                                    <option value="all">Select Company</option>
+                                                                    {% for comp in company %}
+                                                                        <option value="{{ comp.pk }}">{{ comp.name }}</option>
+                                                                    {% endfor %}
 
 
-                                                            </select>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row clearfix">
+                                                    <div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">person</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <input onkeyup="checkUsername()" type="text"
+                                                                       class="form-control date" id="username"
+                                                                       name="username" placeholder="Username *">
+                                                                <span id="errorMsg"
+                                                                      style="color:grey;position: absolute;top: 35px;left: 0;padding: 2px;font-size: 11px;"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">remove_red_eye</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <input type="number" class="form-control date"
+                                                                       name="password" id="password"
+                                                                       placeholder="Password *">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -257,7 +288,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" style="background-color: #cabdbd"
+                                <button type="button" style="background-color: #cabdbd" id="saveBtn" disabled
                                         class="btn btn-link waves-effect " onclick="AddStaff()">SAVE
                                 </button>
 
@@ -275,7 +306,7 @@
 
 
 
-       <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
     <script>
         function readURL(input) {
             if (input.files && input.files[0]) {
@@ -314,10 +345,12 @@
             var address = $('#address').val();
             var staffType = $('#staffType').val();
             var companyID = $('#companyID').val();
+            var username = $('#username').val();
+            var password = $('#password').val();
 
 
-            if (name === "" || phone === ""
-                || address === ""|| staffType === "all"|| companyID === "all"
+            if (name === "" || phone === "" || username === "" || password === ""
+                || address === "" || staffType === "all" || companyID === "all"
                 || document.getElementById("imageUpload").files.length === 0 || document.getElementById("imageUpload2").files.length === 0) {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('* fields are required.');
@@ -330,6 +363,39 @@
             }
 
         }
+
+        function checkUsername() {
+            var username = $('#username').val();
+            if (username.length >= 3) {
+
+
+                $.ajax({
+                    type: 'get',
+                    url: "{% url 'mamtaApp:user_name_exist' %}?q=" + username,
+                    success: function (response) {
+                        if (response.canUse === 'Yes') {
+                            $('#errorMsg').html(response.message).css('color', 'green');
+                            $('#saveBtn').prop('disabled', false);
+                        }
+
+                        else {
+                            $('#errorMsg').html(response.message).css('color', 'red');
+                            $('#saveBtn').prop('disabled', true);
+                        }
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+            else {
+                $('#errorMsg').html('');
+                $('#saveBtn').prop('disabled', true);
+            }
+
+        }
+
 
     </script>
 

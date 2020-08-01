@@ -238,6 +238,12 @@
                         <span>Profile</span>
                     </a>
                 </li>
+                <li {% if request.session.nav == '10' %} class="active" {% endif %} >
+                    <a href="{% url 'mamtaApp:login_and_logout_report' %}">
+                        <i class="material-icons">vpn_key</i>
+                        <span>Login/Logout Report</span>
+                    </a>
+                </li>
                 <li {% if request.session.nav == '7' %} class="active" {% endif %} >
                     <a href="{% url 'mamtaApp:logout' %}">
                         <i class="material-icons">eject</i>
