@@ -124,6 +124,8 @@
             <ul class="list" id="navUL">
                 <li class="header">MAIN NAVIGATION</li>
 
+{% if request.user|has_group:"Both" %}
+
 
                 <li {% if request.session.nav == '1' %} class="active" {% endif %}>
                     <a href="{% url 'mamtaApp:home' %}">
@@ -250,6 +252,45 @@
                         <span>Log Out</span>
                     </a>
                 </li>
+    {% elif request.user|has_group:"Accountant" %}
+
+    <li {% if request.session.nav == '9' %} class="active" {% endif %}>
+                    <a href="{% url 'invoiceApp:collection_report_accountant' %}">
+                        <i class="material-icons">home</i>
+                        <span>Home</span>
+                    </a>
+                </li>
+           <li
+                        {% if request.session.nav == 'atten1' or request.session.nav == 'atten2' or request.session.nav == 'atten3' %}
+                            class="active" {% endif %} >
+                    <a href="#" class="menu-toggle waves-effect waves-block">
+                        <i class="material-icons">person_add</i>
+                        <span>Manage Attendance</span>
+                    </a>
+                    <ul class="ml-menu">
+                        <li {% if request.session.nav == 'atten1' %} class="active" {% endif %}>
+                            <a href="{% url 'attendanceApp:loginSystem' %}">
+
+                                <span>Manage Login System</span>
+                            </a>
+                        </li>
+                        <li {% if request.session.nav == 'atten2' %} class="active" {% endif %}>
+                            <a href="{% url 'attendanceApp:manageEmployee' %}">
+                                <span>Manage Employees</span>
+                            </a>
+                        </li>
+                        <li {% if request.session.nav == 'atten3' %} class="active" {% endif %}>
+                            <a href="{% url 'attendanceApp:attendanceReport' %}">
+                                <span>Attendance Report</span>
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </li>
+
+{% endif %}
+
 
             </ul>
         </div>

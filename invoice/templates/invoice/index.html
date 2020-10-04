@@ -201,6 +201,7 @@
                             <li style="background-color: #e6eaff;" onclick="changeTab('cash')" class="active"><a
                                     href="#Commentary" data-toggle="tab">Cash</a>
                             </li>
+
                             <li style="background-color: #e6eaff;" onclick="changeTab('credit')"><a href="#Videos"
                                         data-toggle="tab">Credit</a>
                             </li>
@@ -219,6 +220,9 @@
                             <li style="background-color: #e6eaff;" onclick="changeTab('commission')"><a
                                     href="#Commission"
                                     data-toggle="tab">Commission</a>
+                            </li>
+                            <li style="background-color: #e6eaff;" onclick="changeTab('card')" ><a
+                                    href="#Card" data-toggle="tab">Card</a>
                             </li>
 
                         </ul>
@@ -247,6 +251,36 @@
                                         <div class="col-sm-6 col-xs-6">
                                             <div class="form-group"><br>
                                                 <input type="number" class="form-control" id="cash" aria-describedby=""
+                                                       placeholder="Rs.">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            <div role="tabpanel" class="tab-pane fade" id="Card" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-6" id="CardTab">
+                                            <div class="form-group"><br>
+
+                                                <div>
+
+                                                    <input readonly type="text" class="form-control" id="billNumber"
+                                                           aria-describedby=""
+                                                           placeholder="Enter Invoice No">
+                                                </div>
+
+                                                <input type="hidden" id="SeriesID" name="SeriesID">
+                                                <input type="hidden" id="MainNumber" name="MainNumber">
+                                                <input type="hidden" id="MainSeries" name="MainSeries">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="cardd" aria-describedby=""
                                                        placeholder="Rs.">
 
                                             </div>
@@ -748,6 +782,7 @@
 
         // var collect = ' <div class="col-sm-6 col-xs-6"><div class="form-group"><br><select id="partyName" class="selectpicker" data-show-subtext="true"data-live-search="true"></select></div></div><div class="col-sm-6 col-xs-6"><div class="form-group"><br><input type="number" class="form-control" id="partyAmount"aria-describedby=""placeholder="Rs." value="0"></div></div>'
         if (t === 'cash') {
+            $('#Card').css('display', 'none');
             $('#Commentary').css('display', '');
             $('#Videos').css('display', 'none');
             $('#Collection').css('display', 'none');
@@ -758,8 +793,10 @@
             $('#collectionBtn').css('display', 'none');
             $('#CashTab').html(bill);
             $('#CreditTab').html('');
+            $('#CardTab').html('');
         }
         if (t === 'credit') {
+            $('#Card').css('display', 'none');
             $('#Commentary').css('display', 'none');
             $('#Collection').css('display', 'none');
             $('#Videos').css('display', '');
@@ -770,8 +807,24 @@
             $('#collectionBtn').css('display', '');
             $('#CashTab').html('');
             $('#CreditTab').html(bill);
+            $('#CardTab').html('');
+        }
+         if (t === 'card') {
+            $('#Card').css('display', '');
+            $('#Commentary').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#Videos').css('display', 'none');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', 'none');
+            $('#CashCollection').css('display', 'none');
+            $('#billType').val('Card');
+            $('#collectionBtn').css('display', 'none');
+            $('#CashTab').html('');
+            $('#CreditTab').html();
+            $('#CardTab').html(bill);
         }
         if (t === 'collection') {
+            $('#Card').css('display', 'none');
             $('#Commentary').css('display', 'none');
             $('#Videos').css('display', 'none');
             $('#Collection').css('display', '');
@@ -788,6 +841,7 @@
 
         }
         if (t === 'cc') {
+            $('#Card').css('display', 'none');
             $('#Commentary').css('display', 'none');
             $('#Videos').css('display', 'none');
             $('#Collection').css('display', 'none');
@@ -804,6 +858,7 @@
 
         }
         if (t === 'return') {
+            $('#Card').css('display', 'none');
             $('#Commentary').css('display', 'none');
             $('#Videos').css('display', 'none');
             $('#Collection').css('display', 'none');
@@ -817,6 +872,7 @@
 
         }
         if (t === 'commission') {
+            $('#Card').css('display', 'none');
             $('#Commentary').css('display', 'none');
             $('#Videos').css('display', 'none');
             $('#Collection').css('display', 'none');
@@ -851,6 +907,70 @@
         if (billType === 'Cash') {
 
             var amount = $('#cash').val();
+            var ChallanNumber = 'N/A';
+            data = new FormData();
+            data.append('SalesType', billType);
+            data.append('BillNumber', billNumber);
+            data.append('CustomerName', 'N/A');
+            data.append('Amount', amount);
+            data.append('SeriesID', SeriesID);
+            data.append('MainNumber', MainNumber);
+            data.append('MainSeries', MainSeries);
+            data.append('ChallanNumber', ChallanNumber);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (billNumber === "" || amount === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:create_invoice' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+                            $(getInvoiceDetails(id));
+                            getRecentThreeInvoices();
+                            $('#billNumber').val('');
+                            $('.collapse').collapse('hide');
+                            $('#p1').html(response.data['createdBy']);
+                            $('#p2').html(response.data['amount']);
+                            $('#p3').html(response.data['billNo']);
+                            $('#p4').html(response.data['datetime']);
+                            window.print();
+                        }
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html(response.message).fadeIn().fadeOut(2000);
+
+                        }
+
+                        $('#SearchForm')[0].reset();
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+
+            }
+        }
+        if (billType === 'Card') {
+
+            var amount = $('#cardd').val();
             var ChallanNumber = 'N/A';
             data = new FormData();
             data.append('SalesType', billType);

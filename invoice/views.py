@@ -147,6 +147,82 @@ class InvoiceCreatedByCashListJson(BaseDatatableView):
             i = i + 1
         return json_data
 
+class InvoiceCreatedByCardListJson(BaseDatatableView):
+    order_columns = ['id', 'billNumber', 'amount', 'salesType', 'InvoiceSeriesID', 'createdBy', 'datetime', 'action']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        if staff == 'all':
+            return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
+                                        salesType__exact='Card', )
+        else:
+            return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
+                                        salesType__exact='Card',
+                                        createdBy=int(staff))
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(InvoiceSeriesID__companyID__name__icontains=search) | Q(amount__icontains=search) | Q(
+                    billNumber__icontains=search) | Q(datetime__icontains=search) | Q(
+                    createdBy__name__icontains=search)).order_by(
+                '-id')
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+
+            if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
+                action = '''<span>N/A</span>'''.format(item.pk)
+            else:
+                action = '''<span> <a onclick="getDetail('{}','{}','{}','{}','{}')" data-toggle="modal"
+                               data-target="#defaultModalInvoiceEdit"><button style="background-color: #3F51B5;color: white;" type="button"
+                               class="btn  waves-effect " data-toggle="modal"
+                               data-target="#largeModalEdit">
+                           <i class="material-icons">border_color</i></button> </a>
+
+
+
+                       <button onclick="deleteSale('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect hideModerator " data-toggle="modal"
+                               data-target="#defaultModal">
+                           <i class="material-icons">delete</i></button></span>'''.format(item.pk, item.billNumber,
+                                                                                          item.salesType, item.amount,
+                                                                                          item.customerName, item.pk)
+
+            if item.InvoiceSeriesID.companyID is None:
+                company = 'N/A'
+            else:
+                company = item.InvoiceSeriesID.companyID.name
+
+            if item.createdBy is None:
+                createdBy = 'Admin'
+            else:
+                createdBy = item.createdBy.name
+            json_data.append([
+                escape(i),
+                escape(item.billNumber),
+                escape(item.amount),  # escape HTML for security reasons
+                escape(item.salesType),  # escape HTML for security reasons
+                company,  # escape HTML for security reasons
+                createdBy,  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                action
+
+            ])
+            i = i + 1
+        return json_data
+
+
 
 class InvoiceCreatedByCreditListJson(BaseDatatableView):
     order_columns = ['id', 'billNumber', 'amount','challanNumber', 'customerName', 'salesType', 'InvoiceSeriesID', 'createdBy',
@@ -630,6 +706,8 @@ def create_invoice(request):
                 sale.customerName = CustomerName
                 if SalesType == 'Cash':
                     sale.isCash = True
+                if SalesType == 'Card':
+                    sale.isCash = False
                 if SalesType == 'Credit':
                     sale.isCash = False
                     sale.challanNumber = ChallanNumber
@@ -671,7 +749,7 @@ def edit_invoice(request):
         Amount = request.POST.get('amountE')
         CustomerName = request.POST.get('customerE')
 
-        invoice_series = BillNumber[:-5]
+        invoice_series = BillNumber[0:2]
         MainNumber = BillNumber[2:]
 
         try:
@@ -691,6 +769,8 @@ def edit_invoice(request):
                 sale.customerName = CustomerName
                 if SalesType == 'Cash':
                     sale.isCash = True
+                if SalesType == 'Card':
+                    sale.isCash = False
                 if SalesType == 'Credit':
                     sale.isCash = False
 
@@ -892,6 +972,9 @@ def generate_net_report(request):
     sales_cash = Sales.objects.filter(datetime__icontains=datetime.today().date(),
                                       salesType__icontains='cash',
                                       InvoiceSeriesID__companyID_id=user.companyID_id).order_by('datetime')
+    sales_card = Sales.objects.filter(datetime__icontains=datetime.today().date(),
+                                      salesType__icontains='card',
+                                      InvoiceSeriesID__companyID_id=user.companyID_id).order_by('datetime')
     sales_credit = Sales.objects.filter(datetime__icontains=datetime.today().date(),
                                         salesType__icontains='credit',
                                         InvoiceSeriesID__companyID_id=user.companyID_id).order_by('datetime')
@@ -919,6 +1002,7 @@ def generate_net_report(request):
 
     context = {
         'sales_cash': sales_cash,
+        'sales_card': sales_card,
         'sales_credit': sales_credit,
         'date': date,
         'user': user,
@@ -946,12 +1030,19 @@ def generate_net_report_admin(request):
     sales_cash = Sales.objects.filter(datetime__icontains=day_string,
                                       salesType__icontains='cash',
                                       InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+    sales_card = Sales.objects.filter(datetime__icontains=day_string,
+                                      salesType__icontains='card',
+                                      InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
     sales_credit = Sales.objects.filter(datetime__icontains=day_string,
                                         salesType__icontains='credit',
                                         InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
     cash_total = 0.0
     for cash in sales_cash:
         cash_total = cash_total + cash.amount
+
+    card_total = 0.0
+    for card in sales_card:
+        card_total = card_total + card.amount
 
     credit_total = 0.0
     for credit in sales_credit:
@@ -989,9 +1080,11 @@ def generate_net_report_admin(request):
         commission_total = commission_total + c.amount
     context = {
         'sales_cash': sales_cash,
+        'sales_card': sales_card,
         'sales_credit': sales_credit,
         'date': gDate,
         'cash_total': cash_total,
+        'card_total': card_total,
         'credit_total': credit_total,
         'company': company.name,
         'skipped': skipped_list,
@@ -1019,9 +1112,11 @@ def generate_monthly_report_admin(request):
     days = [date(date1.year, date1.month, day) for day in range(1, num_days + 1)]
 
     g_total = 0.0
+    g_total_card = 0.0
     c_total = 0.0
     c_total_cash = 0.0
     sale_list = []
+    sale_list_card = []
     col_list = []
     col_list_cash = []
     for d in days:
@@ -1029,9 +1124,16 @@ def generate_monthly_report_admin(request):
         sales_cash = Sales.objects.filter(datetime__contains=day_string,
                                           salesType__icontains='cash',
                                           InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+        sales_card = Sales.objects.filter(datetime__contains=day_string,
+                                          salesType__icontains='card',
+                                          InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
         cash_total = 0.0
         for cash in sales_cash:
             cash_total = cash_total + cash.amount
+
+        card_total = 0.0
+        for card in sales_card:
+            card_total = card_total + card.amount
 
         sale_dic = {
             'Date': d,
@@ -1042,6 +1144,14 @@ def generate_monthly_report_admin(request):
 
         sale_list.append(sale_dic)
 
+        sale_card_dic = {
+            'Date': d,
+            'Total': card_total
+        }
+
+        g_total_card = g_total_card + card_total
+
+        sale_list_card.append(sale_card_dic)
         col = MoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
                                              isAddedInSales__exact=True).order_by('datetime')
         col_total = 0.0
@@ -1073,9 +1183,11 @@ def generate_monthly_report_admin(request):
 
     context = {
         'sales_cash': sale_list,
+        'sales_card': sale_list_card,
         'collection': col_list,
         'collectionCash': col_list_cash,
         'Gtotal': g_total,
+        'Cardtotal': g_total_card,
         'Ctotal': c_total,
         'CtotalCash': c_total_cash,
         'Month': date1.month,

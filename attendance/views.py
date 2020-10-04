@@ -368,7 +368,7 @@ def attendance(request):
     return render(request, 'attendance/attendance.html', context)
 
 
-@check_group('Both')
+# @check_group('Both')
 def attendanceReport(request):
     request.session['nav'] = 'atten3'
     date = datetime.today().now().strftime('%d/%m/%Y')
@@ -382,25 +382,25 @@ def attendanceReport(request):
     return render(request, 'attendance/attendanceReport.html', context)
 
 
-@check_group('Both')
+# @check_group('Both')
 def loginSystem(request):
     request.session['nav'] = 'atten1'
     return render(request, 'attendance/loginStystem.html')
 
 
-@check_group('Both')
+# @check_group('Both')
 def manageEmployee(request):
     request.session['nav'] = 'atten2'
     return render(request, 'attendance/EmployeeList.html')
 
 
-@check_group('Both')
+# @check_group('Both')
 def addEmployee(request):
     request.session['nav'] = 'atten2'
     return render(request, 'attendance/addEmployee.html')
 
 
-@check_group('Both')
+# @check_group('Both')
 def edit_employee(request, id=None):
     request.session['nav'] = 'atten2'
     instance = get_object_or_404(Employee, pk=id)
@@ -410,7 +410,7 @@ def edit_employee(request, id=None):
     return render(request, 'attendance/editEmployee.html', context)
 
 
-@check_group('Both')
+# @check_group('Both')
 def add_login_system_api(request):
     if request.method == 'POST':
         try:
@@ -454,7 +454,7 @@ def add_login_system_api(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@check_group('Both')
+# @check_group('Both')
 def edit_login_system_api(request):
     if request.method == 'POST':
         try:
@@ -480,7 +480,7 @@ def edit_login_system_api(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@check_group('Both')
+# @check_group('Both')
 def add_employee_api(request):
     if request.method == 'POST':
         try:
@@ -514,7 +514,7 @@ def add_employee_api(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@check_group('Both')
+# @check_group('Both')
 def edit_employee_api(request):
     if request.method == 'POST':
         try:
@@ -548,7 +548,7 @@ def edit_employee_api(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@check_group('Both')
+# @check_group('Both')
 @csrf_exempt
 def edit_employee_photo_api(request):
     if request.method == 'POST':
@@ -564,7 +564,7 @@ def edit_employee_photo_api(request):
             return JsonResponse({'response': 'error'}, safe=False)
 
 
-@check_group('Both')
+# @check_group('Both')
 @csrf_exempt
 def delete_employee_api(request):
     if request.method == 'POST':

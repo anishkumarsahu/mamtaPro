@@ -6,6 +6,7 @@ urlpatterns = [
 
     url(r'^InvoiceSeriesListJson/$', InvoiceSeriesListJson.as_view(), name='InvoiceSeriesListJson'),
     url(r'^InvoiceCreatedByCashListJson/$', InvoiceCreatedByCashListJson.as_view(), name='InvoiceCreatedByCashListJson'),
+    url(r'^InvoiceCreatedByCardListJson/$', InvoiceCreatedByCardListJson.as_view(), name='InvoiceCreatedByCardListJson'),
     url(r'^InvoiceCreatedByCreditListJson/$', InvoiceCreatedByCreditListJson.as_view(), name='InvoiceCreatedByCreditListJson'),
     url(r'^CollectionListJson/$', CollectionListJson.as_view(), name='CollectionListJson'),
     url(r'^CashCollectionListJson/$', CashCollectionListJson.as_view(), name='CashCollectionListJson'),
