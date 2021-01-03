@@ -132,33 +132,28 @@
     <div class="col-md-12">
         <h4>123DACN</h4>
 
-        <ul style="    position: fixed;top: 5px;right: 30%; width: 30%;" class="nav">
-            <h4>Username : {% if user == 'Admin' %}
-             Admin
-                {% else %}{{ user.name|capfirst }}
-            {% endif %} </h4>
-        </ul>
-{% if user == 'Admin' %}
-             <ul style="    position: fixed;top: 7px;right: 2%; width: 10%;" class="nav">
 
-            <a href="{% url 'invoiceApp:invoice_report' %}"
-               style="font-weight: bold;width:100%;padding-right: 10px;background-color: #9C27B0;border-color:#9C27B0"
-               type="button" class="btn btn-warning">Admin Panel</a>
-        </ul>
-                {% else %}
-        <ul style="    position: fixed;top: 7px;right: 2%; width: 10%;" class="nav">
+        {% if user == 'Admin' %}
+            <ul style="    position: fixed;top: 7px;right: 2%; width: 10%;" class="nav">
 
-            <a href="{% url 'invoiceApp:generate_collection_report' %}"
-               style="font-weight: bold;width:100%;padding-right: 10px;background-color: #9C27B0;border-color:#9C27B0"
-               type="button" class="btn btn-warning">Collection Report</a>
-        </ul>
-        <ul style="    position: fixed;top: 7px;right: 15%; width: 10%;" class="nav">
+                <a href="{% url 'invoiceApp:invoice_report' %}"
+                   style="font-weight: bold;width:100%;padding-right: 10px;background-color: #9C27B0;border-color:#9C27B0"
+                   type="button" class="btn btn-warning">Admin Panel</a>
+            </ul>
+        {% else %}
+            <ul style="    position: fixed;top: 7px;right: 2%; width: 10%;" class="nav">
 
-            <a href="{% url 'invoiceApp:generate_net_report' %}"
-               style="font-weight: bold;width:100%;padding-right: 10px;background-color: #9C27B0;border-color:#9C27B0"
-               type="button" class="btn btn-warning">Invoice Report</a>
-        </ul>
-{% endif %}
+                <a href="{% url 'invoiceApp:generate_collection_report' %}"
+                   style="font-weight: bold;width:100%;padding-right: 10px;background-color: #9C27B0;border-color:#9C27B0"
+                   type="button" class="btn btn-warning">Collection Report</a>
+            </ul>
+            <ul style="    position: fixed;top: 7px;right: 15%; width: 10%;" class="nav">
+
+                <a href="{% url 'invoiceApp:generate_net_report' %}"
+                   style="font-weight: bold;width:100%;padding-right: 10px;background-color: #9C27B0;border-color:#9C27B0"
+                   type="button" class="btn btn-warning">Invoice Report</a>
+            </ul>
+        {% endif %}
         <hr/>
         <div class="col-md-1 col-sm-3 col-xs-12">
             <ul class="nav nav-tabs tabs-left sideways tabClass">
@@ -174,17 +169,23 @@
 
 
             </ul>
+            <ul style="    position: fixed;bottom: 80px;" class="nav">
+                <h4>Username : {% if user == 'Admin' %}
+                    Admin
+                    {% else %}{{ user.name|capfirst }}
+                {% endif %} </h4>
+            </ul>
             <ul style="position: fixed;bottom: 0;width:14%;padding-bottom: 20px" class="nav">
                 <span style="color: grey;font-size: 12px;">{{ user.companyID.name }}</span>
                 <a href="{% url 'mamtaApp:logout' %}"
                    style="font-weight: bold;width:100%;padding-right: 10px;background-color: #2d4760;border-color: #2d4760"
                    type="button" class="btn btn-warning">Logout</a>
                 {% if user != 'Admin' %}
-                <a style="color: #b54f3d;font-size: 13px;cursor: pointer;" data-toggle="modal"
-                   data-target="#ChangePasswordModal"
-                   data-whatever="@mdo">
-                    <stong>Change Password</stong>
-                </a>
+                    <a style="color: #b54f3d;font-size: 13px;cursor: pointer;" data-toggle="modal"
+                       data-target="#ChangePasswordModal"
+                       data-whatever="@mdo">
+                        <stong>Change Password</stong>
+                    </a>
                 {% endif %}
             </ul>
         </div>
@@ -203,7 +204,7 @@
                             </li>
 
                             <li style="background-color: #e6eaff;" onclick="changeTab('credit')"><a href="#Videos"
-                                        data-toggle="tab">Credit</a>
+                                                                                                    data-toggle="tab">Credit</a>
                             </li>
                             <li style="background-color: #e6eaff;" onclick="changeTab('collection')"><a
                                     href="#Collection"
@@ -221,8 +222,11 @@
                                     href="#Commission"
                                     data-toggle="tab">Commission</a>
                             </li>
-                            <li style="background-color: #e6eaff;" onclick="changeTab('card')" ><a
+                            <li style="background-color: #e6eaff;" onclick="changeTab('card')"><a
                                     href="#Card" data-toggle="tab">Card</a>
+                            </li>
+                            <li style="background-color: #e6eaff;" onclick="changeTab('correction')"><a
+                                    href="#Correction" data-toggle="tab">Correction</a>
                             </li>
 
                         </ul>
@@ -259,7 +263,7 @@
 
                                 </div>
 
-                            <div role="tabpanel" class="tab-pane fade" id="Card" style="display:none;">
+                                <div role="tabpanel" class="tab-pane fade" id="Card" style="display:none;">
                                     <div class="row">
                                         <div class="col-sm-6 col-xs-6" id="CardTab">
                                             <div class="form-group"><br>
@@ -294,7 +298,7 @@
 
                                         </div>
                                         <div class="col-sm-4 col-xs-4">
-                                           {% comment %} <div class="form-group"><br>
+                                            {% comment %} <div class="form-group"><br>
                                                 <input type="text" class="form-control" id="name" aria-describedby=""
                                                        onkeypress="return checkCustomer(event)"
                                                        placeholder="Customer Name"
@@ -312,7 +316,7 @@
                                             <div class="form-group"><br>
                                                 <input type="number" class="form-control" id="credit"
                                                        aria-describedby=""
-                                                       placeholder="Amount (Rs.)" >
+                                                       placeholder="Amount (Rs.)">
 
                                             </div>
                                         </div>
@@ -320,7 +324,7 @@
                                             <div class="form-group"><br>
                                                 <input type="number" class="form-control" id="challanNumber"
                                                        aria-describedby=""
-                                                       placeholder="Challan Number" >
+                                                       placeholder="Challan Number">
 
                                             </div>
                                         </div>
@@ -398,6 +402,43 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div role="tabpanel" class="tab-pane fade" id="Correction" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-sm-3">
+
+                                            <div class="form-group"><br>
+                                                <select class="form-control" id="sIDCorrection"
+                                                        style="padding: 2px!important;cursor: pointer">
+
+                                                    {% for InvoiceSery in InvoiceSeries %}
+                                                        <option value="{{ InvoiceSery.Series }}">{{ InvoiceSery.Series }}</option>
+                                                    {% endfor %}
+
+
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-5">
+
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="invoiceNumberCorrection"
+                                                       aria-describedby=""
+                                                       placeholder="Invoice Number">
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-4 col-xs-4">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="AmountCorrection"
+                                                       aria-describedby=""
+                                                       placeholder="Rs." value="0">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div role="tabpanel" class="tab-pane fade" id="Commission" style="display:none;">
                                     <div class="row">
                                         <div class="col-sm-3">
@@ -518,12 +559,24 @@
                         </div>
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="col-sm-12">
+                        <div class="col-sm-6">
                             <label style="color: #0178fc"> Last Three (3) Recent Invoices</label>
                             <div style="padding-top: 5px;overflow-x: scroll;">
 
                                 <div style="width: 100%;height: 30px;">
                     <span id="recent">
+
+                     </span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-6">
+                            <label style="color: #0178fc"> Today's Correction</label>
+                            <div style="padding-top: 5px;overflow-x: scroll;">
+
+                                <div style="width: 100%;height: 30px;">
+                    <span id="todayCorrection">
 
                      </span>
                                 </div>
@@ -794,6 +847,7 @@
             $('#CashTab').html(bill);
             $('#CreditTab').html('');
             $('#CardTab').html('');
+            $('#Correction').css('display', 'none');
         }
         if (t === 'credit') {
             $('#Card').css('display', 'none');
@@ -808,8 +862,9 @@
             $('#CashTab').html('');
             $('#CreditTab').html(bill);
             $('#CardTab').html('');
+            $('#Correction').css('display', 'none');
         }
-         if (t === 'card') {
+        if (t === 'card') {
             $('#Card').css('display', '');
             $('#Commentary').css('display', 'none');
             $('#Collection').css('display', 'none');
@@ -822,6 +877,7 @@
             $('#CashTab').html('');
             $('#CreditTab').html();
             $('#CardTab').html(bill);
+            $('#Correction').css('display', 'none');
         }
         if (t === 'collection') {
             $('#Card').css('display', 'none');
@@ -837,6 +893,7 @@
             // $('#collection2').html('');
             //getBuyerList();
             getCollectionDetails();
+            $('#Correction').css('display', 'none');
 
 
         }
@@ -854,6 +911,7 @@
             //$('#collection2').html(collect);
             //getBuyerList();
             getCashCollectionDetails();
+            $('#Correction').css('display', 'none');
 
 
         }
@@ -868,6 +926,7 @@
             $('#billType').val('Return');
             $('#collectionBtn').css('display', 'none');
             getReturnDetails();
+            $('#Correction').css('display', 'none');
 
 
         }
@@ -882,6 +941,22 @@
             $('#billType').val('Commission');
             $('#collectionBtn').css('display', 'none');
             getCommissionDetails();
+            $('#Correction').css('display', 'none');
+
+
+        }
+        if (t === 'correction') {
+            $('#Card').css('display', 'none');
+            $('#Commentary').css('display', 'none');
+            $('#Videos').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', 'none');
+            $('#CashCollection').css('display', 'none');
+            $('#billType').val('Correction');
+            $('#collectionBtn').css('display', 'none');
+            getCorrectionDetails();
+            $('#Correction').css('display', '');
 
 
         }
@@ -1047,7 +1122,7 @@
             data.append('ChallanNumber', ChallanNumber);
             data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
-            if (billNumber === "" || amountCredit === "" || name === ""|| ChallanNumber === "") {
+            if (billNumber === "" || amountCredit === "" || name === "" || ChallanNumber === "") {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
@@ -1274,6 +1349,56 @@
 
             }
         }
+
+
+        if (billType === 'Correction') {
+            var sIDReturn = $('#sIDCorrection').val();
+            var invoiceNumberReturn = $('#invoiceNumberCorrection').val();
+            var AmountReturn = $('#AmountCorrection').val();
+            data = new FormData();
+            data.append('sIDReturn', sIDReturn);
+            data.append('invoiceNumberReturn', invoiceNumberReturn);
+            data.append('AmountReturn', AmountReturn);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (invoiceNumberReturn === "" || AmountReturn === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:correct_collection' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Correction Added.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+
+
+                        }
+                        getCorrectionDetails();
+                        $('#SearchForm')[0].reset();
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+
+
+                });
+
+
+            }
+        }
         $("#partyName1").val('');
         $("#partyName1").selectpicker("refresh");
         $("#partyName").val('');
@@ -1467,7 +1592,14 @@
                         $('#name_status').html('New Party Added.').fadeIn().fadeOut(2000);
                         $('#PartyForm')[0].reset();
                         $('#addPartyModal').modal('hide');
-                        getBuyerList();
+                        for (i in response.data) {
+                            $('#partyName').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                            $("#partyName").selectpicker('refresh');
+                            $('#partyName1').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                            $("#partyName1").selectpicker('refresh');
+                            $('#name').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["Name"] + '">' + response.data[i]["Name"] + '</option>');
+                            $("#name").selectpicker('refresh');
+                        }
 
                     }
 
@@ -1486,7 +1618,7 @@
         }
 
     }
-    $(getBuyerList());
+
     function getBuyerList() {
         $('#partyName').html('');
         $('#partyName1').html('');
@@ -1613,6 +1745,26 @@
 
     }
 
+    function getCorrectionDetails() {
+        $('#todayCorrection').html('');
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_today_correction_by_company' %}",
+            success: function (response) {
+                for (i in response.data) {
+                    todayCorrection = '<span class="label label-info invoiceStyle" ><strong>' + response.data[i].InvoiceNumber + ' - ₹ ' + response.data[i].Amount + '  </strong></span>';
+
+                    $('#todayCorrection').append(todayCorrection)
+                }
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
     function getCommissionDetails() {
         $('#todayCommission').html('');
 
@@ -1635,6 +1787,104 @@
         });
 
     }
+
+
+    $(document).on("keypress", "input[aria-controls='bs-select-1']", function (e) {
+
+
+        if (e.which != 38 || e.which != 40) {
+            var inputVal = $(this).val();
+            $('#name').html('');
+            $.ajax({
+                type: 'get',
+                url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
+                success: function (response) {
+
+
+                    for (i in response.data) {
+                        $('#name').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["Name"] + '">' + response.data[i]["Name"] + '</option>');
+
+                    }
+                    $("#name").selectpicker('refresh');
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+
+
+            });
+
+
+        }
+
+    });
+
+
+    $(document).on("keypress", "input[aria-controls='bs-select-3']", function (e) {
+
+
+        if (e.which != 38 || e.which != 40) {
+            var inputVal = $(this).val();
+            $('#partyName').html('');
+            $.ajax({
+                type: 'get',
+                url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
+                success: function (response) {
+
+                    $('#partyName').append('<option  value="" selected>Search Party</option>');
+
+                    for (i in response.data) {
+                        $('#partyName').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                    }
+                    $("#partyName").selectpicker('refresh');
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+
+
+            });
+
+
+        }
+    });
+
+    $(document).on("keypress", "input[aria-controls='bs-select-2']", function (e) {
+
+        if (e.which != 38 || e.which != 40) {
+            var inputVal = $(this).val();
+            $('#partyName1').html('');
+            $.ajax({
+                type: 'get',
+                url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
+                success: function (response) {
+
+                    $('#partyName1').append('<option  value="" selected>Search Party</option>');
+
+                    for (i in response.data) {
+
+                        $('#partyName1').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+
+
+                    }
+                    $("#partyName1").selectpicker('refresh');
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+
+
+            });
+
+
+        }
+    });
 </script>
 </body>
 </html>

@@ -88,3 +88,18 @@ class Commission(models.Model):
 
     def __str__(self):
         return str(self.actualBillNumber)
+
+
+
+class CorrectCollection(models.Model):
+    actualBillNumber = models.CharField(max_length=100, blank=True, null=True)
+    numberMain = models.IntegerField(default=1)
+    createdBy = models.ForeignKey(StaffUser, blank=True, null=True)
+    amount = models.FloatField(default=0.0)
+    companyID = models.ForeignKey(Company, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return str(self.actualBillNumber)

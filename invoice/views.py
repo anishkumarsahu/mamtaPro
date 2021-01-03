@@ -494,6 +494,71 @@ class ReturnCollectionListJson(BaseDatatableView):
         return json_data
 
 
+class CorrectCollectionListJson(BaseDatatableView):
+    order_columns = ['id', 'actualBillNumber', 'amount', 'companyID', 'createdBy', 'datetime', 'action']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        if staff == 'all':
+            return CorrectCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1))
+        else:
+            return CorrectCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
+                                                   createdBy_id=int(staff))
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(actualBillNumber__icontains=search) | Q(amount__icontains=search) | Q(datetime__icontains=search) | Q(
+                    createdBy__name__icontains=search))
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
+                action = '''<span>N/A</span>'''.format(item.pk)
+            else:
+                action = '''<span> <a onclick="getDetailCorrection('{}','{}','{}')" data-toggle="modal"
+                               data-target="#defaultModalCorrectEdit"><button style="background-color: #3F51B5;color: white;" type="button"
+                               class="btn  waves-effect " data-toggle="modal"
+                               data-target="#largeModalEdit">
+                           <i class="material-icons">border_color</i></button> </a>
+
+
+
+                       <button onclick="deleteCorrection('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect hideModerator " data-toggle="modal"
+                               data-target="#defaultModalDeleteCorrection">
+                           <i class="material-icons">delete</i></button></span>'''.format(item.pk,
+                                                                                          item.actualBillNumber,
+                                                                                          item.amount, item.pk)
+            if item.createdBy is None:
+                createdBy = 'Admin'
+            else:
+                createdBy = item.createdBy.name
+            json_data.append([
+                escape(i),
+                escape(item.actualBillNumber),  # escape HTML for security reasons
+                str(item.amount),  # escape HTML for security reasons
+                escape(item.companyID.name),  # escape HTML for security reasons
+                createdBy,  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                action,
+
+            ])
+            i = i + 1
+        return json_data
+
+
+
 class CommissionListJson(BaseDatatableView):
     order_columns = ['id', 'actualBillNumber', 'amount', 'companyID', 'createdBy', 'datetime', 'action']
 
@@ -996,6 +1061,8 @@ def generate_net_report(request):
             pass
     returns = ReturnCollection.objects.filter(datetime__icontains=datetime.today().date(),
                                               companyID_id=user.companyID_id).order_by('datetime')
+    corrections = CorrectCollection.objects.filter(datetime__icontains=datetime.today().date(),
+                                              companyID_id=user.companyID_id).order_by('datetime')
 
     commissions = Commission.objects.filter(datetime__icontains=datetime.today().date(),
                                             companyID_id=user.companyID_id).order_by('datetime')
@@ -1009,6 +1076,7 @@ def generate_net_report(request):
         'skipped': skipped_list,
         'returns': returns,
         'commissions': commissions,
+        'corrections': corrections,
 
     }
 
@@ -1072,6 +1140,13 @@ def generate_net_report_admin(request):
     for am in returns:
         return_total = return_total + am.amount
 
+    corrections = CorrectCollection.objects.filter(datetime__icontains=day_string,
+                                              companyID_id=int(companyID)).order_by('datetime')
+
+    correct_total = 0.0
+    for ame in corrections:
+        correct_total = correct_total + ame.amount
+
     commissions = Commission.objects.filter(datetime__icontains=day_string,
                                             companyID_id=int(companyID)).order_by('datetime')
 
@@ -1089,9 +1164,11 @@ def generate_net_report_admin(request):
         'company': company.name,
         'skipped': skipped_list,
         'returns': returns,
+        'corrections': corrections,
         'return_total': return_total,
         'commissions': commissions,
         'commission_total': commission_total,
+        'correct_total': correct_total,
 
     }
 
@@ -1401,16 +1478,28 @@ def add_party_from_sales(request):
                 buy.address = pAddress
                 buy.closingBalance = 0.0
                 buy.save()
-                return JsonResponse({'message': 'success'})
+
+                c_list = []
+
+                data = {
+                    'Name': buy.name,
+                    'Phone': buy.phoneNumber,
+                    'ID': buy.pk,
+                    'Address': buy.address,
+
+                }
+
+                c_list.append(data)
+                return JsonResponse({'message': 'success', 'data': c_list})
             else:
                 return JsonResponse({'message': 'alreadyExist'})
-
         except:
             return JsonResponse({'message': 'fail'})
 
 
 def get_buyer_list(request):
-    buyer = Buyer.objects.filter(isDeleted__exact=False).order_by('name')
+    q = request.GET.get('q')
+    buyer = Buyer.objects.filter( Q(name__icontains=q)|Q(address__icontains=q)|Q(phoneNumber__icontains=q),isDeleted__exact=False).order_by('name')
     c_list = []
     for c in buyer:
         data = {
@@ -1596,6 +1685,35 @@ def return_collection(request):
             return JsonResponse({'message': 'fail'})
 
 
+
+def correct_collection(request):
+    if request.method == 'POST':
+
+        sIDReturn = request.POST.get('sIDReturn')
+        invoiceNumberReturn = request.POST.get('invoiceNumberReturn')
+        AmountReturn = request.POST.get('AmountReturn')
+
+        try:
+            re = CorrectCollection()
+            re.numberMain = int(invoiceNumberReturn)
+            re.actualBillNumber = sIDReturn + str(invoiceNumberReturn).zfill(4)
+            re.amount = float(AmountReturn)
+            if not 'Both' in request.user.groups.values_list('name', flat=True):
+                user = StaffUser.objects.get(userID_id=request.user.pk)
+                re.createdBy_id = user.pk
+                re.companyID_id = user.companyID_id
+            else:
+                c = InvoiceSeries.objects.get(series__iexact=sIDReturn, isDeleted__exact=False,isCompleted__exact=False)
+
+                re.companyID_id = c.companyID_id
+            re.save()
+            return JsonResponse({'message': 'success'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
+
+
+
 def get_today_return_by_company(request):
     if 'Both' in request.user.groups.values_list('name', flat=True):
         col = ReturnCollection.objects.filter(datetime__icontains=datetime.today().date()).order_by('-datetime')
@@ -1616,6 +1734,31 @@ def get_today_return_by_company(request):
         c_list.append(data)
 
     return JsonResponse({'message': 'success', 'data': c_list})
+
+
+
+def get_today_correction_by_company(request):
+    if 'Both' in request.user.groups.values_list('name', flat=True):
+        col = CorrectCollection.objects.filter(datetime__icontains=datetime.today().date()).order_by('-datetime')
+
+    else:
+        user = StaffUser.objects.get(userID_id=request.user.pk)
+        col = CorrectCollection.objects.filter(datetime__icontains=datetime.today().date(),
+                                          companyID_id=user.companyID_id).order_by('-datetime')
+    c_list = []
+    for c in col:
+        data = {
+            'InvoiceNumber': c.actualBillNumber,
+            'Amount': c.amount,
+            'ID': c.pk,
+
+        }
+
+        c_list.append(data)
+
+    return JsonResponse({'message': 'success', 'data': c_list})
+
+
 
 
 def edit_return(request):
@@ -1639,6 +1782,27 @@ def edit_return(request):
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+def edit_correction(request):
+    if request.method == 'POST':
+
+        ColID = request.POST.get('CorrectionID')
+        Amount = request.POST.get('amountECorrection')
+        invoice = request.POST.get('invoiceECorrection')
+        try:
+            ret = CorrectCollection.objects.get(pk=int(ColID))
+            ret.amount = float(Amount)
+            ret.actualBillNumber = invoice
+
+            ret.save()
+
+            messages.success(request, 'Correction updated successfully.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error, Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 @check_group('Both')
 def delete_return_api(request):
     if request.method == 'POST':
@@ -1654,6 +1818,21 @@ def delete_return_api(request):
             messages.success(request, 'Error. Please try again.')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
+@check_group('Both')
+def delete_correction_api(request):
+    if request.method == 'POST':
+        try:
+            returnDelID = request.POST.get('correctionDelID')
+            col = CorrectCollection.objects.get(pk=int(returnDelID))
+            col.delete()
+            messages.success(request, 'Correction detail deleted successfully.')
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def commission_collection(request):
     if request.method == 'POST':

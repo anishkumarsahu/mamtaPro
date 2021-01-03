@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^CollectionListJson/$', CollectionListJson.as_view(), name='CollectionListJson'),
     url(r'^CashCollectionListJson/$', CashCollectionListJson.as_view(), name='CashCollectionListJson'),
     url(r'^ReturnCollectionListJson/$', ReturnCollectionListJson.as_view(), name='ReturnCollectionListJson'),
+    url(r'^CorrectCollectionListJson/$', CorrectCollectionListJson.as_view(), name='CorrectCollectionListJson'),
     url(r'^CommissionListJson/$', CommissionListJson.as_view(), name='CommissionListJson'),
 
     url(r'^$', index, name='index'),
@@ -64,5 +65,11 @@ urlpatterns = [
     url(r'^get_today_commission_by_company/$', get_today_commission_by_company, name='get_today_commission_by_company'),
     url(r'^edit_commission/$', edit_commission, name='edit_commission'),
     url(r'^delete_commission_api/$', delete_commission_api, name='delete_commission_api'),
+
+    # Correction
+    url(r'^correction_collection_post/$', correct_collection, name='correct_collection'),
+    url(r'^get_today_correction_by_company/$', get_today_correction_by_company, name='get_today_correction_by_company'),
+    url(r'^edit_correction/$', edit_correction, name='edit_correction'),
+    url(r'^delete_correction_api/$', delete_correction_api, name='delete_correction_api'),
 
 ]

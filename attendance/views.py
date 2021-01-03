@@ -638,7 +638,7 @@ def logout_post_api(request):
         except:
             return JsonResponse({'response': 'error'}, safe=False)
 
-
+day_name= ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday']
 def genereate_attendence_report(request):
     sDate = request.GET.get('startDate')
     eDate = request.GET.get('endDate')
@@ -668,15 +668,18 @@ def genereate_attendence_report(request):
                 for i in range(1, 32):
                     if i < 10:
                         i = "0{}".format(i)
+                        day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
                     try:
-
                         attend = EmployeeAttendance.objects.get(employeeID__id=e.pk,
                                                                                 attendanceDate__icontains=d+ "-{}".format(i))
 
                         if attend.loginTime is None and attend.logoutTime is None:
-
-                            att.append('A')
-                            a_count = a_count +1
+                            if  day_name[day] == 'Sunday':
+                                att.append('H')
+                                na_count = na_count + 1
+                            else:
+                                att.append('A')
+                                a_count = a_count +1
                         else:
                             att.append('P')
                             p_count= p_count+ 1
@@ -732,6 +735,8 @@ def genereate_attendence_report(request):
                 for i in range(1, 32):
                     if i < 10:
                         i = "0{}".format(i)
+                        day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
+
                     try:
 
                         attend = EmployeeAttendance.objects.get(employeeID__id=e.pk,
@@ -739,8 +744,12 @@ def genereate_attendence_report(request):
 
                         if attend.loginTime is None and attend.logoutTime is None:
 
-                            att.append('A')
-                            a_count = a_count + 1
+                            if  day_name[day] == 'Sunday':
+                                att.append('H')
+                                na_count = na_count + 1
+                            else:
+                                att.append('A')
+                                a_count = a_count +1
                         else:
                             att.append('P')
                             p_count = p_count + 1
