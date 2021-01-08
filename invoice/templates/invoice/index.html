@@ -100,8 +100,8 @@
 
     @media print {
         body {
-            width: 80mm;
-            height: 297mm;
+            width: 60mm;
+            height: 50mm;
             margin-left: 3mm;
             margin-bottom: 3mm;
         }
@@ -155,7 +155,7 @@
             </ul>
         {% endif %}
         <hr/>
-        <div class="col-md-1 col-sm-3 col-xs-12">
+        <div class="col-md-1 col-sm-3 col-xs-12" style="height: 400px;overflow-y: scroll">
             <ul class="nav nav-tabs tabs-left sideways tabClass">
                 {% for InvoiceSery in InvoiceSeries %}
 
@@ -228,6 +228,9 @@
                             <li style="background-color: #e6eaff;" onclick="changeTab('correction')"><a
                                     href="#Correction" data-toggle="tab">Correction</a>
                             </li>
+                          {% comment %}  <li style="background-color: #e6eaff;" onclick="changeTab('mix')"><a
+                                    href="#Correction" data-toggle="tab">Mix</a>
+                            </li>{% endcomment %}
 
                         </ul>
                         <div class="tab-content">
@@ -332,16 +335,21 @@
                                 </div>
                                 <div role="tabpanel" class="tab-pane fade" id="Collection" style="display:none;">
                                     <div class="row" id="collection1">
-                                        <div class="col-sm-6 col-xs-6">
+                                        <div class="col-sm-4 col-xs-4">
                                             <div class="form-group"><br><select id="partyName1"
                                                                                 class="selectpicker loadBuyer"
                                                                                 data-show-subtext="true"
                                                                                 data-live-search="true"></select></div>
                                         </div>
-                                        <div class="col-sm-6 col-xs-6">
+                                        <div class="col-sm-4 col-xs-4">
                                             <div class="form-group"><br><input type="number" class="form-control"
                                                                                id="partyAmount1" aria-describedby=""
                                                                                placeholder="Rs." value="0"></div>
+                                        </div>
+                                         <div class="col-sm-4 col-xs-4">
+                                            <div class="form-group"><br><input type="text" class="form-control"
+                                                                               id="collectionremark" aria-describedby=""
+                                                                               placeholder="Remark" ></div>
                                         </div>
 
                                     </div>
@@ -1168,9 +1176,11 @@
         if (billType === 'Collection') {
             var partyName = $('#partyName1').val();
             var partyAmount = $('#partyAmount1').val();
+            var collectionremark = $('#collectionremark').val();
             data = new FormData();
             data.append('partyName', partyName);
             data.append('partyAmount', partyAmount);
+            data.append('collectionremark', collectionremark);
             data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
             if (partyName === "" || partyAmount === "") {

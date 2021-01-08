@@ -1361,11 +1361,13 @@ def take_collection(request):
 
         partyName = request.POST.get('partyName')
         partyAmount = request.POST.get('partyAmount')
+        collectionremark = request.POST.get('collectionremark')
 
         try:
             collection = MoneyCollection()
             collection.buyerID_id = int(partyName)
             collection.amount = float(partyAmount)
+            collection.remark = collectionremark
 
             collection.paymentMode = 'Cash'
             collection.isAddedInSales = True
@@ -1499,7 +1501,7 @@ def add_party_from_sales(request):
 
 def get_buyer_list(request):
     q = request.GET.get('q')
-    buyer = Buyer.objects.filter( Q(name__icontains=q)|Q(address__icontains=q)|Q(phoneNumber__icontains=q),isDeleted__exact=False).order_by('name')
+    buyer = Buyer.objects.filter(name__startswith=q,isDeleted__exact=False).order_by('name')
     c_list = []
     for c in buyer:
         data = {
