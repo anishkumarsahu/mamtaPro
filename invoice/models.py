@@ -38,6 +38,7 @@ class Sales(models.Model):
     salesType = models.CharField(max_length=100, blank=True, null=True)
     createdBy = models.ForeignKey(StaffUser, blank=True, null=True)
     amount = models.FloatField(default=0.0)
+    mixCardAmount = models.FloatField(default=0.0)
     isCash = models.BooleanField(default=True)
     customerName = models.CharField(max_length=200, blank=True, null=True)
     challanNumber = models.CharField(max_length=200,default='N/A')

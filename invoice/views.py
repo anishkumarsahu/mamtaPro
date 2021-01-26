@@ -222,6 +222,84 @@ class InvoiceCreatedByCardListJson(BaseDatatableView):
             i = i + 1
         return json_data
 
+class InvoiceCreatedByMixListJson(BaseDatatableView):
+    order_columns = ['id', 'billNumber', 'amount','mixCardAmount', 'salesType', 'InvoiceSeriesID', 'createdBy', 'datetime', 'action']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        if staff == 'all':
+            return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
+                                        salesType__exact='Mix', )
+        else:
+            return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
+                                        salesType__exact='Mix',
+                                        createdBy=int(staff))
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(InvoiceSeriesID__companyID__name__icontains=search) | Q(amount__icontains=search) |
+                Q(mixCardAmount__icontains=search) | Q(
+                    billNumber__icontains=search) | Q(datetime__icontains=search) | Q(
+                    createdBy__name__icontains=search)).order_by(
+                '-id')
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+
+            if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
+                action = '''<span>N/A</span>'''.format(item.pk)
+            else:
+                action = '''<span> <a onclick="getDetailMix('{}','{}','{}','{}','{}','{}')" data-toggle="modal"
+                               data-target="#defaultModalInvoiceEditMix"><button style="background-color: #3F51B5;color: white;" type="button"
+                               class="btn  waves-effect " data-toggle="modal"
+                               data-target="#largeModalEdit">
+                           <i class="material-icons">border_color</i></button> </a>
+
+
+
+                       <button onclick="deleteSaleMix('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect hideModerator " data-toggle="modal"
+                               data-target="#defaultModalMix">
+                           <i class="material-icons">delete</i></button></span>'''.format(item.pk, item.billNumber,
+                                                                                          item.salesType, item.amount,
+                                                                                          item.customerName, item.mixCardAmount, item.pk)
+
+            if item.InvoiceSeriesID.companyID is None:
+                company = 'N/A'
+            else:
+                company = item.InvoiceSeriesID.companyID.name
+
+            if item.createdBy is None:
+                createdBy = 'Admin'
+            else:
+                createdBy = item.createdBy.name
+            json_data.append([
+                escape(i),
+                escape(item.billNumber),
+                escape(item.amount),  # escape HTML for security reasons
+                escape(item.mixCardAmount),  # escape HTML for security reasons
+                escape(item.salesType),  # escape HTML for security reasons
+                company,  # escape HTML for security reasons
+                createdBy,  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                action
+
+            ])
+            i = i + 1
+        return json_data
+
+
 
 
 class InvoiceCreatedByCreditListJson(BaseDatatableView):
@@ -751,6 +829,7 @@ def create_invoice(request):
         BillNumber = request.POST.get('BillNumber')
         SalesType = request.POST.get('SalesType')
         Amount = request.POST.get('Amount')
+        CardAmount = request.POST.get('CardAmount')
         CustomerName = request.POST.get('CustomerName')
         SeriesID = request.POST.get('SeriesID')
         MainNumber = request.POST.get('MainNumber')
@@ -776,16 +855,23 @@ def create_invoice(request):
                 if SalesType == 'Credit':
                     sale.isCash = False
                     sale.challanNumber = ChallanNumber
+                if SalesType == 'Mix':
+                    sale.isCash = False
+                    sale.mixCardAmount = float(CardAmount)
                 if not 'Both' in request.user.groups.values_list('name', flat=True):
 
                     user = StaffUser.objects.get(userID_id=request.user.pk)
                     sale.createdBy_id = user.pk
                 sale.save()
+                try:
+                    by = sale.createdBy.name
+                except:
+                    by = 'Admin'
 
                 data = {
-                    # 'createdBy': sale.createdBy.name,
+                    'createdBy': by,
                     'billNo': sale.billNumber,
-                    'amount': sale.amount,
+                    'amount': sale.amount + sale.mixCardAmount,
                     'datetime': sale.datetime.strftime('%d-%m-%Y %I:%M %p')
                 }
 
@@ -838,6 +924,58 @@ def edit_invoice(request):
                     sale.isCash = False
                 if SalesType == 'Credit':
                     sale.isCash = False
+
+                sale.save()
+                messages.success(request, 'Sales updated successfully.')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            else:
+
+                messages.success(request, 'Error, Bill Number repeated.')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+        except:
+            messages.success(request, 'Error, Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def edit_invoice_mix(request):
+    if request.method == 'POST':
+
+        invoiceID = request.POST.get('invoiceIDMix')
+        BillNumber = request.POST.get('invoiceEMix')
+        SalesType = request.POST.get('salesEMix')
+        Amount = request.POST.get('amountEMix')
+        CustomerName = request.POST.get('customerEMix')
+        cardAmountEMix = request.POST.get('cardAmountEMix')
+
+        invoice_series = BillNumber[0:2]
+        MainNumber = BillNumber[2:]
+
+        try:
+            isExist = InvoiceSeries.objects.get(series__exact=int(invoice_series), isDeleted__exact=False)
+            sales = Sales.objects.filter(numberMain__exact=int(MainNumber), InvoiceSeriesID_id=isExist.pk).exclude(
+                pk=int(invoiceID)).count()
+
+            if sales < 1:
+
+                sale = Sales.objects.get(pk=int(invoiceID))
+
+                sale.InvoiceSeriesID_id = isExist.pk
+                sale.billNumber = BillNumber
+                sale.numberMain = int(MainNumber)
+                sale.salesType = SalesType
+                sale.amount = float(Amount)
+                sale.customerName = CustomerName
+                if SalesType == 'Cash':
+                    sale.isCash = True
+                if SalesType == 'Card':
+                    sale.isCash = False
+                if SalesType == 'Credit':
+                    sale.isCash = False
+                if SalesType == 'Mix':
+                    sale.isCash = False
+                    sale.mixCardAmount = float(cardAmountEMix)
 
                 sale.save()
                 messages.success(request, 'Sales updated successfully.')
@@ -921,6 +1059,20 @@ def delete_sale_api(request):
             messages.success(request, 'Error. Please try again.')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+@check_group('Both')
+def delete_sale_api_mix(request):
+    if request.method == 'POST':
+        try:
+            saleID = request.POST.get('saleIDMix')
+            sale = Sales.objects.get(pk=int(saleID))
+            sale.delete()
+            messages.success(request, 'Sales detail deleted successfully.')
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 @check_group('Both')
 def delete_collection_api(request):
@@ -1044,6 +1196,10 @@ def generate_net_report(request):
                                         salesType__icontains='credit',
                                         InvoiceSeriesID__companyID_id=user.companyID_id).order_by('datetime')
 
+    sales_mix = Sales.objects.filter(datetime__icontains=datetime.today().date(),
+                                     salesType__icontains='Mix',
+                                     InvoiceSeriesID__companyID_id=int(user.companyID_id)).order_by('datetime')
+
     skipped_list = []
     invoiceByUser = InvoiceSeries.objects.filter(companyID_id=user.companyID_id, isCompleted__exact=False, isDeleted__exact=False)
     for invoice in invoiceByUser:
@@ -1071,6 +1227,7 @@ def generate_net_report(request):
         'sales_cash': sales_cash,
         'sales_card': sales_card,
         'sales_credit': sales_credit,
+        'sales_mix': sales_mix,
         'date': date,
         'user': user,
         'skipped': skipped_list,
@@ -1104,6 +1261,9 @@ def generate_net_report_admin(request):
     sales_credit = Sales.objects.filter(datetime__icontains=day_string,
                                         salesType__icontains='credit',
                                         InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+    sales_mix = Sales.objects.filter(datetime__icontains=day_string,
+                                        salesType__icontains='Mix',
+                                        InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
     cash_total = 0.0
     for cash in sales_cash:
         cash_total = cash_total + cash.amount
@@ -1116,6 +1276,11 @@ def generate_net_report_admin(request):
     for credit in sales_credit:
         credit_total = credit_total + credit.amount
 
+    mix_cash_total = 0.0
+    mix_card_total = 0.0
+    for mix in sales_mix:
+        mix_cash_total = mix_cash_total + mix.amount
+        mix_card_total = mix_card_total + mix.mixCardAmount
     company = Company.objects.get(pk=int(companyID))
     invoiceByUser = InvoiceSeries.objects.filter(companyID_id=company.pk, isCompleted__exact=False, isDeleted__exact=False)
 
@@ -1157,6 +1322,7 @@ def generate_net_report_admin(request):
         'sales_cash': sales_cash,
         'sales_card': sales_card,
         'sales_credit': sales_credit,
+        'sales_mix': sales_mix,
         'date': gDate,
         'cash_total': cash_total,
         'card_total': card_total,
@@ -1168,7 +1334,9 @@ def generate_net_report_admin(request):
         'return_total': return_total,
         'commissions': commissions,
         'commission_total': commission_total,
-        'correct_total': correct_total,
+        'mix_cash_total': mix_cash_total,
+        'mix_card_total': mix_card_total,
+        'mix_total': mix_cash_total + mix_card_total,
 
     }
 
@@ -1501,7 +1669,7 @@ def add_party_from_sales(request):
 
 def get_buyer_list(request):
     q = request.GET.get('q')
-    buyer = Buyer.objects.filter(name__startswith=q,isDeleted__exact=False).order_by('name')
+    buyer = Buyer.objects.filter(name__icontains=q,isDeleted__exact=False).order_by('name')
     c_list = []
     for c in buyer:
         data = {

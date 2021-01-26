@@ -118,6 +118,35 @@
         </table>
     </section>
 
+<p style="font-size: 10px; margin: 2px;">Mix</p>
+
+    <section id="Mix">
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Bill_No.</th>
+                <th scope="col">CashAmount(₹).</th>
+                <th scope="col">CardAmount(₹)</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in sales_mix %}
+
+
+
+                <tr>
+                    <td>{{ foo.billNumber }}</td>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.mixCardAmount }}</td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
 <p style="font-size: 10px; margin: 2px;">Returns </p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">

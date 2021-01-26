@@ -100,10 +100,11 @@
 
     @media print {
         body {
-            width: 60mm;
-            height: 50mm;
+            width: 80mm;
+            height: 80mm;
             margin-left: 3mm;
-            margin-bottom: 3mm;
+            margin-bottom: 10mm;
+            font-size: 14px;
         }
 
         #nonPrintDiv {
@@ -156,7 +157,7 @@
         {% endif %}
         <hr/>
         <div class="col-md-1 col-sm-3 col-xs-12" style="height: 400px;overflow-y: scroll">
-            <ul class="nav nav-tabs tabs-left sideways tabClass">
+            <ul class="nav nav-tabs tabs-left sideways tabClass" style="font-size: 12px;">
                 {% for InvoiceSery in InvoiceSeries %}
 
                     <li id="s{{ InvoiceSery.SeriesID }}" onclick="getInvoiceList('{{ InvoiceSery.SeriesID }}')"><a
@@ -228,9 +229,9 @@
                             <li style="background-color: #e6eaff;" onclick="changeTab('correction')"><a
                                     href="#Correction" data-toggle="tab">Correction</a>
                             </li>
-                          {% comment %}  <li style="background-color: #e6eaff;" onclick="changeTab('mix')"><a
-                                    href="#Correction" data-toggle="tab">Mix</a>
-                            </li>{% endcomment %}
+                            <li style="background-color: #e6eaff;" onclick="changeTab('mix')"><a
+                                    href="#Mix" data-toggle="tab">Mix</a>
+                            </li>
 
                         </ul>
                         <div class="tab-content">
@@ -259,6 +260,42 @@
                                             <div class="form-group"><br>
                                                 <input type="number" class="form-control" id="cash" aria-describedby=""
                                                        placeholder="Rs.">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="Mix" style="display: none">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xs-6" id="MixTab">
+                                            <div class="form-group"><br>
+
+                                                <div>
+
+                                                    <input readonly type="text" class="form-control" id="billNumber"
+                                                           aria-describedby=""
+                                                           placeholder="Enter Invoice No">
+                                                </div>
+
+                                                <input type="hidden" id="SeriesID" name="SeriesID">
+                                                <input type="hidden" id="MainNumber" name="MainNumber">
+                                                <input type="hidden" id="MainSeries" name="MainSeries">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-3 col-xs-3">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="mixCash" aria-describedby=""
+                                                       placeholder="Cash Amount(Rs.)">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 col-xs-3">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="mixCard" aria-describedby=""
+                                                       placeholder="Card Amount(Rs.)">
 
                                             </div>
                                         </div>
@@ -346,10 +383,10 @@
                                                                                id="partyAmount1" aria-describedby=""
                                                                                placeholder="Rs." value="0"></div>
                                         </div>
-                                         <div class="col-sm-4 col-xs-4">
+                                        <div class="col-sm-4 col-xs-4">
                                             <div class="form-group"><br><input type="text" class="form-control"
                                                                                id="collectionremark" aria-describedby=""
-                                                                               placeholder="Remark" ></div>
+                                                                               placeholder="Remark"></div>
                                         </div>
 
                                     </div>
@@ -748,7 +785,7 @@
 </div>
 
 </div>
-<div id="printDiv" style="width: 80mm;height: 297mm;padding: 2mm;">
+<div id="printDiv" style="width: 80mm;height: 80mm;padding: 2mm;font-size: 14px;margin-bottom: 10mm">
     <style>
         .wavy {
             text-decoration-line: underline;
@@ -775,13 +812,13 @@
         }
     </style>
     <p><span class="wavy"
-             style="width: 100% ;text-align: center;text-transform: uppercase;">{{ user.companyID.name }}</span><br>
-    <ul>
-        <li><span>Created By:</span><span id="p1" class="val">N/A</span></li>
-        <li><span>Amount (&#8377):</span><span id="p2" class="val">N/A</span></li>
-        <li><span>Bill No.:</span><span id="p3" class="val">N/A</span></li>
-        <li style="padding-bottom: 5mm"><span>Datetime:</span><span id="p4" class="val">N/A</span></li>
-    </ul>
+             style="font-size: 17px;width: 100% ;text-align: center;text-transform: uppercase;">{{ user.companyID.name }}</span><br>
+
+    <p style="font-size: 15px"> Created By: <span id="p1">N/A</span></p>
+    <p style="font-size: 15px"> Amount (&#8377): <span id="p2">N/A</span></p>
+    <p style="font-size: 15px"> Bill No.: <span id="p3">N/A</span></p>
+    <p style="font-size: 15px"> Datetime: <span id="p4">N/A</span></p>
+
     </p>
 </div>
 <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
@@ -855,7 +892,9 @@
             $('#CashTab').html(bill);
             $('#CreditTab').html('');
             $('#CardTab').html('');
+            $('#MixTab').html('');
             $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
         }
         if (t === 'credit') {
             $('#Card').css('display', 'none');
@@ -870,7 +909,9 @@
             $('#CashTab').html('');
             $('#CreditTab').html(bill);
             $('#CardTab').html('');
+            $('#MixTab').html('');
             $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
         }
         if (t === 'card') {
             $('#Card').css('display', '');
@@ -883,9 +924,11 @@
             $('#billType').val('Card');
             $('#collectionBtn').css('display', 'none');
             $('#CashTab').html('');
-            $('#CreditTab').html();
+            $('#CreditTab').html('');
             $('#CardTab').html(bill);
+            $('#MixTab').html('');
             $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
         }
         if (t === 'collection') {
             $('#Card').css('display', 'none');
@@ -902,6 +945,7 @@
             //getBuyerList();
             getCollectionDetails();
             $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
 
 
         }
@@ -920,6 +964,7 @@
             //getBuyerList();
             getCashCollectionDetails();
             $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
 
 
         }
@@ -935,6 +980,7 @@
             $('#collectionBtn').css('display', 'none');
             getReturnDetails();
             $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
 
 
         }
@@ -950,6 +996,7 @@
             $('#collectionBtn').css('display', 'none');
             getCommissionDetails();
             $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
 
 
         }
@@ -965,10 +1012,29 @@
             $('#collectionBtn').css('display', 'none');
             getCorrectionDetails();
             $('#Correction').css('display', '');
+            $('#Mix').css('display', 'none');
 
 
         }
+        if (t === 'mix') {
+            $('#Card').css('display', 'none');
+            $('#Commentary').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#Videos').css('display', 'none');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', 'none');
+            $('#CashCollection').css('display', 'none');
+            $('#billType').val('Mix');
+            $('#collectionBtn').css('display', 'none');
+            $('#CashTab').html('');
+            $('#CreditTab').html('');
+            $('#CardTab').html('');
+            $('#MixTab').html(bill);
+            $('#Correction').css('display', 'none');
+            $('#Mix').css('display', '');
 
+
+        }
     }
 
 
@@ -996,6 +1062,7 @@
             data.append('BillNumber', billNumber);
             data.append('CustomerName', 'N/A');
             data.append('Amount', amount);
+            data.append('CardAmount', '0');
             data.append('SeriesID', SeriesID);
             data.append('MainNumber', MainNumber);
             data.append('MainSeries', MainSeries);
@@ -1060,6 +1127,7 @@
             data.append('BillNumber', billNumber);
             data.append('CustomerName', 'N/A');
             data.append('Amount', amount);
+            data.append('CardAmount', '0');
             data.append('SeriesID', SeriesID);
             data.append('MainNumber', MainNumber);
             data.append('MainSeries', MainSeries);
@@ -1067,6 +1135,73 @@
             data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
             if (billNumber === "" || amount === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:create_invoice' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+                            $(getInvoiceDetails(id));
+                            getRecentThreeInvoices();
+                            $('#billNumber').val('');
+                            $('.collapse').collapse('hide');
+                            $('#p1').html(response.data['createdBy']);
+                            $('#p2').html(response.data['amount']);
+                            $('#p3').html(response.data['billNo']);
+                            $('#p4').html(response.data['datetime']);
+                            window.print();
+                        }
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html(response.message).fadeIn().fadeOut(2000);
+
+                        }
+
+                        $('#SearchForm')[0].reset();
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+
+            }
+        }
+
+         if (billType === 'Mix') {
+
+            var cashAmount = $('#mixCash').val();
+            var cardAmount = $('#mixCard').val();
+            var ChallanNumber = 'N/A';
+            data = new FormData();
+            data.append('SalesType', billType);
+            data.append('BillNumber', billNumber);
+            data.append('CustomerName', 'N/A');
+            data.append('Amount', cashAmount);
+            data.append('CardAmount', cardAmount);
+            data.append('SeriesID', SeriesID);
+            data.append('MainNumber', MainNumber);
+            data.append('MainSeries', MainSeries);
+            data.append('ChallanNumber', ChallanNumber);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (billNumber === "" || cashAmount === ""|| cardAmount === "") {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
@@ -1124,6 +1259,7 @@
             data.append('BillNumber', billNumber);
             data.append('CustomerName', name);
             data.append('Amount', amountCredit);
+            data.append('CardAmount', '0');
             data.append('SeriesID', SeriesID);
             data.append('MainNumber', MainNumber);
             data.append('MainSeries', MainSeries);
