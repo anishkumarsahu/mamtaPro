@@ -9,8 +9,7 @@
         {% comment %}body {
             -weasy-hyphens: auto;
         }{% endcomment %}
-
-       @page {
+        @page {
                 size: A5;
                 margin: .3cm;
             }
@@ -23,22 +22,23 @@
         .skip {
             columns: 7;
         }
-        table.table-bordered > thead > tr > th{
+                table.table-bordered > thead > tr > th{
   border:1px solid grey!important;
 }
             table.table-bordered > tbody > tr > td{
   border:1px solid grey!important;
 }
+
     </style>
 </head>
 <body>
 <div class="container">
     <div class="row">
         <span style="font-size: 10px;">Date: {{ date }}</span>
-       <span style="font-size: 9px;float: right">123DACN Sales Report -({{user.companyID.name }})</span></div>
+       <span style="font-size: 9px;float: right">123DACN Sales Report-({{ company }})</span></div>
     </div>
 <p style="font-size: 10px; margin: 2px;">Cash</p>
-    <section id="Cash">
+    <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
@@ -62,14 +62,15 @@
             </tbody>
         </table>
     </section>
+
 <p style="font-size: 10px; margin: 2px;">Card</p>
-    <section id="Card">
+    <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Bill_No.</th>
                 <th scope="col">Amount(₹)</th>
-                <th scope="col">Remark</th>
+                <th scope="col">Remark(₹)</th>
 
             </tr>
             </thead>
@@ -90,8 +91,9 @@
         </table>
     </section>
 
-<p style="font-size: 10px; margin: 2px;">Credit</p>
-    <section id="Credit">
+<p style="font-size: 10px; margin: 2px;">Credit </p>
+<section>
+        <section id="Credit">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
@@ -118,6 +120,7 @@
 
             </tbody>
         </table>
+    </section>
     </section>
 
 <p style="font-size: 10px; margin: 2px;">Mix</p>
@@ -148,8 +151,7 @@
             </tbody>
         </table>
     </section>
-
-<p style="font-size: 10px; margin: 2px;">Returns </p>
+<p style="font-size: 10px; margin: 2px;">Returns</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -175,7 +177,7 @@
         </table>
     </section>
 
-<p style="font-size: 10px; margin: 2px;">Corrections </p>
+<p style="font-size: 10px; margin: 2px;">Corrections</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -201,7 +203,8 @@
         </table>
     </section>
 
-<p style="font-size: 10px; margin: 2px;">Commission </p>
+
+<p style="font-size: 10px; margin: 2px;">Commission</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -228,7 +231,7 @@
     </section>
 
 
-<p style="font-size: 10px; margin: 2px;">Expenses</p>
+<p style="font-size: 10px; margin: 2px;">Expenses </p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -253,6 +256,7 @@
             </tbody>
         </table>
     </section>
+
 <p style="font-size: 10px; margin: 2px;">Skipped Invoice Number </p>
     <section class="skip">
         <table class="table table-bordered" style="font-size: 9px;">
@@ -280,6 +284,7 @@
             </tbody>
         </table>
     </section>
+
 
 </div>
 

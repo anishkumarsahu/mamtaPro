@@ -42,6 +42,7 @@ class Sales(models.Model):
     isCash = models.BooleanField(default=True)
     customerName = models.CharField(max_length=200, blank=True, null=True)
     challanNumber = models.CharField(max_length=200,default='N/A')
+    remark = models.CharField(max_length=300, default='N/A')
     isDeleted = models.BooleanField(default=False)
     datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -104,3 +105,16 @@ class CorrectCollection(models.Model):
 
     def __str__(self):
         return str(self.actualBillNumber)
+
+
+class Expense(models.Model):
+    remark = models.CharField(max_length=300, blank=True, null=True)
+    createdBy = models.ForeignKey(StaffUser, blank=True, null=True)
+    amount = models.FloatField(default=0.0)
+    companyID = models.ForeignKey(Company, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __str__(self):
+        return str(self.remark)

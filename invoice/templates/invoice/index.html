@@ -196,7 +196,7 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="10">
 
-                    <div class="col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 20px">
+                    <div class="col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 20px;padding-left: 0;padding-right: 0">
 
 
                         <ul id="myTabs" class="nav nav-pills nav-justified" role="tablist" data-tabs="tabs">
@@ -231,6 +231,9 @@
                             </li>
                             <li style="background-color: #e6eaff;" onclick="changeTab('mix')"><a
                                     href="#Mix" data-toggle="tab">Mix</a>
+                            </li>
+                            <li style="background-color: #e6eaff;" onclick="changeTab('expense')"><a
+                                    href="#Expense" data-toggle="tab">Expense</a>
                             </li>
 
                         </ul>
@@ -305,7 +308,7 @@
 
                                 <div role="tabpanel" class="tab-pane fade" id="Card" style="display:none;">
                                     <div class="row">
-                                        <div class="col-sm-6 col-xs-6" id="CardTab">
+                                        <div class="col-sm-4 col-xs-4" id="CardTab">
                                             <div class="form-group"><br>
 
                                                 <div>
@@ -322,10 +325,17 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6 col-xs-6">
+                                        <div class="col-sm-4 col-xs-4">
                                             <div class="form-group"><br>
                                                 <input type="number" class="form-control" id="cardd" aria-describedby=""
                                                        placeholder="Rs.">
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-xs-4">
+                                            <div class="form-group"><br>
+                                                <input type="text" class="form-control" id="cardRemark" aria-describedby=""
+                                                       placeholder="Remark">
 
                                             </div>
                                         </div>
@@ -338,14 +348,6 @@
 
                                         </div>
                                         <div class="col-sm-4 col-xs-4">
-                                            {% comment %} <div class="form-group"><br>
-                                                <input type="text" class="form-control" id="name" aria-describedby=""
-                                                       onkeypress="return checkCustomer(event)"
-                                                       placeholder="Customer Name"
-                                                       autocomplete="off">
-
-                                            </div>{% endcomment %}
-
 
                                             <div class="form-group"><br><select id="name"
                                                                                 class="selectpicker loadBuyer"
@@ -518,6 +520,28 @@
                                         </div>
                                     </div>
                                 </div>
+                             <div role="tabpanel" class="tab-pane fade" id="Expense" style="display:none;">
+                                    <div class="row">
+
+                                        <div class="col-sm-6">
+                                            <div class="form-group"><br>
+                                                <input type="text" class="form-control" id="exRemark"
+                                                       aria-describedby=""
+                                                       placeholder="Expense Remark">
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-6 col-xs-6">
+                                            <div class="form-group"><br>
+                                                <input type="number" class="form-control" id="exAmount"
+                                                       aria-describedby=""
+                                                       placeholder="(Rs.) Amount" value="0">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                                 <div style="text-align: center;">
                                     <button style="padding-right: 30px;padding-left: 30px;display: none;" type="button"
@@ -582,7 +606,6 @@
                          </span>
                                     </div>
                                 </div>
-
                                 <div style="padding-top: 10px">
                                     <label style="color: #0178fc">Today's Returns</label> <br>
                                     <div style="width: 100%;overflow-x: scroll;height: 45px;overflow-y: hidden">
@@ -629,6 +652,24 @@
 
                         </div>
                     </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="col-sm-6">
+
+                        </div>
+                        <div class="col-sm-6">
+                            <label style="color: #0178fc"> Today's Expense</label>
+                            <div style="padding-top: 5px;overflow-x: scroll;">
+
+                                <div style="width: 100%;height: 30px;">
+                    <span id="todayExpense">
+
+                     </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
 
 
                 </div>
@@ -817,6 +858,7 @@
     <p style="font-size: 15px"> Created By: <span id="p1">N/A</span></p>
     <p style="font-size: 15px"> Amount (&#8377): <span id="p2">N/A</span></p>
     <p style="font-size: 15px"> Bill No.: <span id="p3">N/A</span></p>
+    <p style="font-size: 15px"> Mode: <span id="p5">N/A</span></p>
     <p style="font-size: 15px"> Datetime: <span id="p4">N/A</span></p>
 
     </p>
@@ -895,6 +937,7 @@
             $('#MixTab').html('');
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
         }
         if (t === 'credit') {
             $('#Card').css('display', 'none');
@@ -912,6 +955,7 @@
             $('#MixTab').html('');
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
         }
         if (t === 'card') {
             $('#Card').css('display', '');
@@ -929,6 +973,7 @@
             $('#MixTab').html('');
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
         }
         if (t === 'collection') {
             $('#Card').css('display', 'none');
@@ -946,6 +991,7 @@
             getCollectionDetails();
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
 
 
         }
@@ -965,6 +1011,7 @@
             getCashCollectionDetails();
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
 
 
         }
@@ -981,6 +1028,7 @@
             getReturnDetails();
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
 
 
         }
@@ -997,6 +1045,7 @@
             getCommissionDetails();
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
 
 
         }
@@ -1013,6 +1062,7 @@
             getCorrectionDetails();
             $('#Correction').css('display', '');
             $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
 
 
         }
@@ -1032,6 +1082,27 @@
             $('#MixTab').html(bill);
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', '');
+            $('#Expense').css('display', 'none');
+
+
+        }
+         if (t === 'expense') {
+            $('#Card').css('display', 'none');
+            $('#Commentary').css('display', 'none');
+            $('#Videos').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#CashCollection').css('display', 'none');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', 'none');
+            $('#billType').val('expense');
+            $('#collectionBtn').css('display', 'none');
+            //$('#collection1').html('');
+            //$('#collection2').html(collect);
+            //getBuyerList();
+            getExpenseDetails();
+            $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
+            $('#Expense').css('display', '');
 
 
         }
@@ -1045,14 +1116,15 @@
     });
 
     function postSales() {
-
-
         var billType = $('#billType').val();
+         var csrfmiddlewaretoken = $("input[name='csrfmiddlewaretoken']").val();
+        if(billType !== 'expense'){
+
         var SeriesID = $('#SeriesID').val();
         var MainNumber = $('#MainNumber').val();
         var MainSeries = $('#MainSeries').val();
         var billNumber = $('#billNumber').val();
-        var csrfmiddlewaretoken = $("input[name='csrfmiddlewaretoken']").val();
+
         if (billType === 'Cash') {
 
             var amount = $('#cash').val();
@@ -1099,6 +1171,7 @@
                             $('#p2').html(response.data['amount']);
                             $('#p3').html(response.data['billNo']);
                             $('#p4').html(response.data['datetime']);
+                            $('#p5').html(response.data['ModeOfPayment']);
                             window.print();
                         }
                         else {
@@ -1121,12 +1194,14 @@
         if (billType === 'Card') {
 
             var amount = $('#cardd').val();
+            var remark = $('#cardRemark').val();
             var ChallanNumber = 'N/A';
             data = new FormData();
             data.append('SalesType', billType);
             data.append('BillNumber', billNumber);
             data.append('CustomerName', 'N/A');
             data.append('Amount', amount);
+            data.append('Remark', remark);
             data.append('CardAmount', '0');
             data.append('SeriesID', SeriesID);
             data.append('MainNumber', MainNumber);
@@ -1164,6 +1239,7 @@
                             $('#p2').html(response.data['amount']);
                             $('#p3').html(response.data['billNo']);
                             $('#p4').html(response.data['datetime']);
+                            $('#p5').html(response.data['ModeOfPayment']);
                             window.print();
                         }
                         else {
@@ -1231,6 +1307,7 @@
                             $('#p2').html(response.data['amount']);
                             $('#p3').html(response.data['billNo']);
                             $('#p4').html(response.data['datetime']);
+                            $('#p5').html(response.data['ModeOfPayment']);
                             window.print();
                         }
                         else {
@@ -1528,6 +1605,12 @@
                             $('#name_status').addClass('validate_data');
                             $('#name_status').html('New Correction Added.').fadeIn().fadeOut(2000);
                             $('#SalesForm')[0].reset();
+                            $('#p1').html(response.data['createdBy']);
+                            $('#p2').html(response.data['amount']);
+                            $('#p3').html(response.data['billNo']);
+                            $('#p4').html(response.data['datetime']);
+                            $('#p5').html(response.data['ModeOfPayment']);
+                            window.print();
 
 
                         }
@@ -1545,6 +1628,58 @@
 
             }
         }
+        }
+
+       else{
+           if (billType === 'expense') {
+            var exRemark = $('#exRemark').val();
+            var exAmount = $('#exAmount').val();
+            data = new FormData();
+            data.append('exRemark', exRemark);
+            data.append('exAmount', exAmount);
+            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+            if (exRemark === "" || exAmount === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:add_expense' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('New Expense Added.').fadeIn().fadeOut(2000);
+                            $('#SalesForm')[0].reset();
+
+
+                        }
+                       getExpenseDetails();
+                        $('#SearchForm')[0].reset();
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+
+
+                });
+
+
+            }
+        }
+        }
+
+
         $("#partyName1").val('');
         $("#partyName1").selectpicker("refresh");
         $("#partyName").val('');
@@ -1923,6 +2058,28 @@
                     todayCommission = '<span class="label label-warning invoiceStyle" ><strong>' + response.data[i].InvoiceNumber + ' - ₹ ' + response.data[i].Amount + '  </strong></span>';
 
                     $('#todayCommission').append(todayCommission)
+                }
+
+            },
+            error: function () {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+            }
+        });
+
+    }
+    function getExpenseDetails() {
+        $('#todayExpense').html('');
+
+
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_today_expense_by_company' %}",
+            success: function (response) {
+                for (i in response.data) {
+                    todayExpense = '<span class="label label-warning invoiceStyle" ><strong>' + response.data[i].Remark + ' - ₹ ' + response.data[i].Amount + '  </strong></span>';
+
+                    $('#todayExpense').append(todayExpense)
                 }
 
             },

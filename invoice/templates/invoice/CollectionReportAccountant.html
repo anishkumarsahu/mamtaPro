@@ -78,7 +78,7 @@
                     </div>
                 </div>
             <div class="col-md-2 col-sm-4 col-xs-4" style="margin-top: 26px;text-align: center!important;">
-                                <a id="reportUrl" href="{% url 'invoiceApp:generate_net_report_admin' %}"
+                                <a id="reportUrl" href="{% url 'invoiceApp:generate_net_report_accountant' %}"
                                    style="background-color: #24b53c;color: white;" type="button" class="btn  waves-effect "
                                 >Daily Report
                                 </a>
@@ -520,7 +520,7 @@
         function ChangeCompany() {
             var comp = $('#companyID').val();
             var gDate = $('#gDate').val();
-            $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+            $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_accountant' %}?companyID=" + comp + '&gDate=' + gDate);
 
             $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
 

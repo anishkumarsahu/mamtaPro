@@ -702,6 +702,70 @@ class CommissionListJson(BaseDatatableView):
 
 
 
+class ExpenseListJson(BaseDatatableView):
+    order_columns = ['id', 'remark', 'amount', 'companyID', 'createdBy', 'datetime', 'action']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        if staff == 'all':
+            return Expense.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1))
+        else:
+            return Expense.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
+                                             createdBy_id=int(staff))
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(remark__icontains=search) | Q(amount__icontains=search) | Q(datetime__icontains=search) | Q(
+                    createdBy__name__icontains=search))
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
+                action = '''<span>N/A</span>'''.format(item.pk)
+            else:
+                action = '''<span> <a onclick="getDetailExpense('{}','{}','{}')" data-toggle="modal"
+                               data-target="#defaultModalExpenseEdit"><button style="background-color: #3F51B5;color: white;" type="button"
+                               class="btn  waves-effect " data-toggle="modal"
+                               data-target="#largeModalEdit">
+                           <i class="material-icons">border_color</i></button> </a>
+
+
+
+                       <button onclick="deleteExpense('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect hideModerator " data-toggle="modal"
+                               data-target="#defaultModalDeleteExpense">
+                           <i class="material-icons">delete</i></button></span>'''.format(item.pk,
+                                                                                          item.remark,
+                                                                                          item.amount, item.pk)
+            if item.createdBy is None:
+                createdBy = 'Admin'
+            else:
+                createdBy = item.createdBy.name
+            json_data.append([
+                escape(i),
+                escape(item.remark),  # escape HTML for security reasons
+                str(item.amount),  # escape HTML for security reasons
+                escape(item.companyID.name),  # escape HTML for security reasons
+                createdBy,  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                action,
+
+            ])
+            i = i + 1
+        return json_data
+
+
 def index(request):
 
 
@@ -835,7 +899,10 @@ def create_invoice(request):
         MainNumber = request.POST.get('MainNumber')
         MainSeries = request.POST.get('MainSeries')
         ChallanNumber = request.POST.get('ChallanNumber')
-
+        try:
+            Remark = request.POST.get('Remark')
+        except:
+            Remark =''
         try:
             saleExist = Sales.objects.filter(billNumber__exact=BillNumber, InvoiceSeriesID_id=int(SeriesID))
 
@@ -852,6 +919,7 @@ def create_invoice(request):
                     sale.isCash = True
                 if SalesType == 'Card':
                     sale.isCash = False
+                    sale.remark = Remark
                 if SalesType == 'Credit':
                     sale.isCash = False
                     sale.challanNumber = ChallanNumber
@@ -872,7 +940,8 @@ def create_invoice(request):
                     'createdBy': by,
                     'billNo': sale.billNumber,
                     'amount': sale.amount + sale.mixCardAmount,
-                    'datetime': sale.datetime.strftime('%d-%m-%Y %I:%M %p')
+                    'datetime': sale.datetime.strftime('%d-%m-%Y %I:%M %p'),
+                    'ModeOfPayment':sale.salesType
                 }
 
                 return JsonResponse({'message': 'success', 'data': data})
@@ -1222,6 +1291,8 @@ def generate_net_report(request):
 
     commissions = Commission.objects.filter(datetime__icontains=datetime.today().date(),
                                             companyID_id=user.companyID_id).order_by('datetime')
+    expenses = Expense.objects.filter(datetime__icontains=datetime.today().date(),
+                                            companyID_id=user.companyID_id).order_by('datetime')
 
     context = {
         'sales_cash': sales_cash,
@@ -1234,7 +1305,7 @@ def generate_net_report(request):
         'returns': returns,
         'commissions': commissions,
         'corrections': corrections,
-
+        'expenses':expenses
     }
 
     response = HttpResponse(content_type="application/pdf")
@@ -1318,6 +1389,13 @@ def generate_net_report_admin(request):
     commission_total = 0.0
     for c in commissions:
         commission_total = commission_total + c.amount
+
+    expenses = Expense.objects.filter(datetime__icontains=day_string,
+                                            companyID_id=int(companyID)).order_by('datetime')
+
+    expense_total = 0.0
+    for e in expenses:
+        expense_total = expense_total + e.amount
     context = {
         'sales_cash': sales_cash,
         'sales_card': sales_card,
@@ -1337,6 +1415,8 @@ def generate_net_report_admin(request):
         'mix_cash_total': mix_cash_total,
         'mix_card_total': mix_card_total,
         'mix_total': mix_cash_total + mix_card_total,
+        'expense_total':expense_total,
+        'expenses':expenses
 
     }
 
@@ -1347,6 +1427,81 @@ def generate_net_report_admin(request):
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
     return response
 
+
+def generate_net_report_accountant(request):
+    companyID = request.GET.get('companyID')
+    gDate = request.GET.get('gDate')
+    date1 = datetime.strptime(gDate, '%d/%m/%Y')
+    # date2 = datetime.strptime(endDate, '%d/%m/%Y')
+    day_string = date1.strftime('%Y-%m-%d')
+    date = datetime.today().date()
+    sales_cash = Sales.objects.filter(datetime__icontains=day_string,
+                                      salesType__icontains='cash',
+                                      InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+    sales_card = Sales.objects.filter(datetime__icontains=day_string,
+                                      salesType__icontains='card',
+                                      InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+    sales_credit = Sales.objects.filter(datetime__icontains=day_string,
+                                        salesType__icontains='credit',
+                                        InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+    sales_mix = Sales.objects.filter(datetime__icontains=day_string,
+                                        salesType__icontains='Mix',
+                                        InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+
+
+    company = Company.objects.get(pk=int(companyID))
+    invoiceByUser = InvoiceSeries.objects.filter(companyID_id=company.pk, isCompleted__exact=False, isDeleted__exact=False)
+
+    skipped_list = []
+    for invoice in invoiceByUser:
+        try:
+            last_sale = Sales.objects.filter(InvoiceSeriesID_id=invoice.pk).order_by('-numberMain').first()
+
+            for i in InvoiceSerial.objects.filter(numberMain__gte=int(invoice.startsWith),
+                                                  numberMain__lt=int(last_sale.numberMain)
+                                                  ).order_by('-numberMain')[0:200]:
+                try:
+                    sale = Sales.objects.get(numberMain__exact=i.numberMain, InvoiceSeriesID_id=invoice.pk)
+                except:
+                    skipped_list.append(str(invoice.series) + str(i.number))
+        except:
+            pass
+    returns = ReturnCollection.objects.filter(datetime__icontains=day_string,
+                                              companyID_id=int(companyID)).order_by('datetime')
+
+
+    corrections = CorrectCollection.objects.filter(datetime__icontains=day_string,
+                                              companyID_id=int(companyID)).order_by('datetime')
+
+
+    commissions = Commission.objects.filter(datetime__icontains=day_string,
+                                            companyID_id=int(companyID)).order_by('datetime')
+
+
+    expenses = Expense.objects.filter(datetime__icontains=day_string,
+                                            companyID_id=int(companyID)).order_by('datetime')
+
+    context = {
+        'sales_cash': sales_cash,
+        'sales_card': sales_card,
+        'sales_credit': sales_credit,
+        'sales_mix': sales_mix,
+        'date': gDate,
+        'company': company.name,
+        'skipped': skipped_list,
+        'returns': returns,
+        'corrections': corrections,
+        'commissions': commissions,
+        'expenses':expenses
+
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "report.pdf"
+    html = render_to_string("invoice/invoicePDFAccountant.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
+    return response
 
 def generate_monthly_report_admin(request):
     companyID = request.GET.get('companyID')
@@ -1877,8 +2032,20 @@ def correct_collection(request):
 
                 re.companyID_id = c.companyID_id
             re.save()
-            return JsonResponse({'message': 'success'})
+            try:
+                by = re.createdBy.name
+            except:
+                by = 'Admin'
 
+            data = {
+                'createdBy': by,
+                'billNo': re.actualBillNumber,
+                'amount': re.amount,
+                'datetime': re.datetime.strftime('%d-%m-%Y %I:%M %p'),
+                'ModeOfPayment': "Correction"
+            }
+
+            return JsonResponse({'message': 'success', 'data': data})
         except:
             return JsonResponse({'message': 'fail'})
 
@@ -2092,3 +2259,88 @@ def delete_commission_api(request):
             messages.success(request, 'Error. Please try again.')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+# Expense
+
+
+def add_expense(request):
+    if request.method == 'POST':
+
+        exAmount = request.POST.get('exAmount')
+        exRemark = request.POST.get('exRemark')
+
+        try:
+            ex = Expense()
+            ex.remark = exRemark
+            ex.amount = float(exAmount)
+            try:
+                user = StaffUser.objects.get(userID_id=request.user.pk)
+                ex.createdBy_id = user.pk
+                ex.companyID_id = user.companyID_id
+            except:
+                ex.companyID_id = 1
+            ex.save()
+
+
+            return JsonResponse({'message': 'success',})
+        except:
+            return JsonResponse({'message': 'fail'})
+
+
+def get_today_expense_by_company(request):
+    if 'Both' in request.user.groups.values_list('name', flat=True):
+        col = Expense.objects.filter(datetime__icontains=datetime.today().date()
+                                        ).order_by('-datetime')
+
+    else:
+        user = StaffUser.objects.get(userID_id=request.user.pk)
+        col = Expense.objects.filter(datetime__icontains=datetime.today().date(),
+                                    companyID_id=user.companyID_id).order_by('-datetime')
+    c_list = []
+    for c in col:
+        data = {
+            'Remark': c.remark,
+            'Amount': c.amount,
+            'ID': c.pk,
+
+        }
+
+        c_list.append(data)
+
+    return JsonResponse({'message': 'success', 'data': c_list})
+
+
+def edit_expense(request):
+    if request.method == 'POST':
+
+        ColID = request.POST.get('ExpenseID')
+        Amount = request.POST.get('amountEExpense')
+        remark = request.POST.get('remarkEExpense')
+        try:
+            ret = Expense.objects.get(pk=int(ColID))
+            ret.amount = float(Amount)
+            ret.remark = remark
+
+            ret.save()
+
+            messages.success(request, 'Expense updated successfully.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error, Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@check_group('Both')
+def delete_expense_api(request):
+    if request.method == 'POST':
+        try:
+            returnDelID = request.POST.get('expenseDelID')
+            col = Expense.objects.get(pk=int(returnDelID))
+            col.delete()
+            messages.success(request, 'Expense detail deleted successfully.')
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

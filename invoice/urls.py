@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^ReturnCollectionListJson/$', ReturnCollectionListJson.as_view(), name='ReturnCollectionListJson'),
     url(r'^CorrectCollectionListJson/$', CorrectCollectionListJson.as_view(), name='CorrectCollectionListJson'),
     url(r'^CommissionListJson/$', CommissionListJson.as_view(), name='CommissionListJson'),
+    url(r'^ExpenseListJson/$', ExpenseListJson.as_view(), name='ExpenseListJson'),
 
     url(r'^$', index, name='index'),
     url(r'^get_invoice_series/$', get_invoice_series, name='get_invoice_series'),
@@ -36,6 +37,7 @@ urlpatterns = [
     url(r'^invoice_report/$', invoice_report, name='invoice_report'),
     url(r'^generate_net_report/$', generate_net_report, name='generate_net_report'),
     url(r'^generate_net_report_admin/$', generate_net_report_admin, name='generate_net_report_admin'),
+    url(r'^generate_net_report_accountant/$', generate_net_report_accountant, name='generate_net_report_accountant'),
     url(r'^generate_monthly_report_admin/$', generate_monthly_report_admin, name='generate_monthly_report_admin'),
 
 
@@ -75,4 +77,9 @@ urlpatterns = [
     url(r'^edit_correction/$', edit_correction, name='edit_correction'),
     url(r'^delete_correction_api/$', delete_correction_api, name='delete_correction_api'),
 
+    #expense
+    url(r'^add_expense/$', add_expense, name='add_expense'),
+    url(r'^get_today_expense_by_company/$', get_today_expense_by_company, name='get_today_expense_by_company'),
+    url(r'^edit_expense/$', edit_expense, name='edit_expense'),
+    url(r'^delete_expense_api/$', delete_expense_api, name='delete_expense_api'),
 ]
