@@ -593,10 +593,11 @@ class SupplierCollectionListCashJson(BaseDatatableView):
         staff = self.request.GET.get('staff')
         startDate = datetime.strptime(sDate, '%d/%m/%Y')
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        user = StaffUser.objects.get(userID_id=self.request.user.pk)
         if staff == 'all':
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash')
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash', collectedBy__companyID_id=user.companyID_id)
         else:
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash',
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash', collectedBy__companyID_id=user.companyID_id,
                                                   collectedBy=int(staff))
 
     def filter_queryset(self, qs):
@@ -637,6 +638,62 @@ class SupplierCollectionListCashJson(BaseDatatableView):
 
 
 
+class SupplierCollectionAdminListCashJson(BaseDatatableView):
+    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name','approvedBy', 'remark', 'datetime','action']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        if staff == 'all':
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash')
+        else:
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash',
+                                                  collectedBy=int(staff))
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                    collectedBy__name__icontains=search)| Q(
+                    buyerID__name__icontains=search)).order_by(
+                '-id')
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            if item.isApproved == False:
+                button = '''
+                 <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
+                           data-target="#defaultModal" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
+            else:
+                button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
+
+            json_data.append([
+                escape(i),
+                escape(item.buyerID.name),
+                escape(item.amount),  # escape HTML for security reasons
+                escape(item.collectedBy.name),  # escape HTML for security reasons
+                escape(item.approvedBy),  # escape HTML for security reasons
+                escape(item.remark),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                button
+
+            ])
+            i = i + 1
+        return json_data
+
+
+
+
 class SupplierCollectionListChequeJson(BaseDatatableView):
     order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'remark', 'datetime','action']
 
@@ -647,6 +704,63 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
         staff = self.request.GET.get('staff')
         startDate = datetime.strptime(sDate, '%d/%m/%Y')
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
+
+        user = StaffUser.objects.get(userID_id=self.request.user.pk)
+        if staff == 'all':
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', collectedBy__companyID_id=user.companyID_id)
+        else:
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque',
+                                                  collectedBy=int(staff), collectedBy__companyID_id=user.companyID_id)
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                    collectedBy__name__icontains=search)| Q(
+                    buyerID__name__icontains=search)).order_by(
+                '-id')
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            if item.isApproved == False:
+                button = '''
+                <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
+                           data-target="#defaultModal" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
+            else:
+                button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
+
+            json_data.append([
+                escape(i),
+                escape(item.buyerID.name),
+                escape(item.amount),  # escape HTML for security reasons
+                escape(item.collectedBy.name),  # escape HTML for security reasons
+                escape(item.remark),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                button
+
+            ])
+            i = i + 1
+        return json_data
+
+
+
+class SupplierCollectionAdminListChequeJson(BaseDatatableView):
+    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'approvedBy', 'remark', 'datetime','action']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+
         if staff == 'all':
             return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque')
         else:
@@ -681,6 +795,7 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
                 escape(item.buyerID.name),
                 escape(item.amount),  # escape HTML for security reasons
                 escape(item.collectedBy.name),  # escape HTML for security reasons
+                escape(item.approvedBy),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
                 button
@@ -865,6 +980,18 @@ def add_staff_user_api(request):
                     h.save()
                     h.user_set.add(new_user.pk)
                     h.save()
+            elif staffType =='5':
+                try:
+                    h = Group.objects.get(name='Cashier')
+                    h.user_set.add(new_user.pk)
+                    h.save()
+
+                except:
+                    h = Group()
+                    h.name = "Cashier"
+                    h.save()
+                    h.user_set.add(new_user.pk)
+                    h.save()
             else:
                 try:
                     g = Group.objects.get(name='Staff')
@@ -956,6 +1083,13 @@ def edit_staff_user_api(request):
                 new_user.groups.clear()
                 new_user.save()
                 h = Group.objects.get(name='Supply')
+                h.user_set.add(new_user.pk)
+                h.save()
+            elif staffType == '5':
+                new_user = User.objects.get(pk=staff.userID_id)
+                new_user.groups.clear()
+                new_user.save()
+                h = Group.objects.get(name='Cashier')
                 h.user_set.add(new_user.pk)
                 h.save()
             else :
@@ -1254,6 +1388,8 @@ def loginApp(request):
                 return redirect('/attendance/attendance/')
             if 'Supply' in request.user.groups.values_list('name', flat=True):
                 return redirect('/supplyHome/')
+            if 'Cashier' in request.user.groups.values_list('name', flat=True):
+                return redirect('/cashierHome/')
 
         else:
             messages.success(request, "Wrong Credential! Please try again.")
@@ -1384,6 +1520,22 @@ def supply_home(request):
 
     return render(request, 'mamtaApp/supply/supplyIndex.html', context)
 
+
+@check_group('Cashier')
+def cashier_home(request):
+    request.session['nav'] = '9'
+
+    user = StaffUser.objects.get(userID_id=request.user.pk)
+    users = StaffUser.objects.filter(isDeleted__exact=False, companyID_id=user.companyID_id).order_by('name')
+    date = datetime.today().now().strftime('%d/%m/%Y')
+    context = {
+        'users': users,
+        'date': date,
+        'user': user
+    }
+
+    return render(request, 'mamtaApp/cashier/cashierIndex.html', context)
+
 @csrf_exempt
 def take_collection_supplier_api(request):
     if request.method == 'POST':
@@ -1432,7 +1584,8 @@ def approve_collection_supplier_api(request):
         try:
             collection = SupplierCollection.objects.get(pk = int(collectionID))
             collection.isApproved = True
-
+            user = StaffUser.objects.get(userID_id=request.user.pk)
+            collection.approvedBy = user.name
             collection.save()
             buy = Buyer.objects.get(pk=int(collection.buyerID.pk))
             buy.closingBalance = buy.closingBalance - float(collection.amount)

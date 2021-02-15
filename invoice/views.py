@@ -1915,11 +1915,16 @@ def generate_collection_report_admin(request):
         col_total_cash = col_total_cash + cash.amount
 
     supCash = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
-                                                 isApproved__exact=True).order_by('datetime')
+                                                 isApproved__exact=True, paymentMode ='Cash' ).order_by('datetime')
     sup_total_cash = 0.0
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
+    supCheque = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                isApproved__exact=True, paymentMode='Cheque').order_by('datetime')
+    sup_total_cheque = 0.0
+    for cheque in supCheque:
+        sup_total_cheque = sup_total_cheque + cheque.amount
     context = {
         'date': gDate,
         'company': company.name,
@@ -1929,12 +1934,47 @@ def generate_collection_report_admin(request):
         'col_total_cash': col_total_cash,
         'supCash': supCash,
         'sup_total_cash': sup_total_cash,
+        'supCheque': supCheque,
+        'sup_total_cheque': sup_total_cheque,
 
     }
 
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = "report.pdf"
     html = render_to_string("invoice/CollectionPDFAdmin.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
+    return response
+
+
+
+def generate_collection_report_supplier(request):
+    user = StaffUser.objects.get(userID_id = request.user.pk)
+
+    supCash = SupplierCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=request.user.pk,
+                                                  paymentMode ='Cash' ).order_by('datetime')
+    sup_total_cash = 0.0
+    for cash in supCash:
+        sup_total_cash = sup_total_cash + cash.amount
+
+    supCheque = SupplierCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=request.user.pk,
+                                                 paymentMode='Cheque').order_by('datetime')
+    sup_total_cheque = 0.0
+    for cheque in supCheque:
+        sup_total_cheque = sup_total_cheque + cheque.amount
+    context = {
+        'date': datetime.today().date(),
+        'company': user.name,
+        'supCash': supCash,
+        'sup_total_cash': sup_total_cash,
+        'supCheque': supCheque,
+        'sup_total_cheque': sup_total_cheque,
+
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "report.pdf"
+    html = render_to_string("invoice/CollectionPDFSupplier.html", context)
 
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
     return response

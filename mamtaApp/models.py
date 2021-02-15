@@ -121,6 +121,7 @@ class SupplierCollection(models.Model):
     datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
     isApproved = models.BooleanField(default=False)
+    approvedBy = models.CharField(max_length=100, blank=True, null=True, default='N/A')
 
 
 class LoginAndLogoutStatus(models.Model):

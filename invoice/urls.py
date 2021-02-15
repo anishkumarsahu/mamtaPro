@@ -54,6 +54,7 @@ urlpatterns = [
     url(r'^change_password_for_sales_user/$', change_password_for_sales_user, name='change_password_for_sales_user'),
     url(r'^get_last_three_invoices/$', get_last_three_invoices, name='get_last_three_invoices'),
     url(r'^generate_collection_report_admin/$', generate_collection_report_admin, name='generate_collection_report_admin'),
+    url(r'^generate_collection_report_supplier/$', generate_collection_report_supplier, name='generate_collection_report_supplier'),
     url(r'^generate_collection_report/$', generate_collection_report, name='generate_collection_report'),
 
     # Accountant

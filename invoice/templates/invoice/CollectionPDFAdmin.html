@@ -95,7 +95,7 @@
 
 
 
-<p style="font-size: 10px; margin: 2px;">Supply Collection<span style="float: right">Total: ₹ <strong>{{ sup_total_cash }}</strong></span></p>
+<p style="font-size: 10px; margin: 2px;">Supply Collection (Cash)<span style="float: right">Total: ₹ <strong>{{ sup_total_cash }}</strong></span></p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -114,7 +114,7 @@
                 <tr>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
-                    <td></td>
+                    <td>{{ foo.remark }}</td>
 
                 </tr>
             {% endfor %}
@@ -122,6 +122,36 @@
             </tbody>
         </table>
     </section>
+
+
+<p style="font-size: 10px; margin: 2px;">Supply Collection (CC)<span style="float: right">Total: ₹ <strong>{{ sup_total_cheque }}</strong></span></p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in supCheque %}
+
+
+
+                <tr>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.remark }}</td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
 
 
 

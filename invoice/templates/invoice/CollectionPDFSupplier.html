@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <style>
+        {% comment %}body {
+            -weasy-hyphens: auto;
+        }{% endcomment %}
+        @page {
+                size: A5;
+                margin: .3cm;
+            }
+        section {
+            columns: 2;
+        }
+        .skip {
+            columns: 7;
+        }
+
+
+         table.table-bordered > thead > tr > th{
+  border:1px solid grey!important;
+}
+            table.table-bordered > tbody > tr > td{
+  border:1px solid grey!important;
+
+}
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <span style="font-size: 10px;">Date: {{ date }}</span>
+       <span style="font-size: 9px;float: right">123DACN Collection Report-({{ company }})</span></div>
+    </div>
+
+
+<p style="font-size: 10px; margin: 2px;">Supply Collection (Cash)</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in supCash %}
+                <tr >
+                    <td ><span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.amount }}</span></td>
+                    <td><span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.buyerID.name|truncatechars:20 }}</span></td>
+                    <td>
+                        <span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.remark }}</span>
+                    </td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
+
+<p style="font-size: 10px; margin: 2px;">Supply Collection (CC)</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in supCheque %}
+
+
+
+                <tr>
+                         <td ><span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.amount }}</span></td>
+                    <td><span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.buyerID.name|truncatechars:20 }}</span></td>
+                    <td>
+                        <span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.remark }}</span>
+                    </td>
+
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
+
+
+
+</div>
+
+
+</body>
+</html>

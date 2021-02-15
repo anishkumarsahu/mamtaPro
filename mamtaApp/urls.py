@@ -18,7 +18,9 @@ urlpatterns = [
     url(r'^StaffListJson/$', StaffListJson.as_view(), name='StaffListJson'),
     url(r'^SupplierCollectionListJson/$', SupplierCollectionListJson.as_view(), name='SupplierCollectionListJson'),
     url(r'^SupplierCollectionListCashJson/$', SupplierCollectionListCashJson.as_view(), name='SupplierCollectionListCashJson'),
+    url(r'^SupplierCollectionAdminListCashJson/$', SupplierCollectionAdminListCashJson.as_view(), name='SupplierCollectionAdminListCashJson'),
     url(r'^SupplierCollectionListChequeJson/$', SupplierCollectionListChequeJson.as_view(), name='SupplierCollectionListChequeJson'),
+    url(r'^SupplierCollectionAdminListChequeJson/$', SupplierCollectionAdminListChequeJson.as_view(), name='SupplierCollectionAdminListChequeJson'),
 
     url(r'^$', home, name='home'),
     # staff
@@ -80,4 +82,8 @@ urlpatterns = [
 
     # login logout report
     url(r'^login_and_logout_report/$', login_and_logout_report, name='login_and_logout_report'),
+
+    #cashier
+    url(r'^cashierHome/$', cashier_home, name='cashier_home'),
+
 ]
