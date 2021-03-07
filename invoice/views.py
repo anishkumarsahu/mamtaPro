@@ -1396,6 +1396,28 @@ def generate_net_report_admin(request):
     expense_total = 0.0
     for e in expenses:
         expense_total = expense_total + e.amount
+
+    col = MoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                         isAddedInSales__exact=True).order_by('datetime')
+    col_total = 0.0
+    for c in col:
+        col_total = col_total + c.amount
+
+    colCash = CashMoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                 isAddedInSales__exact=True).order_by('datetime')
+    col_total_cash = 0.0
+    for cash in colCash:
+        col_total_cash = col_total_cash + cash.amount
+
+    supCash = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                isApproved__exact=True, paymentMode='Cash').order_by('datetime')
+    sup_total_cash = 0.0
+    for cash in supCash:
+        sup_total_cash = sup_total_cash + cash.amount
+
+
+
+    rokad_value = float(col_total_cash)+float(sup_total_cash)+float(cash_total)+float(mix_cash_total)+float(correct_total)-float(expense_total)-float(commission_total)-float(return_total)
     context = {
         'sales_cash': sales_cash,
         'sales_card': sales_card,
@@ -1409,6 +1431,7 @@ def generate_net_report_admin(request):
         'skipped': skipped_list,
         'returns': returns,
         'corrections': corrections,
+        'correct_total': correct_total,
         'return_total': return_total,
         'commissions': commissions,
         'commission_total': commission_total,
@@ -1416,7 +1439,8 @@ def generate_net_report_admin(request):
         'mix_card_total': mix_card_total,
         'mix_total': mix_cash_total + mix_card_total,
         'expense_total':expense_total,
-        'expenses':expenses
+        'expenses':expenses,
+        'rokad':rokad_value
 
     }
 

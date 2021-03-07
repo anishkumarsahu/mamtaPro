@@ -639,6 +639,7 @@ def logout_post_api(request):
             return JsonResponse({'response': 'error'}, safe=False)
 
 day_name= ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday']
+import  calendar
 def genereate_attendence_report(request):
     sDate = request.GET.get('startDate')
     eDate = request.GET.get('endDate')
@@ -649,6 +650,7 @@ def genereate_attendence_report(request):
     today = datetime.today().date()
     dates = [str(startDate.date()), str(endDate.date())]
     start, end = [datetime.strptime(_, "%Y-%m-%d") for _ in dates]
+
     if start == end:
         start = start+ timedelta(days=-1)
     x= OrderedDict(((start + timedelta(_)).strftime(r"%Y-%m"), None) for _ in range((end - start).days)).keys()
@@ -665,27 +667,49 @@ def genereate_attendence_report(request):
                 a_count =0
                 na_count = 0
                 att = []
-                for i in range(1, 32):
+                for i in range(1, calendar.monthrange(start.year, start.month)[1]+1):
+
                     if i < 10:
                         i = "0{}".format(i)
                         day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
-                    try:
-                        attend = EmployeeAttendance.objects.get(employeeID__id=e.pk,
-                                                                                attendanceDate__icontains=d+ "-{}".format(i))
 
-                        if attend.loginTime is None and attend.logoutTime is None:
-                            if  day_name[day] == 'Sunday':
-                                att.append('H')
-                                na_count = na_count + 1
+                        try:
+                            attend = EmployeeAttendance.objects.get(employeeID__id=e.pk,
+                                                                                    attendanceDate__icontains=d+ "-{}".format(i))
+
+                            if attend.loginTime is None and attend.logoutTime is None:
+                                if day_name[day] == 'Sunday':
+                                    att.append('H')
+                                    na_count = na_count + 1
+                                else:
+                                    att.append('A')
+                                    a_count = a_count +1
                             else:
-                                att.append('A')
-                                a_count = a_count +1
-                        else:
-                            att.append('P')
-                            p_count= p_count+ 1
-                    except:
-                        att.append('H')
-                        na_count = na_count +1
+                                att.append('P')
+                                p_count= p_count+ 1
+                        except:
+                            att.append('H')
+                            na_count = na_count +1
+                    else:
+                        day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
+
+                        try:
+                            attend = EmployeeAttendance.objects.get(employeeID__id=e.pk,
+                                                                    attendanceDate__icontains=d + "-{}".format(i))
+
+                            if attend.loginTime is None and attend.logoutTime is None:
+                                if day_name[day] == 'Sunday':
+                                    att.append('H')
+                                    na_count = na_count + 1
+                                else:
+                                    att.append('A')
+                                    a_count = a_count + 1
+                            else:
+                                att.append('P')
+                                p_count = p_count + 1
+                        except:
+                            att.append('H')
+                            na_count = na_count + 1
 
 
                 emp_dic = {
@@ -709,6 +733,7 @@ def genereate_attendence_report(request):
             'data': data,
             'report': 1,
             'today': today,
+            'days': range(0,calendar.monthrange(start.year, start.month)[1])
 
         }
 
@@ -732,7 +757,7 @@ def genereate_attendence_report(request):
                 a_count = 0
                 na_count = 0
                 att = []
-                for i in range(1, 32):
+                for i in  range(1, calendar.monthrange(start.year, start.month)[1]+1):
                     if i < 10:
                         i = "0{}".format(i)
                         day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
@@ -777,6 +802,7 @@ def genereate_attendence_report(request):
             'data': data,
             'report': 1,
             'today': today,
+            'days':range(0,calendar.monthrange(start.year, start.month)[1])
 
         }
 

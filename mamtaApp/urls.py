@@ -6,6 +6,7 @@ from .views import *
 
 urlpatterns = [
     # buyer
+    url(r'^InvoicePrintListJson/$', InvoicePrintListJson.as_view(), name='InvoicePrintListJson'),
     url(r'^LoginListJson/$', LoginListJson.as_view(), name='LoginListJson'),
     url(r'^LogoutListJson/$', LogoutListJson.as_view(), name='LogoutListJson'),
     url(r'^buyerList/$', BuyerListJson.as_view(), name='BuyerListJson'),
@@ -75,7 +76,9 @@ urlpatterns = [
     url(r'^supplyHome/$', supply_home, name='supply_home'),
     url(r'^supplier_collection_report/$', supplier_collection_report, name='supplier_collection_report'),
     url(r'^take_collection_supplier_api/$', take_collection_supplier_api, name='take_collection_supplier_api'),
+    url(r'^edit_collection_supplier_api/$', edit_collection_supplier_api, name='edit_collection_supplier_api'),
     url(r'^approve_collection_supplier_api/$', approve_collection_supplier_api, name='approve_collection_supplier_api'),
+    url(r'^delete_collection_supplier_api/$', delete_collection_supplier_api, name='delete_collection_supplier_api'),
 
     # username exist?
     url(r'^user_name_exist/$', user_name_exist, name='user_name_exist'),
@@ -85,5 +88,8 @@ urlpatterns = [
 
     #cashier
     url(r'^cashierHome/$', cashier_home, name='cashier_home'),
+
+    #print Report
+    url(r'^print_report/$', print_report, name='print_report'),
 
 ]

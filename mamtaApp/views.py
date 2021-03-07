@@ -13,6 +13,7 @@ from django.template.defaultfilters import register
 from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
 
+from invoice.models import Sales
 from .models import *
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -61,6 +62,60 @@ def check_group(group_name):
         return wrapper
 
     return _check_group
+
+
+class InvoicePrintListJson(BaseDatatableView):
+    order_columns = ['billNumber', 'createdBy','amount', 'salesType',  'datetime']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        if staff == 'all':
+            return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
+                                        ).exclude(salesType__exact='Card')
+        else:
+            return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
+                                        createdBy=int(staff)).exclude(salesType__exact='Card')
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(amount__icontains=search) | Q(
+                    billNumber__icontains=search) | Q(datetime__icontains=search) | Q(
+                    createdBy__name__icontains=search)).order_by(
+                '-id')
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        for item in qs:
+            if item.createdBy is None:
+                createdBy = 'Admin'
+            else:
+                createdBy = item.createdBy.name
+
+            if item.salesType == 'Mix':
+                amount = item.amount+item.mixCardAmount
+            else:
+                amount = item.amount
+            json_data.append([
+                escape(item.billNumber),
+                createdBy,  # escape HTML for security reasons
+                escape(amount),  # escape HTML for security reasons
+                escape(item.salesType),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+
+
+            ])
+        return json_data
+
 
 
 class LoginListJson(BaseDatatableView):
@@ -553,7 +608,7 @@ class SupplierCollectionListJson(BaseDatatableView):
     order_columns = ['id', 'buyerID', 'amount', 'paymentMode', 'remark', 'datetime']
 
     def get_initial_queryset(self):
-        return SupplierCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=self.request.user.pk)
+        return SupplierCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=self.request.user.pk, isDeleted__exact=False)
 
 
     def filter_queryset(self, qs):
@@ -595,9 +650,9 @@ class SupplierCollectionListCashJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
         user = StaffUser.objects.get(userID_id=self.request.user.pk)
         if staff == 'all':
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash', collectedBy__companyID_id=user.companyID_id)
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash', collectedBy__companyID_id=user.companyID_id, isDeleted__exact=False)
         else:
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash', collectedBy__companyID_id=user.companyID_id,
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash', collectedBy__companyID_id=user.companyID_id,  isDeleted__exact=False,
                                                   collectedBy=int(staff))
 
     def filter_queryset(self, qs):
@@ -639,7 +694,7 @@ class SupplierCollectionListCashJson(BaseDatatableView):
 
 
 class SupplierCollectionAdminListCashJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name','approvedBy', 'remark', 'datetime','action']
+    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name','approvedBy', 'remark', 'datetime','action','action1']
 
     def get_initial_queryset(self):
 
@@ -649,9 +704,9 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
         startDate = datetime.strptime(sDate, '%d/%m/%Y')
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
         if staff == 'all':
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash')
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash', isDeleted__exact=False)
         else:
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash',
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cash', isDeleted__exact=False,
                                                   collectedBy=int(staff))
 
     def filter_queryset(self, qs):
@@ -670,6 +725,19 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
         json_data = []
         i = 1
         for item in qs:
+            action = '''<span><a onclick="getSupplierDetail('{}','{}','{}','{}','{}','{}')" class="hideModerator" ><button style="background-color: #3F51B5;color: white;" type="button"
+                                       class="btn  waves-effect " data-toggle="modal"
+                                       data-target="#CollectionModal">
+                                   <i class="material-icons">border_color</i></button> </a>
+
+
+
+                               <button onclick="deleteCollection('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">
+
+
+                                                                <i class="material-icons">delete</i></button></span>'''.format(
+                item.pk, item.buyerID.name,item.buyerID.pk, item.amount, item.paymentMode, item.remark, item.pk)
+
             if item.isApproved == False:
                 button = '''
                  <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
@@ -685,7 +753,8 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
                 escape(item.approvedBy),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
-                button
+                button,
+                action
 
             ])
             i = i + 1
@@ -707,9 +776,9 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
 
         user = StaffUser.objects.get(userID_id=self.request.user.pk)
         if staff == 'all':
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', collectedBy__companyID_id=user.companyID_id)
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', collectedBy__companyID_id=user.companyID_id, isDeleted__exact=False)
         else:
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque',
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', isDeleted__exact=False,
                                                   collectedBy=int(staff), collectedBy__companyID_id=user.companyID_id)
 
     def filter_queryset(self, qs):
@@ -762,9 +831,9 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
 
         if staff == 'all':
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque')
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', isDeleted__exact=False)
         else:
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque',
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', isDeleted__exact=False,
                                                   collectedBy=int(staff))
 
     def filter_queryset(self, qs):
@@ -1562,6 +1631,29 @@ def take_collection_supplier_api(request):
             return JsonResponse({'message': 'fail'})
 
 
+@csrf_exempt
+def edit_collection_supplier_api(request):
+    if request.method == 'POST':
+
+        supID = request.POST.get('supID')
+        CustomerCol = request.POST.get('CustomerCol')
+        AmountCol = request.POST.get('AmountCol')
+        PayMethodCol = request.POST.get('PayMethodCol')
+        RemarkCol = request.POST.get('RemarkCol')
+
+        try:
+            collection = SupplierCollection.objects.get(pk=int(supID))
+            collection.buyerID_id = int(CustomerCol)
+            collection.amount = float(AmountCol)
+            collection.paymentMode = PayMethodCol
+            collection.remark = RemarkCol
+            collection.save()
+
+            return JsonResponse({'message': 'success'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
+
 @check_group('Both')
 def supplier_collection_report(request):
     request.session['nav'] = '55'
@@ -1572,6 +1664,18 @@ def supplier_collection_report(request):
         'date': date
     }
     return render(request, 'mamtaApp/supply/SupplierCollectionReport.html', context)
+
+
+@check_group('Both')
+def print_report(request):
+    request.session['nav'] = '56'
+    users = StaffUser.objects.filter(isDeleted__exact=False).order_by('name')
+    date = datetime.today().now().strftime('%d/%m/%Y')
+    context = {
+        'users': users,
+        'date': date
+    }
+    return render(request, 'mamtaApp/PrintLogReport.html', context)
 
 
 @csrf_exempt
@@ -1586,6 +1690,27 @@ def approve_collection_supplier_api(request):
             collection.isApproved = True
             user = StaffUser.objects.get(userID_id=request.user.pk)
             collection.approvedBy = user.name
+            collection.save()
+            buy = Buyer.objects.get(pk=int(collection.buyerID.pk))
+            buy.closingBalance = buy.closingBalance - float(collection.amount)
+            buy.save()
+            return JsonResponse({'message': 'success'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
+
+
+
+@csrf_exempt
+def delete_collection_supplier_api(request):
+    if request.method == 'POST':
+
+        collectionID = request.POST.get('collectionID')
+
+
+        try:
+            collection = SupplierCollection.objects.get(pk = int(collectionID))
+            collection.isDeleted = True
             collection.save()
             buy = Buyer.objects.get(pk=int(collection.buyerID.pk))
             buy.closingBalance = buy.closingBalance - float(collection.amount)

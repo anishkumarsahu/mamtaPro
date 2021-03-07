@@ -179,7 +179,7 @@
                 </li>
 
 
-                <li {% if request.session.nav == '55' or request.session.nav == '3' or request.session.nav == '4' or request.session.nav == '5' %}
+                <li {% if request.session.nav == '56' or request.session.nav == '55' or request.session.nav == '3' or request.session.nav == '4' or request.session.nav == '5' %}
                     class="active" {% endif %} >
                     <a href="#" class="menu-toggle waves-effect waves-block">
                         <i class="material-icons">attach_money</i>
@@ -205,6 +205,11 @@
                         <li {% if request.session.nav == '55' %} class="active" {% endif %}>
                             <a href="{% url 'mamtaApp:supplier_collection_report' %}">
                                 <span>Supply Collection Report</span>
+                            </a>
+                        </li>
+                    <li {% if request.session.nav == '56' %} class="active" {% endif %}>
+                            <a href="{% url 'mamtaApp:print_report' %}">
+                                <span>Print Log Report</span>
                             </a>
                         </li>
 
@@ -298,11 +303,11 @@
         <!-- Footer -->
         <div class="legal">
             <div class="copyright">
-                &copy; 2019 - 2020 <a target="_blank" href="https://zivainfotech.com">Designed & Developed By <br>Ziva Infotech
+                &copy; 2020 - 2021 <a target="_blank" href="https://zivainfotech.com">Designed & Developed By <br>Ziva Infotech
                 </a>.
             </div>
             <div class="version">
-                <b>Version: </b> 2.1.1
+                <b>Version: </b> 2.5.0
             </div>
         </div>
         <!-- #Footer -->
