@@ -638,6 +638,42 @@ class SupplierCollectionListJson(BaseDatatableView):
         return json_data
 
 
+class SupplierInvoiceCollectionListJson(BaseDatatableView):
+    order_columns = ['id', 'buyerID', 'amount', 'invoiceNumber', 'remark', 'datetime']
+
+    def get_initial_queryset(self):
+        return SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=self.request.user.pk, isDeleted__exact=False)
+
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(invoiceNumber__icontains=search) |  Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                    buyerID__name__icontains=search))
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            json_data.append([
+                escape(i),
+                escape(item.buyerID.name),
+                escape(item.amount),  # escape HTML for security reasons
+                escape(item.invoiceNumber),  # escape HTML for security reasons
+                escape(item.remark),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+
+            ])
+            i = i + 1
+        return json_data
+
+
+
+
 class SupplierCollectionListCashJson(BaseDatatableView):
     order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'remark', 'datetime','action']
 
@@ -1629,6 +1665,33 @@ def take_collection_supplier_api(request):
 
         except:
             return JsonResponse({'message': 'fail'})
+
+
+@csrf_exempt
+def take_collection_invoice_supplier_api(request):
+    if request.method == 'POST':
+
+        CustomerCol = request.POST.get('CustomerCol')
+        AmountCol = request.POST.get('AmountCol')
+        inv = request.POST.get('Invoice')
+        RemarkCol = request.POST.get('RemarkCol')
+
+        try:
+            collection = SupplierInvoiceCollection()
+            collection.buyerID_id = int(CustomerCol)
+            collection.amount = float(AmountCol)
+            user = StaffUser.objects.get(userID_id=request.user.pk)
+            collection.collectedBy_id = user.pk
+            collection.invoiceNumber = inv
+            collection.remark = RemarkCol
+            collection.companyID_id = user.companyID_id
+            collection.save()
+
+            return JsonResponse({'message': 'success'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
+
 
 
 @csrf_exempt

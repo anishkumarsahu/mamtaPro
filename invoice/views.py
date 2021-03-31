@@ -1949,6 +1949,13 @@ def generate_collection_report_admin(request):
     sup_total_cheque = 0.0
     for cheque in supCheque:
         sup_total_cheque = sup_total_cheque + cheque.amount
+
+
+    supInvoice= SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=int(companyID),
+                                                ).order_by('datetime')
+    sup_total_inv = 0.0
+    for inv in supInvoice:
+        sup_total_inv = sup_total_inv + inv.amount
     context = {
         'date': gDate,
         'company': company.name,
@@ -1960,6 +1967,8 @@ def generate_collection_report_admin(request):
         'sup_total_cash': sup_total_cash,
         'supCheque': supCheque,
         'sup_total_cheque': sup_total_cheque,
+        'invoice_total': sup_total_inv,
+        'invoices': supInvoice
 
     }
 
@@ -1986,6 +1995,12 @@ def generate_collection_report_supplier(request):
     sup_total_cheque = 0.0
     for cheque in supCheque:
         sup_total_cheque = sup_total_cheque + cheque.amount
+
+    supInvoice= SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(),
+                                                collectedBy__userID_id=request.user.pk,).order_by('datetime')
+    sup_total_inv = 0.0
+    for inv in supInvoice:
+        sup_total_inv = sup_total_inv + inv.amount
     context = {
         'date': datetime.today().date(),
         'company': user.name,
@@ -1993,6 +2008,8 @@ def generate_collection_report_supplier(request):
         'sup_total_cash': sup_total_cash,
         'supCheque': supCheque,
         'sup_total_cheque': sup_total_cheque,
+        'invoice_total':sup_total_inv,
+        'invoices':supInvoice
 
     }
 

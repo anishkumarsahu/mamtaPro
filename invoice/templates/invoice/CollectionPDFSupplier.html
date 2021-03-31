@@ -36,7 +36,7 @@
 <div class="container">
     <div class="row">
         <span style="font-size: 10px;">Date: {{ date }}</span>
-       <span style="font-size: 9px;float: right">123DACN Collection Report-({{ company }})</span></div>
+       <span style="font-size: 9px;float: right">123DACN Collection Report-({{ company }})</span>
     </div>
 
 
@@ -90,6 +90,38 @@
                     <td>
                         <span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.remark }}</span>
                     </td>
+
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
+
+<p style="font-size: 10px; margin: 2px;">Invoice Supply Collection</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">InvoiceNo.</th>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in invoices %}
+
+
+
+                <tr>
+                         <td > {{ foo.invoiceNumber }}</td>
+                         <td > {{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.remark }}</td>
 
 
                 </tr>

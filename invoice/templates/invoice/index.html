@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>123DACN</title>
     {% progressive_web_app_meta %}
-{#    <meta name="viewport" content="width=device-width, initial-scale=1">#}
+    {#    <meta name="viewport" content="width=device-width, initial-scale=1">#}
     <link href="{% static 'plugins/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.min.css">
@@ -196,7 +196,8 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="10">
 
-                    <div class="col-md-12 col-sm-12 col-xs-12" style="padding-bottom: 20px;padding-left: 0;padding-right: 0">
+                    <div class="col-md-12 col-sm-12 col-xs-12"
+                         style="padding-bottom: 20px;padding-left: 0;padding-right: 0">
 
 
                         <ul id="myTabs" class="nav nav-pills nav-justified" role="tablist" data-tabs="tabs">
@@ -290,14 +291,16 @@
 
                                         <div class="col-sm-3 col-xs-3">
                                             <div class="form-group"><br>
-                                                <input type="number" class="form-control" id="mixCash" aria-describedby=""
+                                                <input type="number" class="form-control" id="mixCash"
+                                                       aria-describedby=""
                                                        placeholder="Cash Amount(Rs.)">
 
                                             </div>
                                         </div>
                                         <div class="col-sm-3 col-xs-3">
                                             <div class="form-group"><br>
-                                                <input type="number" class="form-control" id="mixCard" aria-describedby=""
+                                                <input type="number" class="form-control" id="mixCard"
+                                                       aria-describedby=""
                                                        placeholder="Card Amount(Rs.)">
 
                                             </div>
@@ -334,7 +337,8 @@
                                         </div>
                                         <div class="col-sm-4 col-xs-4">
                                             <div class="form-group"><br>
-                                                <input type="text" class="form-control" id="cardRemark" aria-describedby=""
+                                                <input type="text" class="form-control" id="cardRemark"
+                                                       aria-describedby=""
                                                        placeholder="Remark">
 
                                             </div>
@@ -520,7 +524,7 @@
                                         </div>
                                     </div>
                                 </div>
-                             <div role="tabpanel" class="tab-pane fade" id="Expense" style="display:none;">
+                                <div role="tabpanel" class="tab-pane fade" id="Expense" style="display:none;">
                                     <div class="row">
 
                                         <div class="col-sm-6">
@@ -669,7 +673,6 @@
 
                         </div>
                     </div>
-
 
 
                 </div>
@@ -1086,7 +1089,7 @@
 
 
         }
-         if (t === 'expense') {
+        if (t === 'expense') {
             $('#Card').css('display', 'none');
             $('#Commentary').css('display', 'none');
             $('#Videos').css('display', 'none');
@@ -1117,566 +1120,576 @@
 
     function postSales() {
         var billType = $('#billType').val();
-         var csrfmiddlewaretoken = $("input[name='csrfmiddlewaretoken']").val();
-        if(billType !== 'expense'){
+        var csrfmiddlewaretoken = $("input[name='csrfmiddlewaretoken']").val();
+        if (billType !== 'expense') {
 
-        var SeriesID = $('#SeriesID').val();
-        var MainNumber = $('#MainNumber').val();
-        var MainSeries = $('#MainSeries').val();
-        var billNumber = $('#billNumber').val();
+            var SeriesID = $('#SeriesID').val();
+            var MainNumber = $('#MainNumber').val();
+            var MainSeries = $('#MainSeries').val();
+            var billNumber = $('#billNumber').val();
 
-        if (billType === 'Cash') {
+            if (billType === 'Cash') {
 
-            var amount = $('#cash').val();
-            var ChallanNumber = 'N/A';
-            data = new FormData();
-            data.append('SalesType', billType);
-            data.append('BillNumber', billNumber);
-            data.append('CustomerName', 'N/A');
-            data.append('Amount', amount);
-            data.append('CardAmount', '0');
-            data.append('SeriesID', SeriesID);
-            data.append('MainNumber', MainNumber);
-            data.append('MainSeries', MainSeries);
-            data.append('ChallanNumber', ChallanNumber);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+                var amount = $('#cash').val();
+                var ChallanNumber = 'N/A';
+                data = new FormData();
+                data.append('SalesType', billType);
+                data.append('BillNumber', billNumber);
+                data.append('CustomerName', 'N/A');
+                data.append('Amount', amount);
+                data.append('CardAmount', '0');
+                data.append('SeriesID', SeriesID);
+                data.append('MainNumber', MainNumber);
+                data.append('MainSeries', MainSeries);
+                data.append('ChallanNumber', ChallanNumber);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
-            if (billNumber === "" || amount === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+                if (billNumber === "" || amount === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
+                }
+                else {
+
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:create_invoice' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+                                $(getInvoiceDetails(id));
+                                getRecentThreeInvoices();
+                                $('#billNumber').val('');
+                                $('.collapse').collapse('hide');
+                                $('#p1').html(response.data['createdBy']);
+                                $('#p2').html(response.data['amount']);
+                                $('#p3').html(response.data['billNo']);
+                                $('#p4').html(response.data['datetime']);
+                                $('#p5').html(response.data['ModeOfPayment']);
+                                window.print();
+                            }
+                            else {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html(response.message).fadeIn().fadeOut(2000);
+
+                            }
+
+                            $('#SearchForm')[0].reset();
+                            $('#save').attr('disabled', false);
+
+                        },
+                        error: function () {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                        }
+                    });
+
+                }
             }
-            else {
+            if (billType === 'Card') {
+
+                var amount = $('#cardd').val();
+                var remark = $('#cardRemark').val();
+                var ChallanNumber = 'N/A';
+                data = new FormData();
+                data.append('SalesType', billType);
+                data.append('BillNumber', billNumber);
+                data.append('CustomerName', 'N/A');
+                data.append('Amount', amount);
+                data.append('Remark', remark);
+                data.append('CardAmount', '0');
+                data.append('SeriesID', SeriesID);
+                data.append('MainNumber', MainNumber);
+                data.append('MainSeries', MainSeries);
+                data.append('ChallanNumber', ChallanNumber);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (billNumber === "" || amount === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:create_invoice' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
 
 
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:create_invoice' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+                                $(getInvoiceDetails(id));
+                                getRecentThreeInvoices();
+                                $('#billNumber').val('');
+                                $('.collapse').collapse('hide');
+                                $('#p1').html(response.data['createdBy']);
+                                $('#p2').html(response.data['amount']);
+                                $('#p3').html(response.data['billNo']);
+                                $('#p4').html(response.data['datetime']);
+                                $('#p5').html(response.data['ModeOfPayment']);
+                                window.print();
+                            }
+                            else {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html(response.message).fadeIn().fadeOut(2000);
 
+                            }
 
-                    success: function (response) {
-                        if (response.message === 'success') {
+                            $('#SearchForm')[0].reset();
+                            $('#save').attr('disabled', false);
+
+                        },
+                        error: function () {
                             $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-                            $(getInvoiceDetails(id));
-                            getRecentThreeInvoices();
-                            $('#billNumber').val('');
-                            $('.collapse').collapse('hide');
-                            $('#p1').html(response.data['createdBy']);
-                            $('#p2').html(response.data['amount']);
-                            $('#p3').html(response.data['billNo']);
-                            $('#p4').html(response.data['datetime']);
-                            $('#p5').html(response.data['ModeOfPayment']);
-                            window.print();
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
                         }
-                        else {
+                    });
+
+                }
+            }
+
+            if (billType === 'Mix') {
+
+                var cashAmount = $('#mixCash').val();
+                var cardAmount = $('#mixCard').val();
+                var ChallanNumber = 'N/A';
+                data = new FormData();
+                data.append('SalesType', billType);
+                data.append('BillNumber', billNumber);
+                data.append('CustomerName', 'N/A');
+                data.append('Amount', cashAmount);
+                data.append('CardAmount', cardAmount);
+                data.append('SeriesID', SeriesID);
+                data.append('MainNumber', MainNumber);
+                data.append('MainSeries', MainSeries);
+                data.append('ChallanNumber', ChallanNumber);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (billNumber === "" || cashAmount === "" || cardAmount === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:create_invoice' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+                                $(getInvoiceDetails(id));
+                                getRecentThreeInvoices();
+                                $('#billNumber').val('');
+                                $('.collapse').collapse('hide');
+                                $('#p1').html(response.data['createdBy']);
+                                $('#p2').html(response.data['amount']);
+                                $('#p3').html(response.data['billNo']);
+                                $('#p4').html(response.data['datetime']);
+                                $('#p5').html(response.data['ModeOfPayment']);
+                                window.print();
+                            }
+                            else {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html(response.message).fadeIn().fadeOut(2000);
+
+                            }
+
+                            $('#SearchForm')[0].reset();
+                            $('#save').attr('disabled', false);
+
+                        },
+                        error: function () {
                             $('#name_status').addClass('validate_data');
-                            $('#name_status').html(response.message).fadeIn().fadeOut(2000);
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                        }
+                    });
 
+                }
+            }
+            if (billType === 'Credit') {
+                var amountCredit = $('#credit').val();
+                var name = $('#name').val();
+                var ChallanNumber = $('#challanNumber').val();
+                data = new FormData();
+                data.append('SalesType', billType);
+                data.append('BillNumber', billNumber);
+                data.append('CustomerName', name);
+                data.append('Amount', amountCredit);
+                data.append('CardAmount', '0');
+                data.append('SeriesID', SeriesID);
+                data.append('MainNumber', MainNumber);
+                data.append('MainSeries', MainSeries);
+                data.append('ChallanNumber', ChallanNumber);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (billNumber === "" || amountCredit === "" || name === "" || ChallanNumber === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:create_invoice' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+                                $(getInvoiceDetails(id));
+                                getRecentThreeInvoices();
+                                $('#billNumber').val('');
+                                $('.collapse').collapse('hide')
+                            }
+                            else {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html(response.message).fadeIn().fadeOut(2000);
+
+                            }
+
+                            $('#SearchForm')[0].reset();
+                            $('#save').attr('disabled', false);
+                        },
+                        error: function () {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                        }
+                    });
+
+                }
+            }
+
+            if (billType === 'Collection') {
+                var partyName = $('#partyName1').val();
+                var partyAmount = $('#partyAmount1').val();
+                var collectionremark = $('#collectionremark').val();
+                data = new FormData();
+                data.append('partyName', partyName);
+                data.append('partyAmount', partyAmount);
+                data.append('collectionremark', collectionremark);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (partyName === "" || partyAmount === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:take_collection' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Collection Created.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+
+
+                            }
+
+                            $('#SearchForm')[0].reset();
+                            getCollectionDetails();
+                            $('#save').attr('disabled', false);
+                        },
+                        error: function () {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                        }
+                    });
+
+                }
+            }
+
+
+            if (billType === 'cc') {
+                var partyName = $('#partyName').val();
+                var partyAmount = $('#partyAmount').val();
+                data = new FormData();
+                data.append('partyName', partyName);
+                data.append('partyAmount', partyAmount);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (partyName === "" || partyAmount === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:take_cash_collection' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New CC Created.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+
+
+                            }
+
+                            $('#SearchForm')[0].reset();
+                            getCashCollectionDetails();
+                        },
+                        error: function () {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                            $('#save').attr('disabled', false);
+                        }
+                    });
+
+                }
+            }
+
+            if (billType === 'Return') {
+                var sIDReturn = $('#sIDReturn').val();
+                var invoiceNumberReturn = $('#invoiceNumberReturn').val();
+                var AmountReturn = $('#AmountReturn').val();
+                data = new FormData();
+                data.append('sIDReturn', sIDReturn);
+                data.append('invoiceNumberReturn', invoiceNumberReturn);
+                data.append('AmountReturn', AmountReturn);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (invoiceNumberReturn === "" || AmountReturn === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:return_collection' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Return Added.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+
+
+                            }
+                            getReturnDetails();
+                            $('#SearchForm')[0].reset();
+                            $('#save').attr('disabled', false);
+                        },
+                        error: function () {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
                         }
 
-                        $('#SearchForm')[0].reset();
 
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-                });
+                    });
 
+
+                }
+            }
+
+            if (billType === 'Commission') {
+                var sIDReturn = $('#sIDCommission').val();
+                var invoiceNumberReturn = $('#invoiceNumberCommission').val();
+                var AmountReturn = $('#AmountCommission').val();
+                data = new FormData();
+                data.append('sIDReturn', sIDReturn);
+                data.append('invoiceNumberReturn', invoiceNumberReturn);
+                data.append('AmountReturn', AmountReturn);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (invoiceNumberReturn === "" || AmountReturn === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:commission_collection' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Commission Added.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+                            }
+
+                            $('#SearchForm')[0].reset();
+                            getCommissionDetails();
+                            $('#save').attr('disabled', false);
+                        },
+                        error: function () {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                        }
+                    });
+
+                }
+            }
+
+
+            if (billType === 'Correction') {
+                var sIDReturn = $('#sIDCorrection').val();
+                var invoiceNumberReturn = $('#invoiceNumberCorrection').val();
+                var AmountReturn = $('#AmountCorrection').val();
+                data = new FormData();
+                data.append('sIDReturn', sIDReturn);
+                data.append('invoiceNumberReturn', invoiceNumberReturn);
+                data.append('AmountReturn', AmountReturn);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (invoiceNumberReturn === "" || AmountReturn === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:correct_collection' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Correction Added.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+                                $('#p1').html(response.data['createdBy']);
+                                $('#p2').html(response.data['amount']);
+                                $('#p3').html(response.data['billNo']);
+                                $('#p4').html(response.data['datetime']);
+                                $('#p5').html(response.data['ModeOfPayment']);
+                                window.print();
+
+
+                            }
+                            getCorrectionDetails();
+                            $('#SearchForm')[0].reset();
+                            $('#save').attr('disabled', false);
+                        },
+                        error: function () {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                        }
+
+
+                    });
+
+
+                }
             }
         }
-        if (billType === 'Card') {
 
-            var amount = $('#cardd').val();
-            var remark = $('#cardRemark').val();
-            var ChallanNumber = 'N/A';
-            data = new FormData();
-            data.append('SalesType', billType);
-            data.append('BillNumber', billNumber);
-            data.append('CustomerName', 'N/A');
-            data.append('Amount', amount);
-            data.append('Remark', remark);
-            data.append('CardAmount', '0');
-            data.append('SeriesID', SeriesID);
-            data.append('MainNumber', MainNumber);
-            data.append('MainSeries', MainSeries);
-            data.append('ChallanNumber', ChallanNumber);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+        else {
+            if (billType === 'expense') {
+                var exRemark = $('#exRemark').val();
+                var exAmount = $('#exAmount').val();
+                data = new FormData();
+                data.append('exRemark', exRemark);
+                data.append('exAmount', exAmount);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
-            if (billNumber === "" || amount === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+                if (exRemark === "" || exAmount === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-            }
-            else {
-
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:create_invoice' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
+                }
+                else {
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:add_expense' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
 
 
-                    success: function (response) {
-                        if (response.message === 'success') {
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Expense Added.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+
+
+                            }
+                            getExpenseDetails();
+                            $('#SearchForm')[0].reset();
+                            $('#save').attr('disabled', false);
+                        },
+                        error: function () {
                             $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-                            $(getInvoiceDetails(id));
-                            getRecentThreeInvoices();
-                            $('#billNumber').val('');
-                            $('.collapse').collapse('hide');
-                            $('#p1').html(response.data['createdBy']);
-                            $('#p2').html(response.data['amount']);
-                            $('#p3').html(response.data['billNo']);
-                            $('#p4').html(response.data['datetime']);
-                            $('#p5').html(response.data['ModeOfPayment']);
-                            window.print();
-                        }
-                        else {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html(response.message).fadeIn().fadeOut(2000);
-
+                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
                         }
 
-                        $('#SearchForm')[0].reset();
 
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-                });
+                    });
 
+
+                }
             }
-        }
-
-         if (billType === 'Mix') {
-
-            var cashAmount = $('#mixCash').val();
-            var cardAmount = $('#mixCard').val();
-            var ChallanNumber = 'N/A';
-            data = new FormData();
-            data.append('SalesType', billType);
-            data.append('BillNumber', billNumber);
-            data.append('CustomerName', 'N/A');
-            data.append('Amount', cashAmount);
-            data.append('CardAmount', cardAmount);
-            data.append('SeriesID', SeriesID);
-            data.append('MainNumber', MainNumber);
-            data.append('MainSeries', MainSeries);
-            data.append('ChallanNumber', ChallanNumber);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-            if (billNumber === "" || cashAmount === ""|| cardAmount === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
-            }
-            else {
-
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:create_invoice' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-
-
-                    success: function (response) {
-                        if (response.message === 'success') {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-                            $(getInvoiceDetails(id));
-                            getRecentThreeInvoices();
-                            $('#billNumber').val('');
-                            $('.collapse').collapse('hide');
-                            $('#p1').html(response.data['createdBy']);
-                            $('#p2').html(response.data['amount']);
-                            $('#p3').html(response.data['billNo']);
-                            $('#p4').html(response.data['datetime']);
-                            $('#p5').html(response.data['ModeOfPayment']);
-                            window.print();
-                        }
-                        else {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html(response.message).fadeIn().fadeOut(2000);
-
-                        }
-
-                        $('#SearchForm')[0].reset();
-
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-                });
-
-            }
-        }
-        if (billType === 'Credit') {
-            var amountCredit = $('#credit').val();
-            var name = $('#name').val();
-            var ChallanNumber = $('#challanNumber').val();
-            data = new FormData();
-            data.append('SalesType', billType);
-            data.append('BillNumber', billNumber);
-            data.append('CustomerName', name);
-            data.append('Amount', amountCredit);
-            data.append('CardAmount', '0');
-            data.append('SeriesID', SeriesID);
-            data.append('MainNumber', MainNumber);
-            data.append('MainSeries', MainSeries);
-            data.append('ChallanNumber', ChallanNumber);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-            if (billNumber === "" || amountCredit === "" || name === "" || ChallanNumber === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
-            }
-            else {
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:create_invoice' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-
-
-                    success: function (response) {
-                        if (response.message === 'success') {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Invoice Created.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-                            $(getInvoiceDetails(id));
-                            getRecentThreeInvoices();
-                            $('#billNumber').val('');
-                            $('.collapse').collapse('hide')
-                        }
-                        else {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html(response.message).fadeIn().fadeOut(2000);
-
-                        }
-
-                        $('#SearchForm')[0].reset();
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-                });
-
-            }
-        }
-
-        if (billType === 'Collection') {
-            var partyName = $('#partyName1').val();
-            var partyAmount = $('#partyAmount1').val();
-            var collectionremark = $('#collectionremark').val();
-            data = new FormData();
-            data.append('partyName', partyName);
-            data.append('partyAmount', partyAmount);
-            data.append('collectionremark', collectionremark);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-            if (partyName === "" || partyAmount === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
-            }
-            else {
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:take_collection' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-
-
-                    success: function (response) {
-                        if (response.message === 'success') {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Collection Created.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-
-
-                        }
-
-                        $('#SearchForm')[0].reset();
-                        getCollectionDetails();
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-                });
-
-            }
-        }
-
-
-        if (billType === 'cc') {
-            var partyName = $('#partyName').val();
-            var partyAmount = $('#partyAmount').val();
-            data = new FormData();
-            data.append('partyName', partyName);
-            data.append('partyAmount', partyAmount);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-            if (partyName === "" || partyAmount === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
-            }
-            else {
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:take_cash_collection' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-
-
-                    success: function (response) {
-                        if (response.message === 'success') {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New CC Created.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-
-
-                        }
-
-                        $('#SearchForm')[0].reset();
-                        getCashCollectionDetails();
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-                });
-
-            }
-        }
-
-        if (billType === 'Return') {
-            var sIDReturn = $('#sIDReturn').val();
-            var invoiceNumberReturn = $('#invoiceNumberReturn').val();
-            var AmountReturn = $('#AmountReturn').val();
-            data = new FormData();
-            data.append('sIDReturn', sIDReturn);
-            data.append('invoiceNumberReturn', invoiceNumberReturn);
-            data.append('AmountReturn', AmountReturn);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-            if (invoiceNumberReturn === "" || AmountReturn === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
-            }
-            else {
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:return_collection' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-
-
-                    success: function (response) {
-                        if (response.message === 'success') {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Return Added.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-
-
-                        }
-                        getReturnDetails();
-                        $('#SearchForm')[0].reset();
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-
-
-                });
-
-
-            }
-        }
-
-        if (billType === 'Commission') {
-            var sIDReturn = $('#sIDCommission').val();
-            var invoiceNumberReturn = $('#invoiceNumberCommission').val();
-            var AmountReturn = $('#AmountCommission').val();
-            data = new FormData();
-            data.append('sIDReturn', sIDReturn);
-            data.append('invoiceNumberReturn', invoiceNumberReturn);
-            data.append('AmountReturn', AmountReturn);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-            if (invoiceNumberReturn === "" || AmountReturn === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
-            }
-            else {
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:commission_collection' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-
-
-                    success: function (response) {
-                        if (response.message === 'success') {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Commission Added.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-                        }
-
-                        $('#SearchForm')[0].reset();
-                        getCommissionDetails();
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-                });
-
-            }
-        }
-
-
-        if (billType === 'Correction') {
-            var sIDReturn = $('#sIDCorrection').val();
-            var invoiceNumberReturn = $('#invoiceNumberCorrection').val();
-            var AmountReturn = $('#AmountCorrection').val();
-            data = new FormData();
-            data.append('sIDReturn', sIDReturn);
-            data.append('invoiceNumberReturn', invoiceNumberReturn);
-            data.append('AmountReturn', AmountReturn);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-            if (invoiceNumberReturn === "" || AmountReturn === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
-            }
-            else {
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:correct_collection' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-
-
-                    success: function (response) {
-                        if (response.message === 'success') {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Correction Added.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-                            $('#p1').html(response.data['createdBy']);
-                            $('#p2').html(response.data['amount']);
-                            $('#p3').html(response.data['billNo']);
-                            $('#p4').html(response.data['datetime']);
-                            $('#p5').html(response.data['ModeOfPayment']);
-                            window.print();
-
-
-                        }
-                        getCorrectionDetails();
-                        $('#SearchForm')[0].reset();
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-
-
-                });
-
-
-            }
-        }
-        }
-
-       else{
-           if (billType === 'expense') {
-            var exRemark = $('#exRemark').val();
-            var exAmount = $('#exAmount').val();
-            data = new FormData();
-            data.append('exRemark', exRemark);
-            data.append('exAmount', exAmount);
-            data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-            if (exRemark === "" || exAmount === "") {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
-            }
-            else {
-
-                $.ajax({
-                    type: 'post',
-                    url: '{% url 'invoiceApp:add_expense' %}',
-                    data: data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-
-
-                    success: function (response) {
-                        if (response.message === 'success') {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('New Expense Added.').fadeIn().fadeOut(2000);
-                            $('#SalesForm')[0].reset();
-
-
-                        }
-                       getExpenseDetails();
-                        $('#SearchForm')[0].reset();
-                    },
-                    error: function () {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                    }
-
-
-                });
-
-
-            }
-        }
         }
 
 

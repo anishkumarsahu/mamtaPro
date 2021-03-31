@@ -131,6 +131,50 @@
                         </div>
                     </div>
                 </div>
+
+
+
+                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                MY TODAY INVOICE COLLECTIONS
+                            </h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="collectionTableCollectInvoice"
+                                       class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>Party_Name</th>
+                                        <th>Amount(₹)</th>
+                                        <th>Invoice</th>
+                                        <th>Remark</th>
+                                        <th>CollectedOn</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>Party_Name</th>
+                                        <th>Amount(₹)</th>
+                                        <th>Invoice</th>
+                                        <th>Remark</th>
+                                        <th>CollectedOn</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -138,6 +182,12 @@
         <button style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal"
                 data-target="#CollectionModal"
                 class="btn btn-success btn-circle-lg waves-effect waves-circle waves-float">
+            <i class="material-icons">add</i>
+        </button>
+
+     <button style="    left: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal"
+                data-target="#CollectionModalInvoice"
+                class="btn btn-danger btn-circle-lg waves-effect waves-circle waves-float">
             <i class="material-icons">add</i>
         </button>
     </section>
@@ -363,6 +413,90 @@
     </div>
 
 
+    <div class="modal fade" id="CollectionModalInvoice" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" id="CollectionFormInvoice"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabelInvoice">Take New Invoice Collection</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">person</i>
+                                        </span>
+                                    <div class="form-line">
+
+
+                                        <select class="js-example-disabled-results" id="supplierInvoice">
+                                        </select>
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">attach_money</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="number" class="form-control date"
+                                               name="AmountColInvoice" id="AmountColInvoice"
+                                               placeholder="Amount *">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">list</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="text" class="form-control date"
+                                               name="Invoice" id="Invoice"
+                                               placeholder="Invoice Number *">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">receipt</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="text" class="form-control date" id="RemarkColInvoice"
+                                               name="RemarkColInvoice" placeholder="Any Remark">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="AddParty()">Add New Party
+                        </button>
+                        <button type="button" class="btn btn-link waves-effect" onclick="TakePaymentInvoice()">Save
+                        </button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
 
     <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
@@ -377,6 +511,7 @@
 
     <script>
         var etab;
+        var itab;
 
 
         $(document).ready(function () {
@@ -400,6 +535,28 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": "{% url 'mamtaApp:SupplierCollectionListJson' %}"
+
+            });
+
+
+            itab = $('#collectionTableCollectInvoice').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "buyerID", "targets": 1, "orderable": true},
+                    {"name": "amount", "targets": 2, "orderable": true},
+                    {"name": "invoiceNumber", "targets": 3, "orderable": true},
+                    {"name": "remark", "targets": 4, "orderable": true},
+                    {"name": "datetime", "targets": 5, "orderable": true}
+                ],
+                aaSorting: [[5, 'desc']],
+                "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
+                "pageLength": 8,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:SupplierInvoiceCollectionListJson' %}"
 
             });
 
@@ -551,6 +708,7 @@
 
         }
         function AddParty() {
+            $('#CollectionModalInvoice').modal('hide');
             $('#CollectionModal').modal('hide');
             $('#AddPartyModal').modal('show');
 
@@ -614,7 +772,6 @@
 
 
                 $(document).on("keyup", ".select2-search__field", function (e) {
-                    console.log(e.which)
 
                     if (e.which === 38 || e.which === 40) {
                         return false;
@@ -626,6 +783,7 @@
                         var inputVal = $(this).val();
 
                         $('#supplier').html('');
+                        $('#supplierInvoice').html('');
                         $.ajax({
                             type: 'get',
                             url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
@@ -635,6 +793,7 @@
                                 for (i in response.data) {
 
                                     $('#supplier').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                                    $('#supplierInvoice').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
 
 
                                 }
@@ -656,6 +815,64 @@ $('.js-example-disabled-results option').removeAttr('selected');
         $(document).ready(function () {
             $('.js-example-disabled-results').select2();
         });
+
+
+         function TakePaymentInvoice() {
+            var CustomerCol = $('#supplierInvoice').val();
+            var AmountCol = $('#AmountColInvoice').val();
+            var Invoice = $('#Invoice').val();
+            var RemarkCol = $('#RemarkColInvoice').val();
+
+
+            if (CustomerCol === "" || AmountCol === "" || Invoice === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+
+            }
+
+            else {
+                data = new FormData();
+                data.append('CustomerCol', CustomerCol);
+                data.append('AmountCol', AmountCol);
+                data.append('Invoice', Invoice);
+                data.append('RemarkCol', RemarkCol);
+
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'mamtaApp:take_collection_invoice_supplier_api' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            etab.api().ajax.reload();
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Collection Invoice Taken Successfully').fadeIn().fadeOut(2000);
+                            $('#CollectionFormInvoice')[0].reset();
+                            $('#CollectionModalInvoice').modal('hide');
+
+
+                        }
+
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error').fadeIn().fadeOut(2000);
+                        }
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+
+        }
+
     </script>
 
 
