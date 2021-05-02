@@ -4,10 +4,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+{#    <meta name="viewport" content="width=device-width, initial-scale=1">#}
     <title>123DACN</title>
     {% progressive_web_app_meta %}
-    {#    <meta name="viewport" content="width=device-width, initial-scale=1">#}
-    <link href="{% static 'plugins/bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/css/bootstrap-select.min.css">
 </head>
@@ -69,10 +70,8 @@
     }
 
     .nav-tabs > li > a:hover {
-        /* margin-right: 2px; */
         line-height: 1.42857143;
         border: 1px solid transparent;
-        /* border-radius: 4px 4px 0 0; */
     }
 
     .tabs-left > li.active > a::after {
@@ -354,7 +353,7 @@
                                         <div class="col-sm-4 col-xs-4">
 
                                             <div class="form-group"><br><select id="name"
-                                                                                class="selectpicker loadBuyer"
+                                                                                class="selectpicker loadBuyer form-control"
                                                                                 data-show-subtext="true"
                                                                                 data-live-search="true"></select></div>
                                         </div>
@@ -380,7 +379,7 @@
                                     <div class="row" id="collection1">
                                         <div class="col-sm-4 col-xs-4">
                                             <div class="form-group"><br><select id="partyName1"
-                                                                                class="selectpicker loadBuyer"
+                                                                                class="selectpicker loadBuyer form-control"
                                                                                 data-show-subtext="true"
                                                                                 data-live-search="true"></select></div>
                                         </div>
@@ -403,7 +402,7 @@
                                         <div class="row" id="collection2">
                                             <div class="col-sm-6 col-xs-6">
                                                 <div class="form-group"><br><select id="partyName"
-                                                                                    class="selectpicker loadBuyer"
+                                                                                    class="selectpicker loadBuyer form-control"
                                                                                     data-show-subtext="true"
                                                                                     data-live-search="true"></select>
                                                 </div>
@@ -545,8 +544,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
                                 <div style="text-align: center;">
                                     <button style="padding-right: 30px;padding-left: 30px;display: none;" type="button"
                                             class="btn btn-primary" id="loading">Saving ... Please wait.
@@ -674,7 +671,6 @@
                         </div>
                     </div>
 
-
                 </div>
 
 
@@ -683,8 +679,6 @@
         </div>
 
         <div class="col-md-3 col-sm-3 col-xs-12">
-
-
             <div class="form-group">
 
                 <div style="padding-top: 35px">
@@ -739,7 +733,7 @@
             </div>
 
             <div id="demo" class="collapse" style="padding-top: 10px;">
-                <span style="color: grey;font-weight: bold;margin-bottom: 10px;margin-top: 10px;">Skipped Invoice Numbers</span>
+                <span style="color: grey;font-weight: bold;margin-bottom: 10px;margin-top: 10px;">Skipped Invoice</span>
                 <div style="height: 250px;overflow-y: scroll;overflow-x: hidden;">
                     <div class="row">
                         <div class="col-xs-12" id="skipped">
@@ -752,12 +746,13 @@
         </div>
     </div>
     <div class="clearfix"></div>
+ <a data-toggle="modal" data-target="#addClosingBalance"
+       style="font-weight: bold;padding-right: 10px;background-color: #e9542c;border-color: #e9542c;right: 15%;bottom: 2%;position: fixed"
+       type="button" class="btn btn-warning">Closing Balance</a>
     <a data-toggle="collapse" data-target="#demo" onclick="skippedInvoiceDetails()"
        style="font-weight: bold;padding-right: 10px;background-color: #E91E63;border-color: #E91E63;right: 2%;bottom: 2%;position: fixed"
-       type="button" class="btn btn-warning">Skipped Invoice Numbers</a>
+       type="button" class="btn btn-warning">Skipped Invoice</a>
 </div>
-
-
 <div class="modal fade" id="addPartyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -828,6 +823,35 @@
     </div>
 </div>
 
+<div class="modal fade" id="addClosingBalance" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">Add Closing Balance</h4>
+            </div>
+            <form id="ClosingForm"> {% csrf_token %}
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="Balance" class="control-label">Closing Balance:</label>
+                        <input autocomplete="off" type="number" class="form-control" id="Balance">
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="addClosing()">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 </div>
 <div id="printDiv" style="width: 80mm;height: 80mm;padding: 2mm;font-size: 14px;margin-bottom: 10mm">
     <style>
@@ -866,8 +890,13 @@
 
     </p>
 </div>
-<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-<script src="{% static 'plugins/bootstrap/js/bootstrap.js' %}"></script>
+<script
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.12/dist/js/bootstrap-select.min.js"></script>
 
 <script>
@@ -876,22 +905,16 @@
         getInvoiceDetails(nid);
         return id = nid
     }
-
-
     $('#name_status').fadeIn().fadeOut(2000);
     $(getInvoiceDetails(id));
 
     function getInvoiceDetails(id) {
         $('#unuse').html('');
         $('#used').html('');
-
-
         $.ajax({
             type: 'get',
             url: "{% url 'invoiceApp:get_invoice_series' %}?id=" + id,
             success: function (response) {
-
-
                 for (i in response.data.Used) {
                     Used = '<span class="label label-success invoiceStyle" ><strong>' + response.data.Used[i].Serial + ' </strong></span>'
 
@@ -906,8 +929,7 @@
 
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                 errMsg();
             }
         });
 
@@ -917,13 +939,9 @@
         $('#SeriesID').val(SeriesID);
         $('#MainNumber').val(MainNumber);
         $('#MainSeries').val(MainSeries);
-
     }
-
     function changeTab(t) {
         var bill = '<div class="form-group"><br><div><input readonly type="text" class="form-control" id="billNumber"aria-describedby=""placeholder="Enter Invoice No"></div><input type="hidden" id="SeriesID" name="SeriesID"><input type="hidden" id="MainNumber" name="MainNumber"><input type="hidden" id="MainSeries" name="MainSeries"></div>'
-
-        // var collect = ' <div class="col-sm-6 col-xs-6"><div class="form-group"><br><select id="partyName" class="selectpicker" data-show-subtext="true"data-live-search="true"></select></div></div><div class="col-sm-6 col-xs-6"><div class="form-group"><br><input type="number" class="form-control" id="partyAmount"aria-describedby=""placeholder="Rs." value="0"></div></div>'
         if (t === 'cash') {
             $('#Card').css('display', 'none');
             $('#Commentary').css('display', '');
@@ -988,15 +1006,10 @@
             $('#Commission').css('display', 'none');
             $('#billType').val('Collection');
             $('#collectionBtn').css('display', '');
-            //$('#collection1').html(collect);
-            // $('#collection2').html('');
-            //getBuyerList();
             getCollectionDetails();
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-
-
         }
         if (t === 'cc') {
             $('#Card').css('display', 'none');
@@ -1008,15 +1021,10 @@
             $('#Commission').css('display', 'none');
             $('#billType').val('cc');
             $('#collectionBtn').css('display', '');
-            //$('#collection1').html('');
-            //$('#collection2').html(collect);
-            //getBuyerList();
             getCashCollectionDetails();
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-
-
         }
         if (t === 'return') {
             $('#Card').css('display', 'none');
@@ -1032,8 +1040,6 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-
-
         }
         if (t === 'commission') {
             $('#Card').css('display', 'none');
@@ -1049,8 +1055,6 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-
-
         }
         if (t === 'correction') {
             $('#Card').css('display', 'none');
@@ -1066,8 +1070,6 @@
             $('#Correction').css('display', '');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-
-
         }
         if (t === 'mix') {
             $('#Card').css('display', 'none');
@@ -1086,8 +1088,6 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', '');
             $('#Expense').css('display', 'none');
-
-
         }
         if (t === 'expense') {
             $('#Card').css('display', 'none');
@@ -1099,18 +1099,12 @@
             $('#Commission').css('display', 'none');
             $('#billType').val('expense');
             $('#collectionBtn').css('display', 'none');
-            //$('#collection1').html('');
-            //$('#collection2').html(collect);
-            //getBuyerList();
             getExpenseDetails();
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', '');
-
-
         }
     }
-
 
     $('#SalesForm').keypress(function (e) {
         if (e.which == 13) {
@@ -1188,8 +1182,7 @@
 
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                            errMsg();
                         }
                     });
 
@@ -1257,8 +1250,7 @@
 
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                            errMsg();
                         }
                     });
 
@@ -1297,8 +1289,6 @@
                         contentType: false,
                         cache: false,
                         processData: false,
-
-
                         success: function (response) {
                             if (response.message === 'success') {
                                 $('#name_status').addClass('validate_data');
@@ -1320,14 +1310,12 @@
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
 
                             }
-
                             $('#SearchForm')[0].reset();
                             $('#save').attr('disabled', false);
 
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                             errMsg();
                         }
                     });
 
@@ -1348,11 +1336,9 @@
                 data.append('MainSeries', MainSeries);
                 data.append('ChallanNumber', ChallanNumber);
                 data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
                 if (billNumber === "" || amountCredit === "" || name === "" || ChallanNumber === "") {
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-
                 }
                 else {
                     $('#save').attr('disabled', true);
@@ -1385,8 +1371,7 @@
                             $('#save').attr('disabled', false);
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                            errMsg();
                         }
                     });
 
@@ -1433,15 +1418,12 @@
                             $('#save').attr('disabled', false);
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                            errMsg();
                         }
                     });
 
                 }
             }
-
-
             if (billType === 'cc') {
                 var partyName = $('#partyName').val();
                 var partyAmount = $('#partyAmount').val();
@@ -1479,8 +1461,7 @@
                             getCashCollectionDetails();
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                             errMsg();
                             $('#save').attr('disabled', false);
                         }
                     });
@@ -1512,23 +1493,18 @@
                         contentType: false,
                         cache: false,
                         processData: false,
-
-
                         success: function (response) {
                             if (response.message === 'success') {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html('New Return Added.').fadeIn().fadeOut(2000);
                                 $('#SalesForm')[0].reset();
-
-
                             }
                             getReturnDetails();
                             $('#SearchForm')[0].reset();
                             $('#save').attr('disabled', false);
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                             errMsg();
                         }
 
 
@@ -1576,15 +1552,12 @@
                             $('#save').attr('disabled', false);
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                             errMsg();
                         }
                     });
 
                 }
             }
-
-
             if (billType === 'Correction') {
                 var sIDReturn = $('#sIDCorrection').val();
                 var invoiceNumberReturn = $('#invoiceNumberCorrection').val();
@@ -1630,14 +1603,9 @@
                             $('#save').attr('disabled', false);
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                            errMsg();
                         }
-
-
                     });
-
-
                 }
             }
         }
@@ -1665,23 +1633,18 @@
                         contentType: false,
                         cache: false,
                         processData: false,
-
-
                         success: function (response) {
                             if (response.message === 'success') {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html('New Expense Added.').fadeIn().fadeOut(2000);
                                 $('#SalesForm')[0].reset();
-
-
                             }
                             getExpenseDetails();
                             $('#SearchForm')[0].reset();
                             $('#save').attr('disabled', false);
                         },
                         error: function () {
-                            $('#name_status').addClass('validate_data');
-                            $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                             errMsg();
                         }
 
 
@@ -1691,8 +1654,6 @@
                 }
             }
         }
-
-
         $("#partyName1").val('');
         $("#partyName1").selectpicker("refresh");
         $("#partyName").val('');
@@ -1739,8 +1700,6 @@
                 contentType: false,
                 cache: false,
                 processData: false,
-
-
                 success: function (response) {
                     if (response.message === 'success') {
                         $('#resultDiv').css('display', '');
@@ -1750,8 +1709,6 @@
                         $('#s2').html(response.data['Amount']);
                         $('#s3').html(response.data['CustomerName']);
                         $('#s4').html(response.data['Datetime']);
-                        {#                        $('#s5').html(response.data['CreatedBy']);#}
-
                     }
                     else if (response.message === 'notFound') {
                         $('#useNow').html('');
@@ -1773,8 +1730,7 @@
                     return response;
                 },
                 error: function () {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                     errMsg();
                 }
             });
         }
@@ -1803,8 +1759,7 @@
                 }
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                 errMsg();
             }
         });
 
@@ -1824,8 +1779,7 @@
 
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                 errMsg();
             }
         });
 
@@ -1844,8 +1798,7 @@
 
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                 errMsg();
             }
         });
 
@@ -1878,8 +1831,6 @@
                 contentType: false,
                 cache: false,
                 processData: false,
-
-
                 success: function (response) {
                     if (response.message === 'success') {
                         $('#name_status').addClass('validate_data');
@@ -1905,50 +1856,17 @@
 
                 },
                 error: function () {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    errMsg();
                 }
             });
         }
 
     }
-
-    function getBuyerList() {
-        $('#partyName').html('');
-        $('#partyName1').html('');
-        $('#name').html('');
-        $.ajax({
-            type: 'get',
-            url: "{% url 'invoiceApp:get_buyer_list' %}",
-            success: function (response) {
-
-                $('#partyName').append('<option  value="" selected>Search Party</option>');
-                $('#partyName1').append('<option  value="" selected>Search Party</option>');
-                $('#name').append('<option  value="" selected>Search Party</option>');
-
-                for (i in response.data) {
-                    $('#partyName').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
-                    $("#partyName").selectpicker('refresh');
-                    $('#partyName1').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
-                    $("#partyName1").selectpicker('refresh');
-                    $('#name').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["Name"] + '">' + response.data[i]["Name"] + '</option>');
-                    $("#name").selectpicker('refresh');
-                }
-            },
-            error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
-            }
-        });
-
-    }
-
     function ChangePassword() {
         var nPass = $('#nPass').val();
         var rPass = $('#rPass').val();
         data = new FormData();
         data.append('nPass', nPass);
-
         if (nPass === "" || rPass === "") {
             $('#name_status').addClass('validate_data');
             $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
@@ -1982,18 +1900,15 @@
                     }
 
                     else {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error').fadeIn().fadeOut(2000);
+                         errMsg();
                     }
 
                 },
                 error: function () {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    errMsg();
                 }
             });
         }
-
     }
     $(getRecentThreeInvoices());
     function getRecentThreeInvoices() {
@@ -2004,20 +1919,15 @@
             success: function (response) {
                 for (i in response.data.Used) {
                     recent = '<span class="label label-success invoiceStyle" ><strong>' + response.data.Used[i].Serial + ' </strong></span>'
-                    //if ((i + 1) % 3 === 0) {
-                    //   recent = recent + '<br><br>'
-                    // }
                     $('#recent').append(recent)
                 }
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                errMsg();
             }
         });
 
     }
-
     function getReturnDetails() {
         $('#todayReturn').html('');
         $.ajax({
@@ -2032,13 +1942,10 @@
 
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                 errMsg();
             }
         });
-
     }
-
     function getCorrectionDetails() {
         $('#todayCorrection').html('');
         $.ajax({
@@ -2053,16 +1960,12 @@
 
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                 errMsg();
             }
         });
-
     }
     function getCommissionDetails() {
         $('#todayCommission').html('');
-
-
         $.ajax({
             type: 'get',
             url: "{% url 'invoiceApp:get_today_commission_by_company' %}",
@@ -2072,19 +1975,14 @@
 
                     $('#todayCommission').append(todayCommission)
                 }
-
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                 errMsg();
             }
         });
-
     }
     function getExpenseDetails() {
         $('#todayExpense').html('');
-
-
         $.ajax({
             type: 'get',
             url: "{% url 'invoiceApp:get_today_expense_by_company' %}",
@@ -2094,29 +1992,22 @@
 
                     $('#todayExpense').append(todayExpense)
                 }
-
             },
             error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                 errMsg();
             }
         });
 
     }
-
-
-    $(document).on("keypress", "input[aria-controls='bs-select-1']", function (e) {
-
-
-        if (e.which != 38 || e.which != 40) {
+    $(document).on("keydown", "input[aria-controls='bs-select-1']", function (e) {
+         if ((e.keyCode < 38 || e.keyCode > 40)) {
+            if ((e.keyCode !== 13 )){
             var inputVal = $(this).val();
             $('#name').html('');
             $.ajax({
                 type: 'get',
                 url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
                 success: function (response) {
-
-
                     for (i in response.data) {
                         $('#name').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["Name"] + '">' + response.data[i]["Name"] + '</option>');
 
@@ -2125,23 +2016,16 @@
 
                 },
                 error: function () {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    errMsg();
                 }
-
-
             });
-
-
         }
-
+         }
     });
+    $(document).on("keydown", "input[aria-controls='bs-select-3']", function (e) {
 
-
-    $(document).on("keypress", "input[aria-controls='bs-select-3']", function (e) {
-
-
-        if (e.which != 38 || e.which != 40) {
+          if ((e.keyCode < 38 || e.keyCode > 40)) {
+            if ((e.keyCode !== 13 )){
             var inputVal = $(this).val();
             $('#partyName').html('');
             $.ajax({
@@ -2158,49 +2042,84 @@
 
                 },
                 error: function () {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                     errMsg();
                 }
-
-
             });
-
-
         }
+          }
     });
 
-    $(document).on("keypress", "input[aria-controls='bs-select-2']", function (e) {
-
-        if (e.which != 38 || e.which != 40) {
+    $(document).on("keydown", "input[aria-controls='bs-select-2']", function (e) {
+        if ((e.keyCode < 38 || e.keyCode > 40)) {
+            if ((e.keyCode !== 13 )){
             var inputVal = $(this).val();
             $('#partyName1').html('');
             $.ajax({
                 type: 'get',
                 url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
                 success: function (response) {
-
                     $('#partyName1').append('<option  value="" selected>Search Party</option>');
-
                     for (i in response.data) {
-
                         $('#partyName1').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                    }
+                    $("#partyName1").selectpicker('refresh');
+                },
+                error: function () {
+                    errMsg();
+                }
+            });
+        }
+        }
+    });
+
+    function errMsg() {
+        $('#name_status').addClass('validate_data');
+        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+    }
+
+    function addClosing() {
+        var Balance = $('#Balance').val();
+
+        data = new FormData();
+        data.append('Balance', Balance);
+
+        if (Balance === "") {
+            $('#name_status').addClass('validate_data');
+            $('#name_status').html('Please Enter Closing Amount.').fadeIn().fadeOut(2000);
+
+        }
+        else {
+            $.ajax({
+                type: 'post',
+                url: '{% url 'invoiceApp:add_closing_balance_api' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Closing Balance Added.').fadeIn().fadeOut(2000);
+                        $('#ClosingForm')[0].reset();
+                        $('#addClosingBalance').modal('hide');
 
 
                     }
-                    $("#partyName1").selectpicker('refresh');
+
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Closing Balance already added').fadeIn().fadeOut(2000);
+                        $('#ClosingForm')[0].reset();
+                    }
 
                 },
                 error: function () {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    errMsg();
                 }
-
-
             });
-
-
         }
-    });
+
+    }
 </script>
 </body>
 </html>

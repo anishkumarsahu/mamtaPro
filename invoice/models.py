@@ -118,3 +118,16 @@ class Expense(models.Model):
 
     def __str__(self):
         return str(self.remark)
+
+
+class OpeningAndClosingBalance(models.Model):
+    openingAmount = models.FloatField(default=0.0)
+    closingAmount = models.FloatField(default=0.0)
+    isBalanceCreditedOnNextDay = models.BooleanField(default=False)
+    balanceDate = models.DateField(blank=True, null=True)
+    balanceCreditDate = models.DateField(blank=True, null=True)
+    companyID = models.ForeignKey(Company, blank=True, null=True)
+    createdBy = models.ForeignKey(StaffUser, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)

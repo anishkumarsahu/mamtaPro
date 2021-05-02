@@ -4,6 +4,7 @@
 
     <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+      <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
 
     <style>
         #leftsidebar {
@@ -87,8 +88,27 @@
         <div class="container-fluid">
 
             <div class="row clearfix">
-                 <div class="col-xs-12" style="text-align: right">
-                <button class="btn btn-primary" style="margin: 5px;"><a target="_blank" href="{% url 'invoiceApp:generate_collection_report_supplier' %}" style="text-decoration: none;color: white;">Download Today's Report</a></button>
+
+                <div class="col-md-4 col-sm-4 col-xs-5" style="padding-right: 2px!important;">
+                    <div class="form-group ">
+                        <label for="cc-number" class="control-label mb-1">Start Date</label>
+                        <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="startDate"
+                               id="startDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                        <span></span>
+                    </div>
+                </div>
+                 <div class="col-md-4 col-sm-4 col-xs-3 buttondown "
+                     style="text-align: center!important;margin-top: 30px;">
+                    <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
+                            onclick="getData()">Search
+                    </button>
+
+
+                </div>
+
+                 <div class="col-md-4 col-sm-4 col-xs-4" style="text-align: center!important;margin-top: 30px;" >
+                <button class="btn btn-primary" style=""><a target="_blank" href="{% url 'invoiceApp:generate_collection_report_supplier' %}" style="text-decoration: none;color: white;">Today's Report</a></button>
             </div>
 
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -506,13 +526,19 @@
     <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
     <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+   <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
+   <script>
+        $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+        $('.datepicker').datepicker({});
 
+
+    </script>
 
 
     <script>
         var etab;
         var itab;
-
+        var startDate = $('#startDate').val();
 
         $(document).ready(function () {
             $('.bootstrap-select').removeClass('form-control');
@@ -534,7 +560,7 @@
                 "pageLength": 8,
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{% url 'mamtaApp:SupplierCollectionListJson' %}"
+                "ajax": "{% url 'mamtaApp:SupplierCollectionListJson' %}?startDate=" + startDate
 
             });
 
@@ -556,14 +582,20 @@
                 "pageLength": 8,
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{% url 'mamtaApp:SupplierInvoiceCollectionListJson' %}"
+                "ajax": "{% url 'mamtaApp:SupplierInvoiceCollectionListJson' %}?startDate=" + startDate
 
             });
 
 
         });
 
+    function getData() {
+            var startDate = $('#startDate').val();
 
+
+            etab.api().ajax.url("{% url 'mamtaApp:SupplierCollectionListJson' %}?startDate=" + startDate).load();
+            itab.api().ajax.url("{% url 'mamtaApp:SupplierInvoiceCollectionListJson' %}?startDate=" + startDate).load();
+         }
         function ChangePassword() {
             var nPass = $('#nPass').val();
             var rPass = $('#rPass').val();
@@ -872,6 +904,7 @@ $('.js-example-disabled-results option').removeAttr('selected');
             }
 
         }
+
 
     </script>
 

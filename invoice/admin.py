@@ -53,3 +53,11 @@ class CommissionAdmin(admin.ModelAdmin):
 admin.site.register(Commission, CommissionAdmin)
 
 
+
+
+class OnCAdmin(admin.ModelAdmin):
+    search_fields = ['openingAmount', 'closingAmount', 'amount', 'datetime', ]
+    list_display = ['openingAmount', 'closingAmount','isBalanceCreditedOnNextDay','balanceDate','balanceCreditDate','companyID','createdBy','isDeleted', 'datetime', ]
+
+
+admin.site.register(OpeningAndClosingBalance, OnCAdmin)

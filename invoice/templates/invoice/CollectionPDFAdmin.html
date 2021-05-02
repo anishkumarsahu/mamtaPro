@@ -187,6 +187,99 @@
 
 
 
+
+
+<p style="font-size: 10px; margin: 2px;">Supply Collection (Cash)(Not Approved)</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in supCash_pending %}
+
+
+
+                <tr>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.remark }}</td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
+
+<p style="font-size: 10px; margin: 2px;">Supply Collection (CC)(Not Approved)</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in supCheque_pending %}
+
+
+
+                <tr>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.remark }}</td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
+
+
+<p style="font-size: 10px; margin: 2px;">Invoice Supply Collection (Not Approved)</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">InvoiceNo.</th>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in supInvoice_pending %}
+
+
+
+                <tr>
+                         <td > {{ foo.invoiceNumber }}</td>
+                         <td > {{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.remark }}</td>
+
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
+
 </div>
 
 

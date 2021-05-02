@@ -608,7 +608,9 @@ class SupplierCollectionListJson(BaseDatatableView):
     order_columns = ['id', 'buyerID', 'amount', 'paymentMode', 'remark', 'datetime']
 
     def get_initial_queryset(self):
-        return SupplierCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=self.request.user.pk, isDeleted__exact=False)
+        sDate = self.request.GET.get('startDate')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        return SupplierCollection.objects.filter(datetime__icontains=startDate.date(), collectedBy__userID_id=self.request.user.pk, isDeleted__exact=False)
 
 
     def filter_queryset(self, qs):
@@ -642,7 +644,9 @@ class SupplierInvoiceCollectionListJson(BaseDatatableView):
     order_columns = ['id', 'buyerID', 'amount', 'invoiceNumber', 'remark', 'datetime']
 
     def get_initial_queryset(self):
-        return SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=self.request.user.pk, isDeleted__exact=False)
+        sDate = self.request.GET.get('startDate')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        return SupplierInvoiceCollection.objects.filter(datetime__icontains=startDate.date(), collectedBy__userID_id=self.request.user.pk, isDeleted__exact=False)
 
 
     def filter_queryset(self, qs):
@@ -1618,9 +1622,11 @@ def supply_home(request):
     request.session['nav'] = '8'
 
     user = StaffUser.objects.get(userID_id=request.user.pk)
+    date = datetime.today().now().strftime('%d/%m/%Y')
 
     context = {
-        'user':user
+        'user':user,
+        'date': date,
     }
 
     return render(request, 'mamtaApp/supply/supplyIndex.html', context)

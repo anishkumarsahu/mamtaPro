@@ -83,4 +83,7 @@ urlpatterns = [
     url(r'^get_today_expense_by_company/$', get_today_expense_by_company, name='get_today_expense_by_company'),
     url(r'^edit_expense/$', edit_expense, name='edit_expense'),
     url(r'^delete_expense_api/$', delete_expense_api, name='delete_expense_api'),
+
+
+    url(r'^add_closing_balance_api/$', add_closing_balance_api, name='add_closing_balance_api'),
 ]

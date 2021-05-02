@@ -17,6 +17,39 @@ from .models import *
 from datetime import datetime, timedelta, date
 import calendar
 
+def enable_opening_balance(request):
+    try:
+        try:
+            user = StaffUser.objects.get(userID_id=request.user.pk)
+            ex = OpeningAndClosingBalance.objects.get(isBalanceCreditedOnNextDay=False,balanceDate__lt=datetime.today().date()
+                                                  ,companyID_id=user.companyID_id)
+
+            ex.isBalanceCreditedOnNextDay = True
+            ex.balanceCreditDate = datetime.today().date()
+            ex.save()
+
+            n = OpeningAndClosingBalance()
+            n.openingAmount = ex.closingAmount
+            n.createdBy_id = user.pk
+            n.balanceDate = datetime.today().date()
+            n.companyID_id = user.companyID_id
+            n.save()
+        except:
+            ex = OpeningAndClosingBalance.objects.get(isBalanceCreditedOnNextDay=False,balanceDate__lt=datetime.today().date(),
+                                                      companyID_id=1)
+
+            ex.isBalanceCreditedOnNextDay = True
+            ex.balanceCreditDate = datetime.today().date()
+            ex.save()
+
+            n = OpeningAndClosingBalance()
+            n.openingAmount = ex.closingAmount
+            n.balanceDate = datetime.today().date()
+            n.companyID_id = 1
+            n.save()
+    except:
+        pass
+
 
 class InvoiceSeriesListJson(BaseDatatableView):
     order_columns = ['id', 'series', 'companyID']
@@ -931,6 +964,7 @@ def create_invoice(request):
                     user = StaffUser.objects.get(userID_id=request.user.pk)
                     sale.createdBy_id = user.pk
                 sale.save()
+                enable_opening_balance(request)
                 try:
                     by = sale.createdBy.name
                 except:
@@ -1269,6 +1303,24 @@ def generate_net_report(request):
                                      salesType__icontains='Mix',
                                      InvoiceSeriesID__companyID_id=int(user.companyID_id)).order_by('datetime')
 
+    cash_total = 0.0
+    for cash in sales_cash:
+        cash_total = cash_total + cash.amount
+
+    card_total = 0.0
+    for card in sales_card:
+        card_total = card_total + card.amount
+
+    credit_total = 0.0
+    for credit in sales_credit:
+        credit_total = credit_total + credit.amount
+
+    mix_cash_total = 0.0
+    mix_card_total = 0.0
+    for mix in sales_mix:
+        mix_cash_total = mix_cash_total + mix.amount
+        mix_card_total = mix_card_total + mix.mixCardAmount
+
     skipped_list = []
     invoiceByUser = InvoiceSeries.objects.filter(companyID_id=user.companyID_id, isCompleted__exact=False, isDeleted__exact=False)
     for invoice in invoiceByUser:
@@ -1294,6 +1346,23 @@ def generate_net_report(request):
     expenses = Expense.objects.filter(datetime__icontains=datetime.today().date(),
                                             companyID_id=user.companyID_id).order_by('datetime')
 
+    return_total = 0.0
+    for am in returns:
+        return_total = return_total + am.amount
+
+    correct_total = 0.0
+    for ame in corrections:
+        correct_total = correct_total + ame.amount
+
+
+    commission_total = 0.0
+    for c in commissions:
+        commission_total = commission_total + c.amount
+
+    expense_total = 0.0
+    for e in expenses:
+        expense_total = expense_total + e.amount
+
     context = {
         'sales_cash': sales_cash,
         'sales_card': sales_card,
@@ -1305,7 +1374,17 @@ def generate_net_report(request):
         'returns': returns,
         'commissions': commissions,
         'corrections': corrections,
-        'expenses':expenses
+        'expenses':expenses,
+        'cash_total': cash_total,
+        'card_total': card_total,
+        'credit_total': credit_total,
+        'mix_cash_total': mix_cash_total,
+        'mix_card_total': mix_card_total,
+        'return_total': return_total,
+        'correct_total': correct_total,
+        'commission_total': commission_total,
+        'expense_total': expense_total,
+        'mix_total': mix_cash_total + mix_card_total,
     }
 
     response = HttpResponse(content_type="application/pdf")
@@ -1414,10 +1493,15 @@ def generate_net_report_admin(request):
     sup_total_cash = 0.0
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
+    try:
+        onc = OpeningAndClosingBalance.objects.get(balanceDate = day_string, companyID_id=int(companyID))
+        opening = onc.openingAmount
+        closing = onc.closingAmount
+    except:
+        opening = 0.0
+        closing = 0.0
 
-
-
-    rokad_value = float(col_total_cash)+float(sup_total_cash)+float(cash_total)+float(mix_cash_total)+float(correct_total)-float(expense_total)-float(commission_total)-float(return_total)
+    rokad_value =opening - closing + float(col_total_cash)+float(sup_total_cash)+float(cash_total)+float(mix_cash_total)+float(correct_total)-float(expense_total)-float(commission_total)-float(return_total)
     context = {
         'sales_cash': sales_cash,
         'sales_card': sales_card,
@@ -1440,7 +1524,9 @@ def generate_net_report_admin(request):
         'mix_total': mix_cash_total + mix_card_total,
         'expense_total':expense_total,
         'expenses':expenses,
-        'rokad':rokad_value
+        'rokad':rokad_value,
+        'opening':opening,
+        'closing':closing
 
     }
 
@@ -1729,6 +1815,7 @@ def take_collection(request):
             buy = Buyer.objects.get(pk=int(partyName))
             buy.closingBalance = buy.closingBalance - float(partyAmount)
             buy.save()
+            enable_opening_balance(request)
             return JsonResponse({'message': 'success'})
 
         except:
@@ -1757,6 +1844,7 @@ def take_cash_collection(request):
             buy = Buyer.objects.get(pk=int(partyName))
             buy.closingBalance = buy.closingBalance - float(partyAmount)
             buy.save()
+            enable_opening_balance(request)
             return JsonResponse({'message': 'success'})
 
         except:
@@ -1952,10 +2040,21 @@ def generate_collection_report_admin(request):
 
 
     supInvoice= SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=int(companyID),
-                                                ).order_by('datetime')
+                                                         isApproved__exact=True,
+                                                         ).order_by('datetime')
     sup_total_inv = 0.0
     for inv in supInvoice:
         sup_total_inv = sup_total_inv + inv.amount
+
+    supInvoice_pending = SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(),
+                                                          companyID_id=int(companyID),
+                                                          isApproved__exact=False,
+                                                          ).order_by('datetime')
+    supCash_pending = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                 isApproved__exact=False, paymentMode ='Cash' ).order_by('datetime')
+
+    supCheque_pending = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                isApproved__exact=False, paymentMode='Cheque').order_by('datetime')
     context = {
         'date': gDate,
         'company': company.name,
@@ -1968,7 +2067,10 @@ def generate_collection_report_admin(request):
         'supCheque': supCheque,
         'sup_total_cheque': sup_total_cheque,
         'invoice_total': sup_total_inv,
-        'invoices': supInvoice
+        'invoices': supInvoice,
+        'supInvoice_pending': supInvoice_pending,
+        'supCash_pending': supCash_pending,
+        'supCheque_pending': supCheque_pending,
 
     }
 
@@ -2085,6 +2187,7 @@ def return_collection(request):
 
                 re.companyID_id = c.companyID_id
             re.save()
+            enable_opening_balance(request)
             return JsonResponse({'message': 'success'})
 
         except:
@@ -2113,6 +2216,7 @@ def correct_collection(request):
 
                 re.companyID_id = c.companyID_id
             re.save()
+            enable_opening_balance(request)
             try:
                 by = re.createdBy.name
             except:
@@ -2275,6 +2379,7 @@ def commission_collection(request):
                 re.companyID_id = c.companyID_id
 
             re.save()
+            enable_opening_balance(request)
             return JsonResponse({'message': 'success'})
 
         except:
@@ -2360,6 +2465,7 @@ def add_expense(request):
             except:
                 ex.companyID_id = 1
             ex.save()
+            enable_opening_balance(request)
 
 
             return JsonResponse({'message': 'success',})
@@ -2425,3 +2531,36 @@ def delete_expense_api(request):
         except:
             messages.success(request, 'Error. Please try again.')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@csrf_exempt
+def add_closing_balance_api(request):
+    if request.method == 'POST':
+        Balance = request.POST.get('Balance')
+        try:
+            try:
+                user = StaffUser.objects.get(userID_id=request.user.pk)
+                ex = OpeningAndClosingBalance.objects.get(balanceDate=datetime.today().date(),
+                                                          isBalanceCreditedOnNextDay = False,
+                                                          companyID_id=user.companyID_id )
+                if ex.closingAmount == 0.0:
+                    ex.closingAmount = float(Balance)
+                    ex.createdBy_id = user.pk
+                    ex.save()
+                    return JsonResponse({'message': 'success', })
+                else:
+                    return JsonResponse({'message': 'Already Added.'})
+
+            except:
+
+                ex = OpeningAndClosingBalance.objects.get(balanceDate=datetime.today().date(),isBalanceCreditedOnNextDay = False,
+                                                          companyID_id=1)
+                if ex.closingAmount == 0.0:
+                    ex.closingAmount = float(Balance)
+                    ex.save()
+                    return JsonResponse({'message': 'success', })
+                else:
+                    return JsonResponse({'message': 'Already Added.'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
