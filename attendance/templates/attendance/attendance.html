@@ -1,7 +1,5 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
-
 {% block body %}
     <style>
         #leftsidebar {
@@ -293,14 +291,15 @@
                             </div>
 
                             <div>
-                             <input type="hidden" id="logoutEmpID">
+                                <input type="hidden" id="logoutEmpID">
 
                                 <input type="password" placeholder="Password" id="logoutPassword"
                                        name="psw" required
                                        style="background-color: #cccccc">
                                 <textarea placeholder="Comment..."
-                                          style="width: 96%; background-color: #cccccc; padding: 22px 15px" id="logoutRemark"></textarea>
-                                 <img src="NaN" alt="" id="logoutImg" style="display: none">
+                                          style="width: 96%; background-color: #cccccc; padding: 22px 15px"
+                                          id="logoutRemark"></textarea>
+                                <img src="NaN" alt="" id="logoutImg" style="display: none">
                             </div>
                             <div class="clearfix">
                                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel
@@ -320,16 +319,9 @@
         </div>
     </div>
 
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-
-
+{% endblock %}
+{% block js %}
     <script type="text/javascript" src="{% static 'attendance/webcam.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
     <script src="{% static 'js/pages/ui/modals.js' %}"></script>
 
     <script language="JavaScript">
@@ -424,7 +416,7 @@
 
 
         function logout_preview_snapshot_out() {
- Webcam.snap(function (data_uri) {
+            Webcam.snap(function (data_uri) {
                 // display results in page
                 $('#logoutImg').attr("src", data_uri);
 
@@ -449,8 +441,6 @@
             // cancel preview freeze and return to live camera view
             Webcam.unfreeze();
             $('#logoutImg').attr("src", 'NaN');
-
-
 
 
             // swap buttons back to first set
@@ -619,17 +609,9 @@
         }
 
 
-
     </script>
 
 
-
-
-
-{% endblock %}
-
-
-{% block js %}
 
 
 {% endblock %}

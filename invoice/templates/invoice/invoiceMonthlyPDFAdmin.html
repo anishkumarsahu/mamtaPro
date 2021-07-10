@@ -6,38 +6,38 @@
     <title>123DACN</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <style>
-        {% comment %}body {
-            -weasy-hyphens: auto;
-        }{% endcomment %}
         @page {
-                size: A5;
-                margin: .3cm;
-            }
+            size: A5;
+            margin: .3cm;
+        }
+
         section {
             columns: 3;
         }
- table.table-bordered > thead > tr > th{
-  border:1px solid grey!important;
-}
-            table.table-bordered > tbody > tr > td{
-  border:1px solid grey!important;
-}
+
+        table.table-bordered > thead > tr > th {
+            border: 1px solid grey !important;
+        }
+
+        table.table-bordered > tbody > tr > td {
+            border: 1px solid grey !important;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="row">
         <span style="font-size: 10px;">Month/Year: {{ Month }}/{{ Year }}</span>
-       <span style="font-size: 9px;float: right">123DACN Sales Report-({{ company }})</span>
+        <span style="font-size: 9px;float: right">123DACN Sales Report-({{ company }})</span>
     </div>
-<p style="font-size: 10px; margin: 2px;">Cash<span style="float: right">Total: ₹ <strong>{{ Gtotal }}</strong></span></p>
+    <p style="font-size: 10px; margin: 2px;">Cash<span
+            style="float: right">Total: ₹ <strong>{{ Gtotal }}</strong></span></p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Date</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
@@ -45,22 +45,19 @@
                 <tr>
                     <td>{{ foo.Date|date }}</td>
                     <td>{{ foo.Total }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-<p style="font-size: 10px; margin: 2px;">Card<span style="float: right">Total: ₹ <strong>{{ Cardtotal }}</strong></span></p>
+    <p style="font-size: 10px; margin: 2px;">Card<span
+            style="float: right">Total: ₹ <strong>{{ Cardtotal }}</strong></span></p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Date</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
@@ -68,21 +65,20 @@
                 <tr>
                     <td>{{ foo.Date|date }}</td>
                     <td>{{ foo.Total }}</td>
-
                 </tr>
             {% endfor %}
 
             </tbody>
         </table>
     </section>
-<p style="font-size: 10px; margin: 2px;">Collection<span style="float: right">Total: ₹ <strong>{{ Ctotal }}</strong></span></p>
+    <p style="font-size: 10px; margin: 2px;">Collection<span style="float: right">Total: ₹ <strong>{{ Ctotal }}</strong></span>
+    </p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Date</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
@@ -90,23 +86,19 @@
                 <tr>
                     <td>{{ foo.Date|date }}</td>
                     <td>{{ foo.Total }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-
-<p style="font-size: 10px; margin: 2px;">CC<span style="float: right">Total: ₹ <strong>{{ CtotalCash }}</strong></span></p>
+    <p style="font-size: 10px; margin: 2px;">CC<span
+            style="float: right">Total: ₹ <strong>{{ CtotalCash }}</strong></span></p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Date</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
@@ -114,18 +106,11 @@
                 <tr>
                     <td>{{ foo.Date|date }}</td>
                     <td>{{ foo.Total }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-
-
 </div>
-
-
 </body>
 </html>

@@ -6,28 +6,30 @@
     <title>123DACN</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <style>
-        {% comment %}body {
-            -weasy-hyphens: auto;
-        }{% endcomment %}
         @page {
-                size: A5;
-                margin: .3cm;
-            }
+            size: A5;
+            margin: .3cm;
+        }
+
         section {
             columns: 3;
         }
+
         #Credit {
             columns: 2;
         }
+
         .skip {
             columns: 7;
         }
-                table.table-bordered > thead > tr > th{
-  border:1px solid grey!important;
-}
-            table.table-bordered > tbody > tr > td{
-  border:1px solid grey!important;
-}
+
+        table.table-bordered > thead > tr > th {
+            border: 1px solid grey !important;
+        }
+
+        table.table-bordered > tbody > tr > td {
+            border: 1px solid grey !important;
+        }
 
     </style>
 </head>
@@ -35,35 +37,28 @@
 <div class="container">
     <div class="row">
         <span style="font-size: 10px;">Date: {{ date }}</span>
-       <span style="font-size: 9px;float: right">123DACN Sales Report-({{ company }})</span>
+        <span style="font-size: 9px;float: right">123DACN Sales Report-({{ company }})</span>
     </div>
-<p style="font-size: 10px; margin: 2px;">Cash</p>
+    <p style="font-size: 10px; margin: 2px;">Cash</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Bill_No.</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in sales_cash %}
-
-
-
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-<p style="font-size: 10px; margin: 2px;">Card</p>
+    <p style="font-size: 10px; margin: 2px;">Card</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -71,29 +66,21 @@
                 <th scope="col">Bill_No.</th>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Remark(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in sales_card %}
-
-
-
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.remark }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-<p style="font-size: 10px; margin: 2px;">Credit </p>
-
-        <section id="Credit">
+    <p style="font-size: 10px; margin: 2px;">Credit </p>
+    <section id="Credit">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
@@ -101,30 +88,21 @@
                 <th scope="col">Chal_No.</th>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Cus_Name</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in sales_credit %}
-
-
-
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.challanNumber }}</td>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.customerName|truncatechars:20 }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-
-<p style="font-size: 10px; margin: 2px;">Mix</p>
-
+    <p style="font-size: 10px; margin: 2px;">Mix</p>
     <section id="Mix">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -132,162 +110,113 @@
                 <th scope="col">Bill_No.</th>
                 <th scope="col">CashAmount(₹).</th>
                 <th scope="col">CardAmount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in sales_mix %}
-
-
-
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.mixCardAmount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-<p style="font-size: 10px; margin: 2px;">Returns</p>
+    <p style="font-size: 10px; margin: 2px;">Returns</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in returns %}
-
-
-
                 <tr>
                     <td>{{ foo.actualBillNumber }}</td>
                     <td>-{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-<p style="font-size: 10px; margin: 2px;">Corrections</p>
+    <p style="font-size: 10px; margin: 2px;">Corrections</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in corrections %}
-
-
-
                 <tr>
                     <td>{{ foo.actualBillNumber }}</td>
                     <td>{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-
-<p style="font-size: 10px; margin: 2px;">Commission</p>
+    <p style="font-size: 10px; margin: 2px;">Commission</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in commissions %}
-
-
-
                 <tr>
                     <td>{{ foo.actualBillNumber }}</td>
                     <td>-{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
 
             </tbody>
         </table>
     </section>
-
-
-<p style="font-size: 10px; margin: 2px;">Expenses </p>
+    <p style="font-size: 10px; margin: 2px;">Expenses </p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Remark</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in expenses %}
-
-
-
                 <tr>
                     <td>{{ foo.remark }}</td>
                     <td>{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-<p style="font-size: 10px; margin: 2px;">Skipped Invoice Number </p>
+    <p style="font-size: 10px; margin: 2px;">Skipped Invoice Number </p>
     <section class="skip">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">InvoiceNo.</th>
-
-
-
             </tr>
             </thead>
             <tbody>
             {% for foo in skipped %}
-
-
-
                 <tr>
                     <th scope="row">{{ foo }}</th>
-
-
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-
 </div>
-
-
 </body>
 </html>

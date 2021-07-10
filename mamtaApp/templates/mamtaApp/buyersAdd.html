@@ -1,15 +1,11 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
-
-
-
 {% block body %}
     <style>
-    .hidePadding{
-        padding-left: 0!important;
-        padding-right: 0!important;
-    }
+        .hidePadding {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
     </style>
 
     <section class="content">
@@ -31,7 +27,8 @@
 
                         </div>
                         <div class="body">
-                            <form id="AddBuyerForm" action="{% url 'mamtaApp:add_buyer_api' %}" method="post" style="text-align: center">
+                            <form id="AddBuyerForm" action="{% url 'mamtaApp:add_buyer_api' %}" method="post"
+                                  style="text-align: center">
                                 {% csrf_token %}
                                 <div class="row clearfix">
                                     <div class="col-md-12">
@@ -86,24 +83,15 @@
                                             class="btn btn-link waves-effect " onclick="AddBuyer()">SAVE
                                     </button>
                                 </div>
-
-
                             </form>
 
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- #END# Input -->
-
         </div>
     </section>
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-
-
 {% endblock %}
-
 {% block js %}
     <script>
         function AddBuyer() {
@@ -126,7 +114,5 @@
             }
 
         }
-
-
     </script>
 {% endblock %}

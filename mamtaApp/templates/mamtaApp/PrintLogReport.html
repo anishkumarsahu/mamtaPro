@@ -1,10 +1,7 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
-
     <style>
         .zoom {
 
@@ -15,7 +12,8 @@
         }
 
         .zoom:hover {
-            transform: scale(3);  }
+            transform: scale(3);
+        }
 
         .card {
             background: #fff;
@@ -52,8 +50,6 @@
             z-index: 10;
             display: block;
         }
-
-
 
     </style>
 
@@ -134,7 +130,7 @@
                                     </thead>
                                     <tfoot>
                                     <tr>
-                                         <th>InvoiceNo.</th>
+                                        <th>InvoiceNo.</th>
                                         <th>AddedBy</th>
                                         <th>Amount(₹)</th>
                                         <th>Type</th>
@@ -155,18 +151,9 @@
         </div>
     </section>
 
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
-
-
     <script>
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $('.datepicker').datepicker({});
@@ -178,7 +165,7 @@
         var ctab;
 
         $(document).ready(function () {
-         $('.bootstrap-select').removeClass('form-control');
+            $('.bootstrap-select').removeClass('form-control');
 
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
@@ -217,9 +204,6 @@
         }
 
 
-
-
     </script>
-
 
 {% endblock %}

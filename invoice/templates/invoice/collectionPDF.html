@@ -6,37 +6,58 @@
     <title>123DACN</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <style>
-        {% comment %}body {
-            -weasy-hyphens: auto;
-        }{% endcomment %}
+        @page {
+            size: A5;
+            margin: .3cm;
+        }
 
-       @page {
-                size: A5;
-                margin: .3cm;
-            }
         section {
             columns: 2;
         }
+
         .skip {
             columns: 7;
         }
-         table.table-bordered > thead > tr > th{
-  border:1px solid grey!important;
-}
-            table.table-bordered > tbody > tr > td{
-  border:1px solid grey!important;
-}
+
+        table.table-bordered > thead > tr > th {
+            border: 1px solid grey !important;
+        }
+
+        table.table-bordered > tbody > tr > td {
+            border: 1px solid grey !important;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="row">
         <span style="font-size: 10px;">Date: {{ date }}</span>
-       <span style="font-size: 9px;float: right">123DACN Collection Report -({{user.companyID.name }})</span>
+        <span style="font-size: 9px;float: right">123DACN Collection Report -({{ user.companyID.name }})</span>
     </div>
-
-
-<p style="font-size: 10px; margin: 2px;">Collection</p>
+{#    <p style="font-size: 10px; margin: 2px;">Collection</p>#}
+{#    <section>#}
+{#        <table class="table table-bordered" style="font-size: 9px;">#}
+{#            <thead>#}
+{#            <tr>#}
+{#                <th scope="col">Amount(₹)</th>#}
+{#                <th scope="col">Cus_Name</th>#}
+{#                <th scope="col">Remark</th>#}
+{#            </tr>#}
+{#            </thead>#}
+{#            <tbody>#}
+{#            {% for foo in col %}#}
+{#                <tr>#}
+{#                    <td>{{ foo.amount }}</td>#}
+{#                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>#}
+{#                    <td>{{ foo.remark }}</td>#}
+{##}
+{#                </tr>#}
+{#            {% endfor %}#}
+{##}
+{#            </tbody>#}
+{#        </table>#}
+{#    </section>#}
+    <p style="font-size: 10px; margin: 2px;">CC</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -44,41 +65,10 @@
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Cus_Name</th>
                 <th scope="col">Remark</th>
-
-            </tr>
-            </thead>
-            <tbody>
-            {% for foo in col %}
-
-
-
-                <tr>
-                    <td>{{ foo.amount }}</td>
-                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
-                    <td>{{ foo.remark }}</td>
-
-                </tr>
-            {% endfor %}
-
-            </tbody>
-        </table>
-    </section>
-<p style="font-size: 10px; margin: 2px;">CC</p>
-    <section>
-        <table class="table table-bordered" style="font-size: 9px;">
-            <thead>
-            <tr>
-                <th scope="col">Amount(₹)</th>
-                <th scope="col">Cus_Name</th>
-                <th scope="col">Remark</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in colCash %}
-
-
-
                 <tr>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
@@ -90,9 +80,6 @@
             </tbody>
         </table>
     </section>
-
 </div>
-
-
 </body>
 </html>

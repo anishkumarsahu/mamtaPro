@@ -138,10 +138,14 @@ class LoginListJson(BaseDatatableView):
         json_data = []
         i = 1
         for item in qs:
+            try:
+                u = item.userID.username
+            except:
+                u ="Admin"
 
             json_data.append([
                 escape(i),
-                escape(item.userID.username),  # escape HTML for security reasons
+                u,  # escape HTML for security reasons
                 escape(item.statusType),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
 
@@ -172,9 +176,13 @@ class LogoutListJson(BaseDatatableView):
         json_data = []
         i = 1
         for item in qs:
+            try:
+                u = item.userID.username
+            except:
+                u ="Admin"
             json_data.append([
                 escape(i),
-                escape(item.userID.username),  # escape HTML for security reasons
+                u,  # escape HTML for security reasons
                 escape(item.statusType),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
 
@@ -355,12 +363,14 @@ class DebitListJson(BaseDatatableView):
                     
                 '''.format(chequeImage, item.latitude, item.longitude)
 
-
-
+            try:
+                name = escape(item.collectedBy.name)
+            except:
+                name = "Admin"
             json_data.append([
                 escape(i),
                 escape(item.amount),  # escape HTML for security reasons
-                escape(item.collectedBy.name),  # escape HTML for security reasons
+                name,  # escape HTML for security reasons
                 escape(item.paymentMode),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
@@ -917,7 +927,11 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
 
 @check_group('Both')
 def home(request):
-    b = json.loads(Balance().decode('utf-8'))
+    try:
+        b = json.loads(Balance().decode('utf-8'))
+        bal =b['balance']['sms']
+    except:
+        bal = 0
     request.session['nav'] = '1'
     staff = StaffUser.objects.filter(isDeleted__exact=False).count()
     buyer = Buyer.objects.filter(isDeleted__exact=False).count()
@@ -941,7 +955,7 @@ def home(request):
         'credit':credit['amount__sum'],
         'dates':date_list[::-1],
         'c_list':credit_list[::-1],
-        'sms':b['balance']['sms'],
+        'sms':bal,
     }
 
     return render(request, 'mamtaApp/index.html',context)

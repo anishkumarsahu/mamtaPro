@@ -1,11 +1,6 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
-
-
-
 {% block body %}
-
     <style>
         .zoom {
 
@@ -32,10 +27,7 @@
         }
 
     </style>
-
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
-
     <style>
         .avatar-upload {
             position: relative;
@@ -104,15 +96,8 @@
         }
 
     </style>
-
-    <!-- #Top Bar -->
-
-
     <section class="content">
         <div class="container-fluid">
-
-
-            <!-- Striped Rows -->
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-right: 0;padding-left: 0">
                     <div class="card">
@@ -291,22 +276,16 @@
                                 <button type="button" style="background-color: #cabdbd" id="saveBtn" disabled
                                         class="btn btn-link waves-effect " onclick="AddStaff()">SAVE
                                 </button>
-
-
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- #END# Striped Rows -->
-
-
         </div>
     </section>
+{% endblock %}
 
-
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+{% block js %}
     <script>
         function readURL(input) {
             if (input.files && input.files[0]) {
@@ -398,6 +377,4 @@
 
 
     </script>
-
-
 {% endblock %}

@@ -1,25 +1,7 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
-
-
-
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <style>
-        .zoom {
-
-            transition: transform .2s; /* Animation */
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-        }
-
-        .zoom:hover {
-            transform: scale(3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
-        }
-
         .card {
             background: #fff;
             min-height: 50px;
@@ -55,8 +37,6 @@
                     {% endif %}
                 </div>
             </div>
-
-
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
                     <div class="card">
@@ -76,13 +56,6 @@
                                         <th>Sl. No</th>
                                         <th>Series</th>
                                         <th>Company</th>
-{% comment %}
-                                        <th>Assigned_To</th>
-{% endcomment %}
-{% comment %}
-                                        <th>Action</th>
-{% endcomment %}
-
                                     </tr>
                                     </thead>
                                     <tfoot>
@@ -90,18 +63,10 @@
                                         <th>Sl. No</th>
                                         <th>Series</th>
                                         <th>Company</th>
-{% comment %}
-                                        <th>Assigned_To</th>
-{% endcomment %}
-{% comment %}
-                                        <th>Action</th>
-{% endcomment %}
 
                                     </tr>
                                     </tfoot>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -109,11 +74,8 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </section>
-
     <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -129,45 +91,22 @@
                                     <div class="body">
 
                                         <div class="row clearfix">
-                                           {% comment %} <div class="col-md-12">
+                                            <div class="col-md-12 col-sm-12">
                                                 <div class="input-group">
                                         <span class="input-group-addon">
-                                            <i class="material-icons">face</i>
+                                        <i class="material-icons">location_city</i>
                                         </span>
                                                     <div class="form-line">
-                                                        <select class="form-control show-tick" name="buyerID"
-                                                                id="buyerID">
-                                                            <option value=""> Select Staff</option>
-
-                                                            {% for user in staff %}
-                                                                <option value="{{ user.pk }}"> {{ user.name }}
-                                                                    - {{ user.address }}
-                                                                </option>
+                                                        <select class="form-control show-tick" id="companyID"
+                                                                name="companyID">
+                                                            <option value="all">Select Company</option>
+                                                            {% for comp in company %}
+                                                                <option value="{{ comp.pk }}">{{ comp.name }}</option>
                                                             {% endfor %}
-
-
                                                         </select>
                                                     </div>
                                                 </div>
                                             </div>
-{% endcomment %}
-<div class="col-md-12 col-sm-12">
-                                                        <div class="input-group">
-                                        <span class="input-group-addon">
-                                        <i class="material-icons">location_city</i>
-                                        </span>
-                                                            <div class="form-line">
-                                                                 <select class="form-control show-tick" id="companyID" name="companyID">
-                                                                <option value="all">Select Company</option>
-                                                                {% for comp in company %}
-                                                                    <option value="{{ comp.pk }}">{{ comp.name }}</option>
-                                                                {% endfor %}
-
-
-                                                            </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                         </div>
                                         <div class="row clearfix">
                                             <div class="col-md-12">
@@ -190,8 +129,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </form>
 
                 </div>
@@ -202,8 +139,7 @@
             </div>
         </div>
     </div>
-
-     <div class="modal fade" id="defaultModalEdit" tabindex="-1" role="dialog">
+    <div class="modal fade" id="defaultModalEdit" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -215,34 +151,11 @@
                         <div class="row clearfix">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="card">
-<input type="hidden" id="invoiceID" name="invoiceID" >
+                                    <input type="hidden" id="invoiceID" name="invoiceID">
 
                                     <div class="body">
 
                                         <div class="row clearfix">
-                                           {% comment %} <div class="col-md-12">
-                                                <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <i class="material-icons">face</i>
-                                        </span>
-                                                    <div class="form-line">
-                                                        <select class="form-control show-tick" name="ebuyerID"
-                                                                id="ebuyerID">
-                                                            <option value=""> Select Staff</option>
-
-                                                            {% for user in staff %}
-                                                                <option value="{{ user.pk }}"> {{ user.name }}
-                                                                    - {{ user.address }}
-                                                                </option>
-                                                            {% endfor %}
-
-
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>{% endcomment %}
-
-
                                         </div>
                                         <div class="row clearfix">
                                             <div class="col-md-12">
@@ -259,16 +172,11 @@
                                             </div>
 
                                         </div>
-
-
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </form>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link waves-effect" onclick="EditInvoice()">Submit</button>
@@ -277,15 +185,8 @@
             </div>
         </div>
     </div>
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script>
         $(document).ready(function () {
             $('#buyerCreditTable').dataTable({
@@ -296,7 +197,7 @@
                     {"name": "id", "targets": 0, "orderable": false},
                     {"name": "series", "targets": 1, "orderable": true},
                     {"name": "companyID", "targets": 2, "orderable": true},
-{#                    {"name": "action", "targets": 2, "orderable": false},#}
+                    {#                    {"name": "action", "targets": 2, "orderable": false},#}
 
                 ],
                 aaSorting: [[1, 'asc']],
@@ -310,10 +211,8 @@
 
 
     </script>
-
     <script>
         function AddCredit() {
-{#            var buyerID = $('#buyerID').val();#}
             var invoiceSeries = $('#invoiceSeries').val();
             var companyID = $('#companyID').val();
 
@@ -333,7 +232,7 @@
 
         }
         function EditInvoice() {
-{#            var buyerID = $('#ebuyerID').val();#}
+            {#            var buyerID = $('#ebuyerID').val();#}
             var invoiceSeries = $('#einvoiceSeries').val();
 
 
@@ -351,9 +250,9 @@
 
 
         }
-        function getDetail(id,series){
-      $('#invoiceID').val(id);
-      $('#einvoiceSeries').val(series);
+        function getDetail(id, series) {
+            $('#invoiceID').val(id);
+            $('#einvoiceSeries').val(series);
 
 
         }

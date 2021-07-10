@@ -1,23 +1,9 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
-      <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <style>
-        .zoom {
-
-            transition: transform .2s; /* Animation */
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-        }
-
-        .zoom:hover {
-            transform: scale(3);  }
-
         .card {
             background: #fff;
             min-height: 50px;
@@ -53,7 +39,8 @@
             z-index: 10;
             display: block;
         }
- .input-group .form-control {
+
+        .input-group .form-control {
             position: initial !important;
             z-index: 2;
             float: left;
@@ -75,13 +62,9 @@
         }
 
     </style>
-
     <section class="content">
         <div class="container-fluid">
-
             <div class="row clearfix">
-
-
                 <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
                     <div class="form-group ">
                         <label for="cc-number" class="control-label mb-1">Start Date</label>
@@ -213,7 +196,7 @@
                                         <th>ApprovedBy</th>
                                         <th>Remark</th>
                                         <th>Collected On</th>
-                                       <th>Status</th>
+                                        <th>Status</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
@@ -227,7 +210,7 @@
 
         </div>
     </section>
-  <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog" >
+    <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -236,23 +219,16 @@
                 <form id="ApproveForm">
                     <input type="hidden" id="collectionID">
 
-                <div class="modal-body">
-
-
-
-                </div>
-
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-link waves-effect" onclick="ChangeStatus()" >Yes</button>
-                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
-                </div>
-                    </form>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="ChangeStatus()">Yes</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-
-
     <div class="modal fade" id="CollectionModal" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -329,33 +305,18 @@
                         <button type="button" class="btn btn-link waves-effect" onclick="EditPayment()">Save
                         </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
-
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
     <script>
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $('.datepicker').datepicker({});
-
-
     </script>
 
     <script>
@@ -363,7 +324,7 @@
         var dtab;
 
         $(document).ready(function () {
-         $('.bootstrap-select').removeClass('form-control');
+            $('.bootstrap-select').removeClass('form-control');
 
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
@@ -440,101 +401,101 @@
 
 
         function ChangeStatus() {
-        var collectionID = $('#collectionID').val();
+            var collectionID = $('#collectionID').val();
 
-        data = new FormData();
-        data.append('collectionID', collectionID);
+            data = new FormData();
+            data.append('collectionID', collectionID);
 
-        $.ajax({
-            type: 'post',
-            url: '{% url 'mamtaApp:delete_collection_supplier_api' %}',
-            data: data,
-            contentType: false,
-            cache: false,
-            processData: false,
+            $.ajax({
+                type: 'post',
+                url: '{% url 'mamtaApp:delete_collection_supplier_api' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
 
 
-            success: function (response) {
-                if (response.message === 'success') {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('Collection Deleted').fadeIn().fadeOut(2000);
-                    $('#defaultModal').modal('hide');
-                     ctab.api().ajax.reload();
-                     dtab.api().ajax.reload();
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Collection Deleted').fadeIn().fadeOut(2000);
+                        $('#defaultModal').modal('hide');
+                        ctab.api().ajax.reload();
+                        dtab.api().ajax.reload();
 
-                }
+                    }
 
-                else {
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+
+                    }
+
+                },
+                error: function () {
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('error.').fadeIn().fadeOut(2000);
-
                 }
+            });
 
-            },
-            error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
+
+        }
+
+
+        $(document).on("keyup", ".select2-search__field", function (e) {
+            console.log(e.which)
+
+            if (e.which === 38 || e.which === 40) {
+                return false;
+
             }
-        });
+            else {
 
 
-    }
+                var inputVal = $(this).val();
+
+                $('#supplier').html('');
+                $.ajax({
+                    type: 'get',
+                    url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
+                    success: function (response) {
 
 
-                $(document).on("keyup", ".select2-search__field", function (e) {
-                    console.log(e.which)
+                        for (i in response.data) {
 
-                    if (e.which === 38 || e.which === 40) {
-                        return false;
-
-                    }
-                    else{
+                            $('#supplier').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
 
 
-                        var inputVal = $(this).val();
+                        }
 
-                        $('#supplier').html('');
-                        $.ajax({
-                            type: 'get',
-                            url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
-                            success: function (response) {
-
-
-                                for (i in response.data) {
-
-                                    $('#supplier').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
-
-
-                                }
-
-                            },
-                            error: function () {
-                                $('#name_status').addClass('validate_data');
-                                $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                            }
-
-
-                        });
-
-
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
                     }
 
-$('.js-example-disabled-results option').removeAttr('selected');
+
                 });
+
+
+            }
+
+            $('.js-example-disabled-results option').removeAttr('selected');
+        });
         $(document).ready(function () {
             $('.js-example-disabled-results').select2();
         });
 
-        function getSupplierDetail(id, supplierName, supplierID, amount,paymentMode,remark) {
+        function getSupplierDetail(id, supplierName, supplierID, amount, paymentMode, remark) {
             $('#supplier').html('');
-            $('#supplier').append('<option   value="' + supplierID + '" selected>' +supplierName + '</option>')
+            $('#supplier').append('<option   value="' + supplierID + '" selected>' + supplierName + '</option>')
             $('#AmountCol').val(amount);
             $('#PayMethodCol').val(paymentMode);
             $('#RemarkCol').val(remark);
             $('#supID').val(id);
         }
 
-            function EditPayment() {
+        function EditPayment() {
             var supID = $('#supID').val();
             var CustomerCol = $('#supplier').val();
             var AmountCol = $('#AmountCol').val();
@@ -594,6 +555,4 @@ $('.js-example-disabled-results option').removeAttr('selected');
         }
 
     </script>
-
-
 {% endblock %}

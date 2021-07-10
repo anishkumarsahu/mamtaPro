@@ -1,10 +1,7 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-
     <style>
         #leftsidebar {
             display: none;
@@ -83,7 +80,7 @@
         }
     </style>
 
-   <section class="content">
+    <section class="content">
         <div class="container-fluid">
 
             <div class="row clearfix">
@@ -214,7 +211,7 @@
                                         <th>Collected By</th>
                                         <th>Remark</th>
                                         <th>Collected On</th>
-                                       <th>Status</th>
+                                        <th>Status</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
@@ -228,7 +225,7 @@
 
         </div>
     </section>
-    <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog" >
+    <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -237,24 +234,20 @@
                 <form id="ApproveForm">
                     <input type="hidden" id="collectionID">
 
-                <div class="modal-body">
+                    <div class="modal-body">
 
 
+                    </div>
 
-                </div>
 
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-link waves-effect" onclick="ChangeStatus()" >Save</button>
-                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-                </div>
-                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="ChangeStatus()">Save</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-
-
-
     <div class="image" style="position: fixed; top: 2rem;right: 5em;z-index: 100;cursor: pointer" data-toggle="modal"
          data-target="#ProfileModal">
         <img style="border-radius: 50%" src="{{ user.photo.url }}" width="40" height="40" alt="User">
@@ -264,27 +257,15 @@
             class="btn bg-light-blue btn-circle waves-effect waves-circle waves-float">
         <i class="material-icons">power_settings_new</i>
     </button>
-
-
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
-
-
     <script>
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $('.datepicker').datepicker({});
 
 
     </script>
-
     <script>
         var ctab;
         var dtab;
@@ -362,49 +343,47 @@
 
 
         function ChangeStatus() {
-        var collectionID = $('#collectionID').val();
+            var collectionID = $('#collectionID').val();
 
-        data = new FormData();
-        data.append('collectionID', collectionID);
+            data = new FormData();
+            data.append('collectionID', collectionID);
 
-        $.ajax({
-            type: 'post',
-            url: '{% url 'mamtaApp:approve_collection_supplier_api' %}',
-            data: data,
-            contentType: false,
-            cache: false,
-            processData: false,
+            $.ajax({
+                type: 'post',
+                url: '{% url 'mamtaApp:approve_collection_supplier_api' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
 
 
-            success: function (response) {
-                if (response.message === 'success') {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('Collection Approved').fadeIn().fadeOut(2000);
-                    $('#defaultModal').modal('hide');
-                     ctab.api().ajax.reload();
-                     dtab.api().ajax.reload();
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Collection Approved').fadeIn().fadeOut(2000);
+                        $('#defaultModal').modal('hide');
+                        ctab.api().ajax.reload();
+                        dtab.api().ajax.reload();
 
-                }
+                    }
 
-                else {
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+
+                    }
+
+                },
+                error: function () {
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('error.').fadeIn().fadeOut(2000);
-
                 }
-
-            },
-            error: function () {
-                $('#name_status').addClass('validate_data');
-                $('#name_status').html('error.').fadeIn().fadeOut(2000);
-            }
-        });
+            });
 
 
-    }
+        }
 
     </script>
-
-
     <script>
 
         function ChangePassword() {
@@ -472,6 +451,4 @@
         }
 
     </script>
-
-
 {% endblock %}

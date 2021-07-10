@@ -1,35 +1,36 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-     <style>
-.zoom {
-  transition: transform .2s; /* Animation */
-  width: 100px;
-  height: 100px;
-  margin: 0 auto;
-}
+    <style>
+        .zoom {
+            transition: transform .2s; /* Animation */
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
 
-.zoom:hover {
-  transform: scale(3);}
-  .card {
-    background: #fff;
-    min-height: 50px;
-    box-shadow: 0 0px 0px rgba(0, 0, 0, 0)!important;
-    position: relative;
-    margin-bottom: 30px;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    -ms-border-radius: 2px;
-    border-radius: 2px;
-}
-.hidePadding{
-        padding-left: 0!important;
-        padding-right: 0!important;
-    }
-</style>
+        .zoom:hover {
+            transform: scale(3);
+        }
 
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
 
-      <section class="content">
+        .hidePadding {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    </style>
+    <section class="content">
         <div class="container-fluid">
 
 
@@ -49,48 +50,48 @@
                         <div class="body">
                             <div class="row">
 
-                            <div class="col-md-6" style="text-align: center">
-                                <img class="imageTable zoom" src="{{ instance.photo.url }}" alt="">
-                                <h4>Photo</h4>
-                            </div>
-                            <div class="col-md-6" style="text-align: center">
-                                <img class="imageTable zoom" src="{{ instance.idProof.url }}" alt="">
-                                <h4>ID Proof</h4>
-                            </div>
-                                 <div class="col-md-12" style="text-align: center">
+                                <div class="col-md-6" style="text-align: center">
+                                    <img class="imageTable zoom" src="{{ instance.photo.url }}" alt="">
+                                    <h4>Photo</h4>
+                                </div>
+                                <div class="col-md-6" style="text-align: center">
+                                    <img class="imageTable zoom" src="{{ instance.idProof.url }}" alt="">
+                                    <h4>ID Proof</h4>
+                                </div>
+                                <div class="col-md-12" style="text-align: center">
                                     <h3 style="margin-bottom: -18px!important;">{{ instance.name|capfirst }}</h3>
 
                                 </div>
 
-                                </div>
+                            </div>
 
                             <hr style="background-color: #2196f3!important;color: #2196f3!important;border-top: 2px solid #2196f3!important;margin-top: 0px!important;">
                             <p class="lead">
-                                <div class="row">
-                            <div class="col-md-4">
-                               <span> <strong>Phone No:</strong> {{ instance.phoneNumber }} </span>
-                            </div>
-                            <div class="col-md-4">
-                               <span> <strong>User ID:</strong> {{ instance.username }} </span>
-                            </div>
-                             <div class="col-md-4">
-                               <span> <strong>Password:</strong> {{ instance.password }} </span>
-                            </div>
-                            <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <span> <strong>Phone No:</strong> {{ instance.phoneNumber }} </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span> <strong>User ID:</strong> {{ instance.username }} </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span> <strong>Password:</strong> {{ instance.password }} </span>
+                                </div>
+                                <div class="col-md-4">
                                <span> <strong>Status:</strong> {% if instance.isActive == True %}
                                    <span style="color: green">ACTIVE </span>
-                                   {% else %}
+                               {% else %}
                                    <span style="color: red">IN-ACTIVE </span>
 
                                {% endif %} </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span> <strong>Address:</strong> {{ instance.address }} </span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span> <strong>Company:</strong> {{ instance.companyID.name }} </span>
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                               <span> <strong>Address:</strong> {{ instance.address }} </span>
-                            </div>
-                            <div class="col-md-4">
-                               <span> <strong>Company:</strong> {{ instance.companyID.name }} </span>
-                            </div>
-                        </div>
 
                             </p>
                         </div>
@@ -100,6 +101,4 @@
 
         </div>
     </section>
-
-<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
 {% endblock %}

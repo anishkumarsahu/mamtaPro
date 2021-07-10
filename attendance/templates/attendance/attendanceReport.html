@@ -1,8 +1,6 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
     <style>
         .zoom {
@@ -59,10 +57,7 @@
 
     <section class="content">
         <div class="container-fluid">
-
             <div class="row clearfix">
-
-
                 <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
                     <div class="form-group ">
                         <label for="cc-number" class="control-label mb-1">Start Date</label>
@@ -105,27 +100,24 @@
             <div class="row clearfix">
 
 
-                            <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
-                                <div class="form-group ">
-                                    <label for="cc-number" class="control-label mb-1">Select Date</label>
-                                    <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="aDate"
-                                           id="aDate" type="text"
-                                           class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
-                                    <span></span>
-                                </div>
-                            </div>
+                <div class="col-md-6 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
+                    <div class="form-group ">
+                        <label for="cc-number" class="control-label mb-1">Select Date</label>
+                        <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="aDate"
+                               id="aDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                        <span></span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 buttondown "
+                     style="margin-top: 26px;text-align: center!important;">
 
+                    <button style="background-color: #b54fb5;color: white;" type="button" class="btn  waves-effect "
+                            onclick="getAttendance()">Get Attendance
+                    </button>
+                </div>
 
-                            <div class="col-md-6 col-sm-6 col-xs-6 buttondown "
-                                 style="margin-top: 26px;text-align: center!important;">
-
-                                <button style="background-color: #b54fb5;color: white;" type="button" class="btn  waves-effect "
-                                        onclick="getAttendance()">Get Attendance
-                                </button>
-                            </div>
-
-                        </div>
-
+            </div>
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
@@ -140,8 +132,6 @@
                                 <i class="material-icons">refresh</i></button>
 
                         </div>
-
-
                         <div class="body">
                             <div class="table-responsive">
                                 <table id="collectionTable" class="table table-bordered table-striped table-hover">
@@ -151,9 +141,7 @@
                                         <th>Photo</th>
                                         <th>Name</th>
                                         <th>InTiming</th>
-
                                         <th>OutTiming</th>
-
                                     </tr>
                                     </thead>
                                     <tfoot>
@@ -162,13 +150,10 @@
                                         <th>Photo</th>
                                         <th>Name</th>
                                         <th>InTiming</th>
-
                                         <th>OutTiming</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -176,19 +161,10 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </section>
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
 
 
@@ -254,7 +230,7 @@
         function getAttendance() {
             getTodayDate();
             var aDate = $('#aDate').val();
-            ctab.api().ajax.url("{% url 'attendanceApp:EmployeeListForAttendanceAdminBasicJson' %}?startDate=" + aDate ).load();
+            ctab.api().ajax.url("{% url 'attendanceApp:EmployeeListForAttendanceAdminBasicJson' %}?startDate=" + aDate).load();
 
         }
         $(getTodayDate());
@@ -268,6 +244,5 @@
         }
 
     </script>
-
 
 {% endblock %}

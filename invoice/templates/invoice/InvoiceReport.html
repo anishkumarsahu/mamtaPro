@@ -1,22 +1,8 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
     <style>
-        .zoom {
-
-            transition: transform .2s; /* Animation */
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-        }
-
-        .zoom:hover {
-            transform: scale(3);
-        }
-
         .card {
             background: #fff;
             min-height: 50px;
@@ -52,28 +38,22 @@
             z-index: 10;
             display: block;
         }
-
-
     </style>
-
     <section class="content">
         <div class="container-fluid">
             <div class="row clearfix">
-            <div class="col-xs-12" style="text-align: right">
-                <button class="btn btn-primary"><a target="_blank" href="{% url 'invoiceApp:index' %}" style="text-decoration: none;color: white">Create Invoice</a></button>
-            </div>
-
-
+                <div class="col-xs-12" style="text-align: right">
+                    <button class="btn btn-primary"><a target="_blank" href="{% url 'invoiceApp:index' %}"
+                                                       style="text-decoration: none;color: white">Create Invoice</a>
+                    </button>
+                </div>
                 <div class="col-md-3 col-sm-8 col-xs-12">
                     <label for="">Company</label>
                     <select class="form-control show-tick" id="companyID" onchange="ChangeCompany()">
                         {% for comp in company %}
                             <option value="{{ comp.pk }}">{{ comp.name }}</option>
                         {% endfor %}
-
-
                     </select>
-
                 </div>
                 <div class="col-md-2 col-sm-4 col-xs-12">
                     <div class="form-group ">
@@ -103,13 +83,9 @@
                     >Monthly Report
                     </a>
                 </div>
-
-
             </div>
             <hr>
             <div class="row clearfix" style="margin-top: 5px;">
-
-
                 <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
                     <div class="form-group ">
                         <label for="cc-number" class="control-label mb-1">Start Date</label>
@@ -135,22 +111,15 @@
                         {% for user in users %}
                             <option value="{{ user.pk }}">{{ user.name }}</option>
                         {% endfor %}
-
-
                     </select>
-
                 </div>
                 <div class="col-md-3 col-sm-12 col-xs-12 buttondown "
                      style="margin-top: 26px;text-align: center!important;">
                     <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
                             onclick="getData()">Search
                     </button>
-
-
                 </div>
-
             </div>
-
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
@@ -163,10 +132,7 @@
     border-radius: 32%;" type="button"
                                     class="btn  waves-effect ">
                                 <i class="material-icons">refresh</i></button>
-
                         </div>
-
-
                         <div class="body">
                             <div class="table-responsive">
                                 <table id="collectionTable" class="table table-bordered table-striped table-hover">
@@ -195,8 +161,6 @@
                                     </tr>
                                     </tfoot>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -204,7 +168,7 @@
                     </div>
                 </div>
             </div>
-     <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
@@ -216,10 +180,7 @@
     border-radius: 32%;" type="button"
                                     class="btn  waves-effect ">
                                 <i class="material-icons">refresh</i></button>
-
                         </div>
-
-
                         <div class="body">
                             <div class="table-responsive">
                                 <table id="cardTable" class="table table-bordered table-striped table-hover">
@@ -248,8 +209,6 @@
                                     </tr>
                                     </tfoot>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -257,8 +216,7 @@
                     </div>
                 </div>
             </div>
-
-        <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
@@ -270,10 +228,7 @@
     border-radius: 32%;" type="button"
                                     class="btn  waves-effect ">
                                 <i class="material-icons">refresh</i></button>
-
                         </div>
-
-
                         <div class="body">
                             <div class="table-responsive">
                                 <table id="mixTable" class="table table-bordered table-striped table-hover">
@@ -414,7 +369,7 @@
 
                         <div class="header">
                             <h2>
-                               CC
+                                CC
                             </h2>
                         </div>
                         <div class="body">
@@ -452,9 +407,6 @@
                     </div>
                 </div>
             </div>
-
-
-
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
@@ -500,9 +452,7 @@
                     </div>
                 </div>
             </div>
-
-
-                    <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
@@ -549,7 +499,7 @@
             </div>
 
 
-                    <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
@@ -595,7 +545,7 @@
                 </div>
             </div>
 
-        <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
@@ -667,7 +617,8 @@
     <div class="modal fade" id="defaultModalMix" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form action="{% url 'invoiceApp:delete_sale_api_mix' %}" method="post" id="deleteSaleFormMix">{% csrf_token %}
+                <form action="{% url 'invoiceApp:delete_sale_api_mix' %}" method="post"
+                      id="deleteSaleFormMix">{% csrf_token %}
                     <div class="modal-header">
                         <h4 class="modal-title" id="defaultModalLabel">Delete Sale</h4>
                     </div>
@@ -746,28 +697,21 @@
                                             {% for comp in buyer %}
                                                 <option value="{{ comp.pk }}">{{ comp.name }}</option>
                                             {% endfor %}
-
-
                                         </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editCol()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-       <div class="modal fade" id="defaultModalDeleteColCash" tabindex="-1" role="dialog">
+    <div class="modal fade" id="defaultModalDeleteColCash" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form action="{% url 'invoiceApp:delete_cash_collection_api' %}" method="post"
@@ -781,18 +725,19 @@
                     <input type="hidden" id="colDelIDCash" name="colDelIDCash">
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link waves-effect" onclick="deleteColNowCash()">Yes</button>
+                        <button type="button" class="btn btn-link waves-effect" onclick="deleteColNowCash()">Yes
+                        </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="defaultModalColEditCash" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form action="{% url 'invoiceApp:edit_collection_cash' %}" method="post" id="EditColFormCash"> {% csrf_token %}
+                <form action="{% url 'invoiceApp:edit_collection_cash' %}" method="post"
+                      id="EditColFormCash"> {% csrf_token %}
                     <div class="modal-header">
                         <h4 class="modal-title" id="defaultModalLabel">Edit Cash Collection</h4>
                     </div>
@@ -813,7 +758,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row clearfix">
                             <div class="col-md-12">
                                 <div class="input-group">
@@ -824,32 +768,26 @@
                                         {% comment %} <input type="text" class="form-control"
                                                placeholder="Customer Name *" name="customerECol"
                                                id="customerECol">{% endcomment %}
-                                        <select class="form-control show-tick" id="customerEColCash" name="customerEColCash"
+                                        <select class="form-control show-tick" id="customerEColCash"
+                                                name="customerEColCash"
                                                 onchange="ChangeCompany()">
                                             {% for comp in buyer %}
                                                 <option value="{{ comp.pk }}">{{ comp.name }}</option>
                                             {% endfor %}
-
-
                                         </select>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editColCash()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="defaultModalInvoiceEdit" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -867,7 +805,7 @@
                                             <i class="material-icons">receipt</i>
                                         </span>
                                     <div class="form-line">
-                                        <input type="number" class="form-control date" id="invoiceE"
+                                        <input type="text" class="form-control date" id="invoiceE"
                                                name="invoiceE" placeholder="Invoice Number *">
                                     </div>
                                 </div>
@@ -885,7 +823,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row clearfix">
                             <div class="col-md-6">
                                 <div class="input-group">
@@ -897,8 +834,6 @@
                                             <option value="Cash">Cash</option>
                                             <option value="Card">Card</option>
                                             <option value="Credit">Credit</option>
-
-
                                         </select>
                                     </div>
                                 </div>
@@ -916,24 +851,20 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editSales()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
-  <div class="modal fade" id="defaultModalInvoiceEditMix" tabindex="-1" role="dialog">
+    <div class="modal fade" id="defaultModalInvoiceEditMix" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form action="{% url 'invoiceApp:edit_invoice_mix' %}" method="post" id="EditSalesFormMix"> {% csrf_token %}
+                <form action="{% url 'invoiceApp:edit_invoice_mix' %}" method="post"
+                      id="EditSalesFormMix"> {% csrf_token %}
                     <div class="modal-header">
                         <h4 class="modal-title" id="defaultModalLabelMix">Edit Invoice</h4>
                     </div>
@@ -963,7 +894,8 @@
                                                placeholder="Cash Amount *">
                                     </div>
                                 </div>
-                            </div><div class="col-md-6">
+                            </div>
+                            <div class="col-md-6">
                                 <div class="input-group">
                                         <span class="input-group-addon">
                                             <i class="material-icons">attach_money</i>
@@ -1008,21 +940,15 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editSalesMix()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
-
     <div class="modal fade" id="defaultModalDeleteReturn" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -1044,8 +970,7 @@
             </div>
         </div>
     </div>
-
-     <div class="modal fade" id="defaultModalDeleteCorrection" tabindex="-1" role="dialog">
+    <div class="modal fade" id="defaultModalDeleteCorrection" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form action="{% url 'invoiceApp:delete_correction_api' %}" method="post"
@@ -1059,15 +984,14 @@
                     <input type="hidden" id="correctionDelID" name="correctionDelID">
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link waves-effect" onclick="deleteCorrectionNow()">Yes</button>
+                        <button type="button" class="btn btn-link waves-effect" onclick="deleteCorrectionNow()">Yes
+                        </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-
     <div class="modal fade" id="defaultModalReturnEdit" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -1092,7 +1016,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row clearfix">
                             <div class="col-md-12">
                                 <div class="input-group">
@@ -1108,24 +1031,20 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editReturn()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-        <div class="modal fade" id="defaultModalCorrectEdit" tabindex="-1" role="dialog">
+    <div class="modal fade" id="defaultModalCorrectEdit" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form action="{% url 'invoiceApp:edit_correction' %}" method="post" id="EditCorrectionForm"> {% csrf_token %}
+                <form action="{% url 'invoiceApp:edit_correction' %}" method="post"
+                      id="EditCorrectionForm"> {% csrf_token %}
                     <div class="modal-header">
                         <h4 class="modal-title" id="defaultModalLabel">Edit Correction</h4>
                     </div>
@@ -1157,27 +1076,20 @@
                                         <input type="text" class="form-control"
                                                placeholder="Invoice Number *" name="invoiceECorrection"
                                                id="invoiceECorrection">
-
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editCorrection()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-
-      <div class="modal fade" id="defaultModalDeleteCommission" tabindex="-1" role="dialog">
+    <div class="modal fade" id="defaultModalDeleteCommission" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form action="{% url 'invoiceApp:delete_commission_api' %}" method="post"
@@ -1191,18 +1103,19 @@
                     <input type="hidden" id="commissionDelID" name="commissionDelID">
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link waves-effect" onclick="deleteCommissionNow()">Yes</button>
+                        <button type="button" class="btn btn-link waves-effect" onclick="deleteCommissionNow()">Yes
+                        </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="defaultModalCommissionEdit" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form action="{% url 'invoiceApp:edit_commission' %}" method="post" id="EditCommissionForm"> {% csrf_token %}
+                <form action="{% url 'invoiceApp:edit_commission' %}" method="post"
+                      id="EditCommissionForm"> {% csrf_token %}
                     <div class="modal-header">
                         <h4 class="modal-title" id="defaultModalLabel">Edit Commission</h4>
                     </div>
@@ -1223,7 +1136,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row clearfix">
                             <div class="col-md-12">
                                 <div class="input-group">
@@ -1239,21 +1151,15 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editCommission()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-
     <div class="modal fade" id="defaultModalExpenseEdit" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -1294,21 +1200,16 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editExpense()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-      <div class="modal fade" id="defaultModalDeleteExpense" tabindex="-1" role="dialog">
+    <div class="modal fade" id="defaultModalDeleteExpense" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form action="{% url 'invoiceApp:delete_expense_api' %}" method="post"
@@ -1320,34 +1221,22 @@
                         <p>Are you sure you want to delete this detail?</p>
                     </div>
                     <input type="hidden" id="expenseDelID" name="expenseDelID">
-
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-link waves-effect" onclick="deleteExpenseNow()">Yes</button>
+                        <button type="button" class="btn btn-link waves-effect" onclick="deleteExpenseNow()">Yes
+                        </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
-
-
     <script>
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $('.datepicker').datepicker({});
-
-
     </script>
-
     <script>
         var ctab;
         var dtab;
@@ -1413,7 +1302,7 @@
 
             });
 
-              mixtab = $('#mixTable').dataTable({
+            mixtab = $('#mixTable').dataTable({
                 dom: 'Blfrtip',
                 buttons: ['excel', 'print'
                 ],
@@ -1483,7 +1372,7 @@
                 "ajax": "{% url 'invoiceApp:CollectionListJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
 
             });
-   cashCollectionTab = $('#collectionTableCollectCash').dataTable({
+            cashCollectionTab = $('#collectionTableCollectCash').dataTable({
                 dom: 'Blfrtip',
                 buttons: ['excel', 'print'
                 ],
@@ -1548,7 +1437,7 @@
                 "ajax": "{% url 'invoiceApp:CorrectCollectionListJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
 
             });
-                        commissionTab = $('#commissionTable').dataTable({
+            commissionTab = $('#commissionTable').dataTable({
                 dom: 'Blfrtip',
                 buttons: ['excel', 'print'
                 ],
@@ -1570,7 +1459,7 @@
 
             });
 
-                        exTab = $('#expenseTable').dataTable({
+            exTab = $('#expenseTable').dataTable({
                 dom: 'Blfrtip',
                 buttons: ['excel', 'print'
                 ],
@@ -1624,7 +1513,7 @@
             $('#salesE').val(sales);
             $('#customerE').val(customer);
         }
-        function getDetailMix(id, bill, sales, amount,  customer,cardamount) {
+        function getDetailMix(id, bill, sales, amount, customer, cardamount) {
             $('#invoiceIDMix').val(id);
             $('#invoiceEMix').val(bill);
             $('#amountEMix').val(amount);
@@ -1676,7 +1565,8 @@
         function deleteCol(id) {
             $('#colDelID').val(id)
 
-        }function deleteColCash(id) {
+        }
+        function deleteColCash(id) {
             $('#colDelIDCash').val(id)
 
         }
@@ -1751,7 +1641,7 @@
             }
 
         }
- function editColCash() {
+        function editColCash() {
             var invoiceID = $('#ColIDCash').val();
             var amountE = $('#amountEColCash').val();
             var customerE = $('#customerEColCash').val();
@@ -1833,7 +1723,7 @@
 
         }
 
-            function editExpense() {
+        function editExpense() {
             var CommissionID = $('#ExpenseID').val();
             var amountECommission = $('#amountEExpense').val();
             var invoiceECommission = $('#remarkEExpense').val();
@@ -1852,7 +1742,7 @@
             $('#commissionDelID').val(id)
 
         }
-          function deleteExpense(id) {
+        function deleteExpense(id) {
             $('#expenseDelID').val(id)
 
         }
@@ -1861,7 +1751,7 @@
             $('#deleteCommissionForm').submit();
         }
 
-                function deleteCorrection(id) {
+        function deleteCorrection(id) {
             $('#correctionDelID').val(id)
 
         }
@@ -1869,12 +1759,9 @@
 
             $('#deleteCorrectionForm').submit();
         }
-         function deleteExpenseNow() {
+        function deleteExpenseNow() {
 
             $('#deleteExpenseForm').submit();
         }
-
     </script>
-
-
 {% endblock %}

@@ -1,12 +1,6 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
-
-
-
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <style>
         .zoom {
 
@@ -35,21 +29,22 @@
         .dt-buttons {
             padding-top: 10px;
         }
-    .hidePadding{
-        padding-left: 0!important;
-        padding-right: 0!important;
-    }
+
+        .hidePadding {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
     </style>
     <section class="content">
         <div class="container-fluid">
             <div class="block-header">
 
                 <div style="float: right">
-{% if not request.user|has_group:"Moderator"%}
+                    {% if not request.user|has_group:"Moderator" %}
 
-                    <button style="background-color: #3F51B5;color: white;margin-bottom: 10px" type="button"
-                            class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">Add Credit
-                    </button>
+                        <button style="background-color: #3F51B5;color: white;margin-bottom: 10px" type="button"
+                                class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">Add Credit
+                        </button>
                     {% endif %}
                 </div>
             </div>
@@ -127,15 +122,16 @@
                                             <i class="material-icons">face</i>
                                         </span>
                                                     <div class="form-line">
-                                                        <select class="form-control show-tick" name="buyerID" id="buyerID">
+                                                        <select class="form-control show-tick" name="buyerID"
+                                                                id="buyerID">
                                                             <option value=""> Select Buyer</option>
 
                                                             {% for user in users %}
-                                                                <option value="{{ user.pk }}"  > {{ user.name }} - {{ user.address }}
+                                                                <option value="{{ user.pk }}"> {{ user.name }}
+                                                                    - {{ user.address }}
                                                                 </option>
 
                                                             {% endfor %}
-
 
 
                                                         </select>
@@ -179,8 +175,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </form>
 
                 </div>
@@ -192,14 +186,8 @@
         </div>
     </div>
 
-       <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script>
         $(document).ready(function () {
             $('#buyerCreditTable').dataTable({

@@ -1,8 +1,6 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
     <style>
         .zoom {
@@ -14,7 +12,8 @@
         }
 
         .zoom:hover {
-            transform: scale(3);  }
+            transform: scale(3);
+        }
 
         .card {
             background: #fff;
@@ -233,17 +232,9 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
-
-
     <script>
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $('.datepicker').datepicker({});
@@ -325,23 +316,23 @@
         function getLocation(lat, long) {
             initMap(lat, long)
         }
-      function initMap(l, lo) {
-        var myLatLng = {lat: parseFloat(l), lng: parseFloat(lo)};
+        function initMap(l, lo) {
+            var myLatLng = {lat: parseFloat(l), lng: parseFloat(lo)};
 
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 15,
-          center: myLatLng
-        });
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: myLatLng
+            });
 
-        var marker = new google.maps.Marker({
-          position: myLatLng,
-          map: map,
-          title: 'Hello World!'
-        });
-      }
+            var marker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                title: 'Hello World!'
+            });
+        }
     </script>
 
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsXUGTFS09pLVdsYEE9YrO2y4IAncAO2U&callback=initMap">
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsXUGTFS09pLVdsYEE9YrO2y4IAncAO2U&callback=initMap">
     </script>
 {% endblock %}

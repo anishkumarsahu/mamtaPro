@@ -1,17 +1,8 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
     <style>
-{#        #leftsidebar {#}
-{#            display: '';#}
-{#        }#}
-{#                section.content {#}
-{#            margin-left: 15px;#}
-{#        }#}
-
         .card {
             background: #fff;
             min-height: 50px;
@@ -47,25 +38,17 @@
             z-index: 10;
             display: block;
         }
-
-
     </style>
-
     <section class="content">
         <div class="container-fluid">
             <div class="row clearfix">
-
-
                 <div class="col-md-3 col-sm-8 col-xs-6">
                     <label for="">Company</label>
                     <select class="form-control show-tick" id="companyID" onchange="ChangeCompany()">
                         {% for comp in company %}
                             <option value="{{ comp.pk }}">{{ comp.name }}</option>
                         {% endfor %}
-
-
                     </select>
-
                 </div>
                 <div class="col-md-3 col-sm-3 col-xs-4 col-xs-offset-1">
                     <div class="form-group ">
@@ -77,25 +60,20 @@
                         <span></span>
                     </div>
                 </div>
-            <div class="col-md-2 col-sm-4 col-xs-4" style="margin-top: 26px;text-align: center!important;">
-                                <a id="reportUrl" href="{% url 'invoiceApp:generate_net_report_accountant' %}"
-                                   style="background-color: #24b53c;color: white;" type="button" class="btn  waves-effect "
-                                >Daily Report
-                                </a>
-                            </div>
+                <div class="col-md-2 col-sm-4 col-xs-4" style="margin-top: 26px;text-align: center!important;">
+                    <a id="reportUrl" href="{% url 'invoiceApp:generate_net_report_accountant' %}"
+                       style="background-color: #24b53c;color: white;" type="button" class="btn  waves-effect "
+                    >Daily Report
+                    </a>
+                </div>
                 <div class="col-md-3 col-sm-12 col-xs-12" style="margin-top: 26px;text-align: center!important;">
                     <a id="reportUrlCollection" href="{% url 'invoiceApp:generate_collection_report_admin' %}"
                        style="background-color: #b54fb5;color: white;" type="button" class="btn  waves-effect "
                     >Generate Collection Report
                     </a>
                 </div>
-
-
-
             </div>
             <div class="row clearfix" style="margin-top: 5px;">
-
-
                 <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
                     <div class="form-group ">
                         <label for="cc-number" class="control-label mb-1">Start Date</label>
@@ -121,22 +99,16 @@
                         {% for user in users %}
                             <option value="{{ user.pk }}">{{ user.name }}</option>
                         {% endfor %}
-
-
                     </select>
-
                 </div>
                 <div class="col-md-3 col-sm-12 col-xs-12 buttondown "
                      style="margin-top: 26px;text-align: center!important;">
                     <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
                             onclick="getData()">Search
                     </button>
-
-
                 </div>
-
             </div>
-              <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
@@ -148,10 +120,7 @@
     border-radius: 32%;" type="button"
                                     class="btn  waves-effect ">
                                 <i class="material-icons">refresh</i></button>
-
                         </div>
-
-
                         <div class="body">
                             <div class="table-responsive">
                                 <table id="cashTable" class="table table-bordered table-striped table-hover">
@@ -178,8 +147,6 @@
                                     </tr>
                                     </tfoot>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -187,8 +154,7 @@
                     </div>
                 </div>
             </div>
-
-                      <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
@@ -200,10 +166,7 @@
     border-radius: 32%;" type="button"
                                     class="btn  waves-effect ">
                                 <i class="material-icons">refresh</i></button>
-
                         </div>
-
-
                         <div class="body">
                             <div class="table-responsive">
                                 <table id="cardTable" class="table table-bordered table-striped table-hover">
@@ -230,8 +193,6 @@
                                     </tr>
                                     </tfoot>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -239,11 +200,9 @@
                     </div>
                 </div>
             </div>
-
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
-
                         <div class="header">
                             <h2>
                                 INVOICE (CREDIT)
@@ -288,8 +247,7 @@
                     </div>
                 </div>
             </div>
-
-          <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
@@ -335,70 +293,56 @@
         </div>
     </section>
     <div class="modal fade" id="ChangePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content" style="background-color: lightgrey;">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title" id="exampleModalLabel">Change Password</h4>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="background-color: lightgrey;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="exampleModalLabel">Change Password</h4>
+                </div>
+                <form id="PasswordForm"> {% csrf_token %}
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="nPass" class="control-label">New Password: <span
+                                    style="color: grey;font-size: 10px;"> Note - Password should be at least 5 character long.</span></label>
+                            <input autocomplete="off" type="password" class="form-control" id="nPass">
+                        </div>
+                        <div class="form-group">
+                            <label for="rPass" class="control-label">Confirm New Password:</label>
+                            <input autocomplete="off" type="password" class="form-control" id="rPass">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="ChangePassword()">Save</button>
+                    </div>
+                </form>
             </div>
-            <form id="PasswordForm"> {% csrf_token %}
-                <div class="modal-body">
-
-                    <div class="form-group">
-                        <label for="nPass" class="control-label">New Password: <span
-                                style="color: grey;font-size: 10px;"> Note - Password should be at least 5 character long.</span></label>
-                        <input autocomplete="off" type="password" class="form-control" id="nPass">
-                    </div>
-                    <div class="form-group">
-                        <label for="rPass" class="control-label">Confirm New Password:</label>
-                        <input autocomplete="off" type="password" class="form-control" id="rPass">
-                    </div>
-
-
-                </div>
-
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="ChangePassword()">Save</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
-<ul style="    position: fixed;top: 20px;right: 20px;padding-bottom: 20px;z-index: 100; text-align: center">
-                <a href="{% url 'mamtaApp:logout' %}"
-                   style="width:100%;padding-right: 10px;background-color: #3aabfb!important; color: white!important;"
-                   type="button" class="btn ">Logout</a>
-                <a style="color: white;font-size: 13px;cursor: pointer;" data-toggle="modal"
-                   data-target="#ChangePasswordModal"
-                   data-whatever="@mdo">
-                    <strong>Change Password</strong>
-                </a>
-            </ul>
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+    <ul style="    position: fixed;top: 20px;right: 20px;padding-bottom: 20px;z-index: 100; text-align: center">
+        <a href="{% url 'mamtaApp:logout' %}"
+           style="width:100%;padding-right: 10px;background-color: #3aabfb!important; color: white!important;"
+           type="button" class="btn ">Logout</a>
+        <a style="color: white;font-size: 13px;cursor: pointer;" data-toggle="modal"
+           data-target="#ChangePasswordModal"
+           data-whatever="@mdo">
+            <strong>Change Password</strong>
+        </a>
+    </ul>
+{% endblock %}
+{% block js %}
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
-
-
     <script>
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $('.datepicker').datepicker({});
-
-
     </script>
-
     <script>
         var etab;
         var etabCash;
-         var ctab;
+        var ctab;
         var credittab;
         var cardTab;
 
@@ -475,8 +419,6 @@
                 "ajax": "{% url 'invoiceApp:InvoiceCreatedByCreditListJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
 
             });
-
-
             etab = $('#collectionTableCollect').dataTable({
                 dom: 'Blfrtip',
                 buttons: ['excel', 'print'
@@ -497,9 +439,6 @@
                 "ajax": "{% url 'invoiceApp:CollectionListJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
 
             });
-
-
-
         });
 
         function getData() {
@@ -515,7 +454,6 @@
         }
 
 
-
         $(ChangeCompany());
         function ChangeCompany() {
             var comp = $('#companyID').val();
@@ -525,64 +463,62 @@
             $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
 
         }
-         function ChangePassword() {
-        var nPass = $('#nPass').val();
-        var rPass = $('#rPass').val();
+        function ChangePassword() {
+            var nPass = $('#nPass').val();
+            var rPass = $('#rPass').val();
 
 
-        data = new FormData();
-        data.append('nPass', nPass);
+            data = new FormData();
+            data.append('nPass', nPass);
 
-        if (nPass === "" || rPass === "") {
-            $('#name_status').addClass('validate_data');
-            $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+            if (nPass === "" || rPass === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
 
-        }
-        else if (nPass != rPass) {
-            $('#name_status').addClass('validate_data');
-            $('#name_status').html('Password not matched. Please try again.').fadeIn().fadeOut(2000);
+            }
+            else if (nPass != rPass) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password not matched. Please try again.').fadeIn().fadeOut(2000);
 
-        }
-        else if (nPass.length < 5) {
-            $('#name_status').addClass('validate_data');
-            $('#name_status').html('Password should be atleast 5 character long.').fadeIn().fadeOut(2000);
+            }
+            else if (nPass.length < 5) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password should be atleast 5 character long.').fadeIn().fadeOut(2000);
 
-        }
+            }
 
-        else {
-            $.ajax({
-                type: 'post',
-                url: '{% url 'invoiceApp:change_password_for_sales_user' %}',
-                data: data,
-                contentType: false,
-                cache: false,
-                processData: false,
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:change_password_for_sales_user' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
 
 
-                success: function (response) {
-                    if (response.message === 'success') {
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Password Changed Successfully').fadeIn().fadeOut(2000);
+                            $('#PasswordForm')[0].reset();
+                            $('#ChangePasswordModal').modal('hide');
+
+                        }
+
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error').fadeIn().fadeOut(2000);
+                        }
+
+                    },
+                    error: function () {
                         $('#name_status').addClass('validate_data');
-                        $('#name_status').html('Password Changed Successfully').fadeIn().fadeOut(2000);
-                        $('#PasswordForm')[0].reset();
-                        $('#ChangePasswordModal').modal('hide');
-
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
                     }
+                });
+            }
 
-                    else {
-                        $('#name_status').addClass('validate_data');
-                        $('#name_status').html('error').fadeIn().fadeOut(2000);
-                    }
-
-                },
-                error: function () {
-                    $('#name_status').addClass('validate_data');
-                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                }
-            });
         }
-
-    }
     </script>
-
-
 {% endblock %}

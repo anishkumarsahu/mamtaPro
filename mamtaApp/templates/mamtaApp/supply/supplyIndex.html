@@ -1,10 +1,8 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-      <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
+    <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
 
     <style>
         #leftsidebar {
@@ -98,7 +96,7 @@
                         <span></span>
                     </div>
                 </div>
-                 <div class="col-md-4 col-sm-4 col-xs-3 buttondown "
+                <div class="col-md-4 col-sm-4 col-xs-3 buttondown "
                      style="text-align: center!important;margin-top: 30px;">
                     <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
                             onclick="getData()">Search
@@ -107,9 +105,12 @@
 
                 </div>
 
-                 <div class="col-md-4 col-sm-4 col-xs-4" style="text-align: center!important;margin-top: 30px;" >
-                <button class="btn btn-primary" style=""><a target="_blank" href="{% url 'invoiceApp:generate_collection_report_supplier' %}" style="text-decoration: none;color: white;">Today's Report</a></button>
-            </div>
+                <div class="col-md-4 col-sm-4 col-xs-4" style="text-align: center!important;margin-top: 30px;">
+                    <button class="btn btn-primary" style=""><a target="_blank"
+                                                                href="{% url 'invoiceApp:generate_collection_report_supplier' %}"
+                                                                style="text-decoration: none;color: white;">Today's
+                        Report</a></button>
+                </div>
 
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
@@ -151,10 +152,7 @@
                         </div>
                     </div>
                 </div>
-
-
-
-                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
 
                         <div class="header">
@@ -205,7 +203,7 @@
             <i class="material-icons">add</i>
         </button>
 
-     <button style="    left: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal"
+        <button style="    left: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal"
                 data-target="#CollectionModalInvoice"
                 class="btn btn-danger btn-circle-lg waves-effect waves-circle waves-float">
             <i class="material-icons">add</i>
@@ -248,25 +246,17 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="ChangePassword()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
 
     </div>
-
-
-
-
     <div class="image" style="position: fixed; top: 2rem;right: 5em;z-index: 100;cursor: pointer" data-toggle="modal"
          data-target="#ProfileModal">
         <img style="border-radius: 50%" src="{{ user.photo.url }}" width="40" height="40" alt="User">
@@ -276,8 +266,6 @@
             class="btn bg-light-blue btn-circle waves-effect waves-circle waves-float">
         <i class="material-icons">power_settings_new</i>
     </button>
-
-
     <div class="modal fade" id="CollectionModal" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -317,7 +305,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row clearfix">
                             <div class="col-md-12">
                                 <div class="input-group">
@@ -329,8 +316,6 @@
                                                 name="PayMethodCol">
                                             <option value="Cash">Cash</option>
                                             <option value="Cheque">Cheque</option>
-
-
                                         </select>
                                     </div>
                                 </div>
@@ -347,25 +332,18 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="AddParty()">Add New Party
                         </button>
                         <button type="button" class="btn btn-link waves-effect" onclick="TakePayment()">Save
                         </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
-
-
     <div class="modal fade" id="AddPartyModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -431,8 +409,6 @@
         </div>
 
     </div>
-
-
     <div class="modal fade" id="CollectionModalInvoice" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -498,43 +474,26 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="AddParty()">Add New Party
                         </button>
                         <button type="button" class="btn btn-link waves-effect" onclick="TakePaymentInvoice()">Save
                         </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
-
-
                     </div>
                 </form>
             </div>
         </div>
-
     </div>
-
-
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
+{% endblock %}
+{% block js %}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-   <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
-   <script>
+    <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
+    <script>
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $('.datepicker').datepicker({});
-
-
     </script>
-
-
     <script>
         var etab;
         var itab;
@@ -589,13 +548,13 @@
 
         });
 
-    function getData() {
+        function getData() {
             var startDate = $('#startDate').val();
 
 
             etab.api().ajax.url("{% url 'mamtaApp:SupplierCollectionListJson' %}?startDate=" + startDate).load();
             itab.api().ajax.url("{% url 'mamtaApp:SupplierInvoiceCollectionListJson' %}?startDate=" + startDate).load();
-         }
+        }
         function ChangePassword() {
             var nPass = $('#nPass').val();
             var rPass = $('#rPass').val();
@@ -803,53 +762,53 @@
         }
 
 
-                $(document).on("keyup", ".select2-search__field", function (e) {
+        $(document).on("keyup", ".select2-search__field", function (e) {
 
-                    if (e.which === 38 || e.which === 40) {
-                        return false;
+            if (e.which === 38 || e.which === 40) {
+                return false;
 
-                    }
-                    else{
-
-
-                        var inputVal = $(this).val();
-
-                        $('#supplier').html('');
-                        $('#supplierInvoice').html('');
-                        $.ajax({
-                            type: 'get',
-                            url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
-                            success: function (response) {
+            }
+            else {
 
 
-                                for (i in response.data) {
+                var inputVal = $(this).val();
 
-                                    $('#supplier').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
-                                    $('#supplierInvoice').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
-
-
-                                }
-
-                            },
-                            error: function () {
-                                $('#name_status').addClass('validate_data');
-                                $('#name_status').html('error.').fadeIn().fadeOut(2000);
-                            }
+                $('#supplier').html('');
+                $('#supplierInvoice').html('');
+                $.ajax({
+                    type: 'get',
+                    url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
+                    success: function (response) {
 
 
-                        });
+                        for (i in response.data) {
+
+                            $('#supplier').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                            $('#supplierInvoice').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
 
 
+                        }
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
                     }
 
-$('.js-example-disabled-results option').removeAttr('selected');
+
                 });
+
+
+            }
+
+            $('.js-example-disabled-results option').removeAttr('selected');
+        });
         $(document).ready(function () {
             $('.js-example-disabled-results').select2();
         });
 
 
-         function TakePaymentInvoice() {
+        function TakePaymentInvoice() {
             var CustomerCol = $('#supplierInvoice').val();
             var AmountCol = $('#AmountColInvoice').val();
             var Invoice = $('#Invoice').val();
@@ -907,6 +866,4 @@ $('.js-example-disabled-results option').removeAttr('selected');
 
 
     </script>
-
-
 {% endblock %}

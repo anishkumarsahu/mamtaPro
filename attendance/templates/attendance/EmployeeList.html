@@ -1,9 +1,7 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
-
-    <style>
+  <style>
         .zoom {
 
             transition: transform .2s; /* Animation */
@@ -56,11 +54,7 @@
         padding-right: 0!important;
     }
     </style>
-
-    <!-- #Top Bar -->
-
-
-    <section class="content">
+<section class="content">
         {% if request.user|has_group:"Moderator" %}
 
         {% endif %}
@@ -144,17 +138,8 @@
             </div>
         </div>
     </div>
-
-
-
-
-          <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
+{% endblock %}
+{% block js %}
 <script src="{% static 'js/pages/ui/modals.js' %}"></script>
     <script>
 
@@ -197,5 +182,4 @@
 
 
     </script>
-
 {% endblock %}

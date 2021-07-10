@@ -1,12 +1,6 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
-
-
-
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <style>
         .zoom {
 
@@ -35,26 +29,25 @@
         .dt-buttons {
             padding-top: 10px;
         }
-    .hidePadding{
-        padding-left: 0!important;
-        padding-right: 0!important;
-    }
+
+        .hidePadding {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
     </style>
     <section class="content">
         <div class="container-fluid">
             <div class="block-header">
 
                 <div style="float: right">
-{% if not request.user|has_group:"Moderator"%}
+                    {% if not request.user|has_group:"Moderator" %}
 
-                    <button style="background-color: #3F51B5;color: white;margin-bottom: 10px" type="button"
-                            class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">Add Company
-                    </button>
+                        <button style="background-color: #3F51B5;color: white;margin-bottom: 10px" type="button"
+                                class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">Add Company
+                        </button>
                     {% endif %}
                 </div>
             </div>
-
-
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
                     <div class="card">
@@ -65,7 +58,6 @@
                             </h2>
 
                         </div>
-
                         <div class="body">
                             <div class="table-responsive">
                                 <table id="buyerCreditTable" class="table table-bordered table-striped table-hover">
@@ -88,13 +80,9 @@
                                         <th>Address</th>
                                         <th>Datetime</th>
                                         <th>Action</th>
-
-
                                     </tr>
                                     </tfoot>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -102,8 +90,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </section>
 
@@ -172,8 +158,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </form>
 
                 </div>
@@ -184,7 +168,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="defaultModalEdit" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -197,7 +180,7 @@
                         <div class="row clearfix">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="card">
-                    <input type="hidden" id="ECID" name="ECID">
+                                    <input type="hidden" id="ECID" name="ECID">
                                     <div class="body">
 
                                         <div class="row clearfix">
@@ -250,8 +233,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </form>
 
                 </div>
@@ -262,15 +243,8 @@
             </div>
         </div>
     </div>
-
-       <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script>
         $(document).ready(function () {
             $('#buyerCreditTable').dataTable({
@@ -295,10 +269,6 @@
             });
         });
 
-
-    </script>
-
-    <script>
         function AddCompany() {
             var Cname = $('#Cname').val();
             var Cphone = $('#Cphone').val();
@@ -316,11 +286,9 @@
                 $('#AddCompanyForm').submit();
 
             }
-
-
         }
 
-        function editCompany(id, name, phone,address) {
+        function editCompany(id, name, phone, address) {
             $('#ECID').val(id);
             $('#ECname').val(name);
             $('#ECphone').val(phone);
@@ -329,8 +297,7 @@
         }
 
         function updateCompany() {
-           var ECname = $('#ECname').val();
-
+            var ECname = $('#ECname').val();
 
 
             if (ECname === "") {
@@ -344,8 +311,6 @@
                 $('#EditCompanyForm').submit();
 
             }
-
-
         }
     </script>
 {% endblock %}

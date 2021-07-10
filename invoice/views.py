@@ -1002,12 +1002,11 @@ def edit_invoice(request):
         SalesType = request.POST.get('salesE')
         Amount = request.POST.get('amountE')
         CustomerName = request.POST.get('customerE')
-
-        invoice_series = BillNumber[0:2]
-        MainNumber = BillNumber[2:]
+        invoice_series = BillNumber[:-4]
+        MainNumber = BillNumber[-4:]
 
         try:
-            isExist = InvoiceSeries.objects.get(series__exact=int(invoice_series), isDeleted__exact=False)
+            isExist = InvoiceSeries.objects.get(series__exact=invoice_series, isDeleted__exact=False)
             sales = Sales.objects.filter(numberMain__exact=int(MainNumber), InvoiceSeriesID_id=isExist.pk).exclude(
                 pk=int(invoiceID)).count()
 
@@ -1362,6 +1361,8 @@ def generate_net_report(request):
     expense_total = 0.0
     for e in expenses:
         expense_total = expense_total + e.amount
+    col = MoneyCollection.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=user.companyID_id,
+                                         isAddedInSales__exact=True).order_by('datetime')
 
     context = {
         'sales_cash': sales_cash,
@@ -1385,6 +1386,7 @@ def generate_net_report(request):
         'commission_total': commission_total,
         'expense_total': expense_total,
         'mix_total': mix_cash_total + mix_card_total,
+        'col': col,
     }
 
     response = HttpResponse(content_type="application/pdf")

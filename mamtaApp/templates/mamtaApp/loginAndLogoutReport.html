@@ -1,24 +1,7 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
-
-
-
 {% block body %}
-
-    <link href="{% static 'plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css' %}" rel="stylesheet">
     <style>
-        .zoom {
-
-            transition: transform .2s; /* Animation */
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-        }
-
-        .zoom:hover {
-            transform: scale(3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
-        }
 
         .card {
             background: #fff;
@@ -70,7 +53,7 @@
                                     </thead>
                                     <tfoot>
                                     <tr>
-                                         <th>Sl. No</th>
+                                        <th>Sl. No</th>
                                         <th>Username</th>
                                         <th>Status</th>
                                         <th>Datetime</th>
@@ -89,7 +72,7 @@
                 </div>
             </div>
 
-  <div class="row clearfix">
+            <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
                     <div class="card">
 
@@ -114,17 +97,13 @@
                                     </thead>
                                     <tfoot>
                                     <tr>
-                                         <th>Sl. No</th>
+                                        <th>Sl. No</th>
                                         <th>Username</th>
                                         <th>Status</th>
                                         <th>Datetime</th>
-
-
                                     </tr>
                                     </tfoot>
                                     <tbody>
-
-
                                     </tbody>
                                 </table>
                             </div>
@@ -134,16 +113,8 @@
             </div>
         </div>
     </section>
-
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/jszip.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.html5.min.js' %}"></script>
-    <script src="{% static 'plugins/jquery-datatable/extensions/export/buttons.print.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script>
         $(document).ready(function () {
             $('#LoginTable').dataTable({
@@ -154,7 +125,7 @@
                     {"name": "id", "targets": 0, "orderable": false},
                     {"name": "userID", "targets": 1, "orderable": true},
                     {"name": "statusType", "targets": 2, "orderable": true},
-                    {"name": "datetime", "targets":3, "orderable": true},
+                    {"name": "datetime", "targets": 3, "orderable": true},
 
                 ],
                 aaSorting: [[3, 'desc']],
@@ -165,7 +136,7 @@
                 "ajax": "{% url 'mamtaApp:LoginListJson' %}"
             });
 
-              $('#LogoutTable').dataTable({
+            $('#LogoutTable').dataTable({
                 dom: 'Blfrtip',
                 buttons: ['excel', 'print'
                 ],
@@ -173,7 +144,7 @@
                     {"name": "id", "targets": 0, "orderable": false},
                     {"name": "userID", "targets": 1, "orderable": true},
                     {"name": "statusType", "targets": 2, "orderable": true},
-                    {"name": "datetime", "targets":3, "orderable": true},
+                    {"name": "datetime", "targets": 3, "orderable": true},
 
                 ],
                 aaSorting: [[3, 'desc']],
@@ -187,5 +158,4 @@
 
 
     </script>
-
 {% endblock %}

@@ -1,14 +1,12 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
 {% block body %}
     <style>
-    .hidePadding{
-        padding-left: 0!important;
-        padding-right: 0!important;
-    }
+        .hidePadding {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
     </style>
-
     <section class="content">
         <div class="container-fluid">
 
@@ -28,7 +26,8 @@
 
                         </div>
                         <div class="body">
-                            <form id="EditBuyerForm" action="{% url 'mamtaApp:edit_buyer_api' %}" method="post" style="text-align: center">
+                            <form id="EditBuyerForm" action="{% url 'mamtaApp:edit_buyer_api' %}" method="post"
+                                  style="text-align: center">
                                 {% csrf_token %}
                                 <input type="hidden" name="buyerID" value="{{ instance.pk }}">
                                 <div class="row clearfix">
@@ -92,14 +91,8 @@
                     </div>
                 </div>
             </div>
-            <!-- #END# Input -->
-
         </div>
     </section>
-
-    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-
-
 {% endblock %}
 
 {% block js %}
@@ -122,9 +115,6 @@
                 $('#EditBuyerForm').submit();
 
             }
-
         }
-
-
     </script>
 {% endblock %}

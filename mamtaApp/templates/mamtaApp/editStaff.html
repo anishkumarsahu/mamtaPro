@@ -1,14 +1,8 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
-
-
-
-
 {% block body %}
-
     <style>
         .zoom {
-
             transition: transform .2s; /* Animation */
             width: 30px;
             height: 30px;
@@ -104,15 +98,8 @@
         }
 
     </style>
-
-    <!-- #Top Bar -->
-
-
     <section class="content">
         <div class="container-fluid">
-
-
-            <!-- Striped Rows -->
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-right: 0;padding-left: 0">
                     <div class="card">
@@ -206,20 +193,23 @@
 
 
                                                 <div class="row clearfix">
-                                                <div class="col-md-6">
+                                                    <div class="col-md-6">
                                                         <div class="input-group">
                                         <span class="input-group-addon">
                                         <i class="material-icons">person</i>
                                         </span>
                                                             <div class="form-line">
-                                                                 <select class="form-control show-tick" id="staffType" name="staffType">
-                                                                <option value="all">Select Staff Type</option>
-                                                                {% for user in types %}
-                                                                    <option value="{{ user.pk }}"  {% if instance.staffTypeID.pk == user.pk %} selected {% endif %} >{{ user.name }}</option>
-                                                                {% endfor %}
+                                                                <select class="form-control show-tick" id="staffType"
+                                                                        name="staffType">
+                                                                    <option value="all">Select Staff Type</option>
+                                                                    {% for user in types %}
+                                                                        <option value="{{ user.pk }}"
+                                                                                {% if instance.staffTypeID.pk == user.pk %}
+                                                                                selected {% endif %} >{{ user.name }}</option>
+                                                                    {% endfor %}
 
 
-                                                            </select>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -236,20 +226,23 @@
                                                         </div>
                                                     </div>
 
-                                                <div class="col-md-12 col-sm-12">
+                                                    <div class="col-md-12 col-sm-12">
                                                         <div class="input-group">
                                         <span class="input-group-addon">
                                         <i class="material-icons">location_city</i>
                                         </span>
                                                             <div class="form-line">
-                                                                 <select class="form-control show-tick" id="companyID" name="companyID">
-                                                                <option value="all">Select Company</option>
-                                                                {% for comp in company %}
-                                                                    <option value="{{ comp.pk }}" {% if instance.companyID.pk == comp.pk %} selected {% endif %}>{{ comp.name }}</option>
-                                                                {% endfor %}
+                                                                <select class="form-control show-tick" id="companyID"
+                                                                        name="companyID">
+                                                                    <option value="all">Select Company</option>
+                                                                    {% for comp in company %}
+                                                                        <option value="{{ comp.pk }}"
+                                                                                {% if instance.companyID.pk == comp.pk %}
+                                                                                selected {% endif %}>{{ comp.name }}</option>
+                                                                    {% endfor %}
 
 
-                                                            </select>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -259,34 +252,47 @@
                                         <i class="material-icons">compare_arrows</i>
                                         </span>
                                                             <div class="form-line">
-                                                            <select class="form-control show-tick" name="isActive">
+                                                                <select class="form-control show-tick" name="isActive">
 
-                                                                <option value="True" {% if instance.isActive == True %} selected {% endif %} >Active</option>
-                                                                <option value="False" {% if instance.isActive == False %} selected {% endif %} >In-Active</option>
+                                                                    <option value="True"
+                                                                            {% if instance.isActive == True %}
+                                                                            selected {% endif %} >Active
+                                                                    </option>
+                                                                    <option value="False"
+                                                                            {% if instance.isActive == False %}
+                                                                            selected {% endif %} >In-Active
+                                                                    </option>
 
-                                                    </select>
+                                                                </select>
                                                             </div>
                                                         </div>
 
-                                </div>
-                                                 <div class="col-sm-6">
+                                                    </div>
+                                                    <div class="col-sm-6">
                                                         <div class="input-group" title="Can Collect Payment?">
                                         <span class="input-group-addon">
                                         <i class="material-icons">attach_money</i>
                                         </span>
                                                             <div class="form-line">
-                                                            <select class="form-control show-tick" name="canTakePayment">
+                                                                <select class="form-control show-tick"
+                                                                        name="canTakePayment">
 
-                                                                <option value="True" {% if instance.canTakePayment == True %} selected {% endif %} >Yes</option>
-                                                                <option value="False" {% if instance.canTakePayment == False %} selected {% endif %} >No</option>
+                                                                    <option value="True"
+                                                                            {% if instance.canTakePayment == True %}
+                                                                            selected {% endif %} >Yes
+                                                                    </option>
+                                                                    <option value="False"
+                                                                            {% if instance.canTakePayment == False %}
+                                                                            selected {% endif %} >No
+                                                                    </option>
 
-                                                    </select>
+                                                                </select>
                                                             </div>
                                                         </div>
 
-                                </div>
+                                                    </div>
 
-                                                 <div class="col-md-12" title="Password">
+                                                    <div class="col-md-12" title="Password">
                                                         <div class="input-group">
                                         <span class="input-group-addon">
                                             <i class="material-icons">remove_red_eye</i>
@@ -302,7 +308,6 @@
                                                 </div>
 
 
-
                                             </div>
                                         </div>
                                     </div>
@@ -310,24 +315,16 @@
                                 <button type="button" style="background-color: #cabdbd"
                                         class="btn btn-link waves-effect " onclick="EditStaff()">SAVE
                                 </button>
-
-
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- #END# Striped Rows -->
-
-
         </div>
     </section>
 
-
-
-
-       <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
-
+{% endblock %}
+{% block js %}
     <script>
         function readURL(input) {
             if (input.files && input.files[0]) {
@@ -371,8 +368,8 @@
             var pass = $('#pass').val();
 
 
-            if (name === "" || phone === ""|| pass === ""
-                || address === ""|| staffType === "all"|| companyID === "all") {
+            if (name === "" || phone === "" || pass === ""
+                || address === "" || staffType === "all" || companyID === "all") {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('* fields are required.');
                 $('#name_status').fadeIn().fadeOut(2000);
@@ -386,7 +383,7 @@
         }
 
 
-          function editStaffPhoto() {
+        function editStaffPhoto() {
             var imageData = document.getElementById("imageUpload").files[0];
             var form_data = new FormData();
             form_data.append('file', imageData);
@@ -425,7 +422,7 @@
         }
 
 
-          function editIdProofPhoto() {
+        function editIdProofPhoto() {
             var imageData = document.getElementById("imageUpload2").files[0];
             var form_data = new FormData();
             form_data.append('file', imageData);
@@ -464,6 +461,5 @@
         }
 
     </script>
-
 
 {% endblock %}

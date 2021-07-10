@@ -6,71 +6,68 @@
     <title>123DACN</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <style>
-        {% comment %}body {
-            -weasy-hyphens: auto;
-        }{% endcomment %}
+        @page {
+            size: A5;
+            margin: .3cm;
+        }
 
-       @page {
-                size: A5;
-                margin: .3cm;
-            }
         section {
             columns: 3;
         }
+
         #Credit {
             columns: 2;
         }
+
         .skip {
             columns: 7;
         }
-        table.table-bordered > thead > tr > th{
-  border:1px solid grey!important;
-}
-            table.table-bordered > tbody > tr > td{
-  border:1px solid grey!important;
-}
+
+        table.table-bordered > thead > tr > th {
+            border: 1px solid grey !important;
+        }
+
+        table.table-bordered > tbody > tr > td {
+            border: 1px solid grey !important;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="row">
         <span style="font-size: 10px;">Date: {{ date }}</span>
-       <span style="font-size: 9px;float: right">123DACN Sales Report -({{user.companyID.name }})</span>
+        <span style="font-size: 9px;float: right">123DACN Sales Report -({{ user.companyID.name }})</span>
     </div>
-{% if user.companyID.id == 2 %}
-<p style="font-size: 10px; margin: 2px;">Cash<span style="float: right">Total: ₹ <strong>{{ cash_total }}</strong></span></p>
-{% else %}
-<p style="font-size: 10px; margin: 2px;">Cash</p>
-{% endif %}
+    {% if user.companyID.id == 2 %}
+        <p style="font-size: 10px; margin: 2px;">Cash<span
+                style="float: right">Total: ₹ <strong>{{ cash_total }}</strong></span></p>
+    {% else %}
+        <p style="font-size: 10px; margin: 2px;">Cash</p>
+    {% endif %}
     <section id="Cash">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Bill_No.</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in sales_cash %}
-
-
-
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-{% if user.companyID.id == 2 %}
-    <p style="font-size: 10px; margin: 2px;">Card<span style="float: right">Total: ₹ <strong>{{ card_total }}</strong></span></p>
+    {% if user.companyID.id == 2 %}
+        <p style="font-size: 10px; margin: 2px;">Card<span
+                style="float: right">Total: ₹ <strong>{{ card_total }}</strong></span></p>
     {% else %}
-<p style="font-size: 10px; margin: 2px;">Card</p>
-{% endif %}
+        <p style="font-size: 10px; margin: 2px;">Card</p>
+    {% endif %}
     <section id="Card">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -78,27 +75,20 @@
                 <th scope="col">Bill_No.</th>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Remark</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in sales_card %}
-
-
-
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.remark }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-<p style="font-size: 10px; margin: 2px;">Credit</p>
+    <p style="font-size: 10px; margin: 2px;">Credit</p>
     <section id="Credit">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -107,32 +97,28 @@
                 <th scope="col">Chal_No.</th>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Cus_Name</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in sales_credit %}
-
-
-
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.challanNumber }}</td>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.customerName|truncatechars:20 }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-{% if user.companyID.id == 2 %}
-    <p style="font-size: 10px; margin: 2px;">Mix<span style="float: right">Cash: ₹ <strong>{{ mix_cash_total }}</strong></span><span style="float: right">Card: ₹ <strong>{{ mix_card_total }}</strong></span><span style="float: right">Total: ₹ <strong>{{ mix_total }}</strong></span></p>
+    {% if user.companyID.id == 2 %}
+        <p style="font-size: 10px; margin: 2px;">Mix<span
+                style="float: right">Cash: ₹ <strong>{{ mix_cash_total }}</strong></span><span style="float: right">Card: ₹ <strong>{{ mix_card_total }}</strong></span><span
+                style="float: right">Total: ₹ <strong>{{ mix_total }}</strong></span></p>
 
     {% else %}
-<p style="font-size: 10px; margin: 2px;">Mix</p>
-{% endif %}
+        <p style="font-size: 10px; margin: 2px;">Mix</p>
+    {% endif %}
     <section id="Mix">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -140,119 +126,99 @@
                 <th scope="col">Bill_No.</th>
                 <th scope="col">CashAmount(₹).</th>
                 <th scope="col">CardAmount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in sales_mix %}
-
-
-
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.mixCardAmount }}</td>
-
                 </tr>
             {% endfor %}
 
             </tbody>
         </table>
     </section>
-{% if user.companyID.id == 2 %}
-    <p style="font-size: 10px; margin: 2px;">Returns <span style="float: right">Total: ₹ <strong> -{{ return_total }}</strong></span></p>
+    {% if user.companyID.id == 2 %}
+        <p style="font-size: 10px; margin: 2px;">Returns <span
+                style="float: right">Total: ₹ <strong> -{{ return_total }}</strong></span></p>
 
     {% else %}
-<p style="font-size: 10px; margin: 2px;">Returns </p>
-{% endif %}
+        <p style="font-size: 10px; margin: 2px;">Returns </p>
+    {% endif %}
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in returns %}
-
-
-
                 <tr>
                     <td>{{ foo.actualBillNumber }}</td>
                     <td>-{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-{% if user.companyID.id == 2 %}
-    <p style="font-size: 10px; margin: 2px;">Corrections <span style="float: right">Total: ₹ <strong> {{ correct_total }}</strong></span></p>
+    {% if user.companyID.id == 2 %}
+        <p style="font-size: 10px; margin: 2px;">Corrections <span
+                style="float: right">Total: ₹ <strong> {{ correct_total }}</strong></span></p>
     {% else %}
-<p style="font-size: 10px; margin: 2px;">Corrections </p>
-{% endif %}
+        <p style="font-size: 10px; margin: 2px;">Corrections </p>
+    {% endif %}
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in corrections %}
-
-
-
                 <tr>
                     <td>{{ foo.actualBillNumber }}</td>
                     <td>{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-{% if user.companyID.id == 2 %}
-    <p style="font-size: 10px; margin: 2px;">Commission <span style="float: right">Total: ₹ <strong> -{{ commission_total }}</strong></span></p>
+    {% if user.companyID.id == 2 %}
+        <p style="font-size: 10px; margin: 2px;">Commission <span
+                style="float: right">Total: ₹ <strong> -{{ commission_total }}</strong></span></p>
     {% else %}
-<p style="font-size: 10px; margin: 2px;">Commission </p>
-{% endif %}
+        <p style="font-size: 10px; margin: 2px;">Commission </p>
+    {% endif %}
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
-
             </tr>
             </thead>
             <tbody>
             {% for foo in commissions %}
-
-
-
                 <tr>
                     <td>{{ foo.actualBillNumber }}</td>
                     <td>-{{ foo.amount }}</td>
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
-{% if user.companyID.id == 2 %}
-    <p style="font-size: 10px; margin: 2px;">Expenses <span style="float: right">Total: ₹ <strong> {{ expense_total }}</strong></span></p>
+    {% if user.companyID.id == 2 %}
+        <p style="font-size: 10px; margin: 2px;">Expenses <span
+                style="float: right">Total: ₹ <strong> {{ expense_total }}</strong></span></p>
     {% else %}
-<p style="font-size: 10px; margin: 2px;">Expenses</p>
-{% endif %}
+        <p style="font-size: 10px; margin: 2px;">Expenses</p>
+    {% endif %}
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -264,12 +230,31 @@
             </thead>
             <tbody>
             {% for foo in expenses %}
-
-
-
                 <tr>
                     <td>{{ foo.remark }}</td>
                     <td>{{ foo.amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+ <p style="font-size: 10px; margin: 2px;">Collection</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in col %}
+                <tr>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.remark }}</td>
 
                 </tr>
             {% endfor %}
@@ -277,36 +262,23 @@
             </tbody>
         </table>
     </section>
-<p style="font-size: 10px; margin: 2px;">Skipped Invoice Number </p>
+    <p style="font-size: 10px; margin: 2px;">Skipped Invoice Number </p>
     <section class="skip">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">InvoiceNo.</th>
-
-
-
             </tr>
             </thead>
             <tbody>
             {% for foo in skipped %}
-
-
-
                 <tr>
                     <th scope="row">{{ foo }}</th>
-
-
-
                 </tr>
             {% endfor %}
-
             </tbody>
         </table>
     </section>
-
 </div>
-
-
 </body>
 </html>
