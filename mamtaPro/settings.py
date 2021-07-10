@@ -87,7 +87,7 @@ DATABASES = {
     }
 }
 
-#
+
 #
 # DATABASES = {
 #     'default': {
@@ -206,7 +206,7 @@ PWA_APP_NAME = '123DACN'
 PWA_APP_DESCRIPTION = "Credit Management System."
 PWA_APP_THEME_COLOR = '#3F51B5'
 PWA_APP_DISPLAY = 'standalone'
-PWA_APP_START_URL = '/'
+PWA_APP_START_URL = '/login/'
 PWA_APP_ICONS = [
     {
         "src": "static/sw/images/48.png",
@@ -241,3 +241,5 @@ PWA_APP_ICONS = [
 ]
 
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'mamtaApp', '../static/sw/sw.js')
+SESSION_COOKIE_AGE = 30*60
+SESSION_SAVE_EVERY_REQUEST = True
