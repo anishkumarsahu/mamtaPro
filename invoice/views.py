@@ -1721,16 +1721,19 @@ def search_invoice(request):
 
         sID = request.POST.get('sID')
         searchID = request.POST.get('searchID')
-
         try:
             obj = Sales.objects.get(InvoiceSeriesID_id=int(sID), numberMain=int(searchID))
+            try:
+                name = obj.createdBy.name[0:10]
+            except:
+                name = 'Admin'
             data = {
                 'BillNumber': obj.billNumber,
                 'Amount': obj.amount,
                 'SalesType': obj.salesType.upper(),
                 'CustomerName': obj.customerName,
                 'Datetime': obj.datetime.strftime('%d-%m-%Y %I:%M %p'),
-                'CreatedBy': obj.createdBy.name[0:10]
+                'CreatedBy': name
             }
             return JsonResponse({'message': 'success', 'data': data})
 

@@ -719,6 +719,7 @@
                     <span>Amount: ₹  <strong id="s2"></strong></span><br>
                     <span>Customer Name:<strong id="s3"></strong></span><br>
                     <span>Datetime:<strong id="s4"></strong></span><br>
+                    <span>Created:<strong id="s5"></strong></span><br>
                 </div>
             </div>
             <div style="padding-top: 30px;display: none;" id="noresultDiv">
@@ -1691,6 +1692,7 @@
                         $('#s2').html(response.data['Amount']);
                         $('#s3').html(response.data['CustomerName']);
                         $('#s4').html(response.data['Datetime']);
+                        $('#s5').html(response.data['CreatedBy']);
                     }
                     else if (response.message === 'notFound') {
                         $('#useNow').html('');
