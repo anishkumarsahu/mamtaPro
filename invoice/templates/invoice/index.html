@@ -269,7 +269,7 @@
                                 </div>
                                 <div role="tabpanel" class="tab-pane fade" id="Mix" style="display: none">
                                     <div class="row">
-                                        <div class="col-sm-6 col-xs-6" id="MixTab">
+                                        <div class="col-sm-3 col-xs-3" id="MixTab">
                                             <div class="form-group"><br>
 
                                                 <div>
@@ -299,6 +299,15 @@
                                                 <input type="number" class="form-control" id="mixCard"
                                                        aria-describedby=""
                                                        placeholder="Card Amount(Rs.)">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-3 col-xs-3">
+                                            <div class="form-group"><br>
+                                                <input type="text" class="form-control" id="cardRemark"
+                                                       aria-describedby=""
+                                                       placeholder="Card Remark">
 
                                             </div>
                                         </div>
@@ -1244,6 +1253,7 @@
 
                 var cashAmount = $('#mixCash').val();
                 var cardAmount = $('#mixCard').val();
+                var cardRemark = $('#cardRemark').val();
                 var ChallanNumber = 'N/A';
                 data = new FormData();
                 data.append('SalesType', billType);
@@ -1255,9 +1265,10 @@
                 data.append('MainNumber', MainNumber);
                 data.append('MainSeries', MainSeries);
                 data.append('ChallanNumber', ChallanNumber);
+                data.append('cardRemark', cardRemark);
                 data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
-                if (billNumber === "" || cashAmount === "" || cardAmount === "") {
+                if (billNumber === "" || cashAmount === "" || cardAmount === ""|| cardRemark === "") {
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 

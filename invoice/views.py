@@ -932,6 +932,7 @@ def create_invoice(request):
         MainNumber = request.POST.get('MainNumber')
         MainSeries = request.POST.get('MainSeries')
         ChallanNumber = request.POST.get('ChallanNumber')
+        cardRemark = request.POST.get('cardRemark')
         try:
             Remark = request.POST.get('Remark')
         except:
@@ -959,6 +960,7 @@ def create_invoice(request):
                 if SalesType == 'Mix':
                     sale.isCash = False
                     sale.mixCardAmount = float(CardAmount)
+                    sale.remark = cardRemark
                 if not 'Both' in request.user.groups.values_list('name', flat=True):
 
                     user = StaffUser.objects.get(userID_id=request.user.pk)
