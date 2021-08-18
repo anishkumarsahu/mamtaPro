@@ -343,7 +343,7 @@
                                         </div>
                                         <div class="col-sm-4 col-xs-4">
                                             <div class="form-group"><br>
-                                                <input type="text" class="form-control" id="cardRemark"
+                                                <input type="text" class="form-control" id="cardRemarkOri"
                                                        aria-describedby=""
                                                        placeholder="Remark">
 
@@ -729,6 +729,7 @@
                     <span>Customer Name:<strong id="s3"></strong></span><br>
                     <span>Datetime:<strong id="s4"></strong></span><br>
                     <span>Created:<strong id="s5"></strong></span><br>
+                    <span>Remark:<strong id="s6"></strong></span><br>
                 </div>
             </div>
             <div style="padding-top: 30px;display: none;" id="noresultDiv">
@@ -1183,7 +1184,7 @@
             if (billType === 'Card') {
 
                 var amount = $('#cardd').val();
-                var remark = $('#cardRemark').val();
+                var remark = $('#cardRemarkOri').val();
                 var ChallanNumber = 'N/A';
                 data = new FormData();
                 data.append('SalesType', billType);
@@ -1704,6 +1705,7 @@
                         $('#s3').html(response.data['CustomerName']);
                         $('#s4').html(response.data['Datetime']);
                         $('#s5').html(response.data['CreatedBy']);
+                        $('#s6').html(response.data['Remark']);
                     }
                     else if (response.message === 'notFound') {
                         $('#useNow').html('');

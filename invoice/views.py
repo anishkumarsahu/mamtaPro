@@ -1735,7 +1735,8 @@ def search_invoice(request):
                 'SalesType': obj.salesType.upper(),
                 'CustomerName': obj.customerName,
                 'Datetime': obj.datetime.strftime('%d-%m-%Y %I:%M %p'),
-                'CreatedBy': name
+                'CreatedBy': name,
+                'Remark':obj.remark
             }
             return JsonResponse({'message': 'success', 'data': data})
 
