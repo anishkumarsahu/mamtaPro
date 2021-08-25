@@ -2022,13 +2022,13 @@ def generate_collection_report_admin(request):
     day_string = date1.strftime('%Y-%m-%d')
 
     company = Company.objects.get(pk=int(companyID))
-    col = MoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+    col = MoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
                                          isAddedInSales__exact=True).order_by('datetime')
     col_total = 0.0
     for c in col:
         col_total = col_total + c.amount
 
-    colCash = CashMoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+    colCash = CashMoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
                                          isAddedInSales__exact=True).order_by('datetime')
     col_total_cash = 0.0
     for cash in colCash:
@@ -2040,7 +2040,7 @@ def generate_collection_report_admin(request):
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
-    supCheque = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+    supCheque = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
                                                 isApproved__exact=True, paymentMode='Cheque').order_by('datetime')
     sup_total_cheque = 0.0
     for cheque in supCheque:
@@ -2048,7 +2048,7 @@ def generate_collection_report_admin(request):
 
 
     supInvoice= SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=int(companyID),
-                                                         isApproved__exact=True,
+                                                         isApproved__exact=True,isDeleted__exact=False,
                                                          ).order_by('datetime')
     sup_total_inv = 0.0
     for inv in supInvoice:
@@ -2056,13 +2056,13 @@ def generate_collection_report_admin(request):
 
     supInvoice_pending = SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(),
                                                           companyID_id=int(companyID),
-                                                          isApproved__exact=False,
+                                                          isApproved__exact=False,isDeleted__exact=False,
                                                           ).order_by('datetime')
     supCash_pending = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
-                                                 isApproved__exact=False, paymentMode ='Cash' ).order_by('datetime')
+                                                 isApproved__exact=False, isDeleted__exact=False,paymentMode ='Cash' ).order_by('datetime')
 
     supCheque_pending = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
-                                                isApproved__exact=False, paymentMode='Cheque').order_by('datetime')
+                                                isApproved__exact=False,isDeleted__exact=False, paymentMode='Cheque').order_by('datetime')
     context = {
         'date': gDate,
         'company': company.name,
@@ -2095,19 +2095,19 @@ def generate_collection_report_supplier(request):
     user = StaffUser.objects.get(userID_id = request.user.pk)
 
     supCash = SupplierCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=request.user.pk,
-                                                  paymentMode ='Cash' ).order_by('datetime')
+                                                  paymentMode ='Cash',isDeleted__exact=False, ).order_by('datetime')
     sup_total_cash = 0.0
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
     supCheque = SupplierCollection.objects.filter(datetime__icontains=datetime.today().date(), collectedBy__userID_id=request.user.pk,
-                                                 paymentMode='Cheque').order_by('datetime')
+                                                 paymentMode='Cheque',isDeleted__exact=False,).order_by('datetime')
     sup_total_cheque = 0.0
     for cheque in supCheque:
         sup_total_cheque = sup_total_cheque + cheque.amount
 
     supInvoice= SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(),
-                                                collectedBy__userID_id=request.user.pk,).order_by('datetime')
+                                                collectedBy__userID_id=request.user.pk,isDeleted__exact=False,).order_by('datetime')
     sup_total_inv = 0.0
     for inv in supInvoice:
         sup_total_inv = sup_total_inv + inv.amount
@@ -2135,10 +2135,10 @@ def generate_collection_report(request):
     user = StaffUser.objects.get(userID_id=request.user.pk)
     date = datetime.today().date()
     col = MoneyCollection.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=user.companyID_id,
-                                         isAddedInSales__exact=True).order_by('datetime')
+                                         isAddedInSales__exact=True,isDeleted__exact=False,).order_by('datetime')
 
     colCash = CashMoneyCollection.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=user.companyID_id,
-                                                 isAddedInSales__exact=True).order_by('datetime')
+                                                 isAddedInSales__exact=True,isDeleted__exact=False,).order_by('datetime')
 
     context = {
 
