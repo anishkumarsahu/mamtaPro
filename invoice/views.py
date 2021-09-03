@@ -1505,7 +1505,7 @@ def generate_net_report_admin(request):
         opening = 0.0
         closing = 0.0
 
-    rokad_value =opening - closing + float(col_total_cash)+float(sup_total_cash)+float(cash_total)+float(mix_cash_total)+float(correct_total)-float(expense_total)-float(commission_total)-float(return_total)
+    rokad_value =opening + closing + float(col_total_cash)+float(sup_total_cash)+float(cash_total)+float(mix_cash_total)+float(correct_total)-float(expense_total)-float(commission_total)-float(return_total)
     context = {
         'sales_cash': sales_cash,
         'sales_card': sales_card,
