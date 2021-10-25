@@ -294,8 +294,8 @@ class EmployeeListForAttendanceAdminJson(BaseDatatableView):
         return json_data
 
 class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
-    order_columns = ['id', 'photo', 'name', 'loginTime',
-                      'logoutTime', ]
+    order_columns = ['id', 'photo', 'name', 'loginTime','loginPhoto'
+                      'logoutTime', 'logoutPhoto']
 
     def get_initial_queryset(self):
 
@@ -343,6 +343,15 @@ class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
                 logoutTime = '''<button type="button" class="btn btn-info">{}
                                     </button>'''.format(attend.logoutTime.strftime('%I:%M %p'))
 
+            if not attend.loginPhoto:
+                loginPhoto = 'N/A'
+            else:
+                loginPhoto = '''<img class="imageTable zoom" src="{}" alt="" >'''.format(attend.loginPhoto.thumbnail.url),
+
+            if not attend.logoutPhoto:
+                logoutPhoto = 'N/A'
+            else:
+                logoutPhoto = '''<img class="imageTable zoom" src="{}" alt="" >'''.format(attend.logoutPhoto.thumbnail.url),
 
             json_data.append([
                 escape(i),
@@ -350,7 +359,9 @@ class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
                 escape(item.name),
 
                 loginTime,
+                loginPhoto,
                 logoutTime,
+                logoutPhoto
             ])
             i = i + 1
         return json_data

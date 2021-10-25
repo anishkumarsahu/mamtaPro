@@ -202,6 +202,27 @@
             </tbody>
         </table>
     </section>
+
+ <p style="font-size: 10px; margin: 2px;">Staff Advance </p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">CustomerName</th>
+                <th scope="col">Amount(₹)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in advance %}
+                <tr>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.amount }}</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
     <p style="font-size: 10px; margin: 2px;">Skipped Invoice Number </p>
     <section class="skip">
         <table class="table table-bordered" style="font-size: 9px;">

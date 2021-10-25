@@ -127,6 +127,10 @@
     .bootstrap-select {
         width: 100% !important;
     }
+    .row {
+    margin-right: 0;
+    margin-left: 0;
+}
 </style>
 <div id="nonPrintDiv">
     <div class="col-md-12">
@@ -167,22 +171,22 @@
 
 
             </ul>
-            <ul style="    position: fixed;bottom: 80px;" class="nav">
-                <h4>Username : {% if user == 'Admin' %}
+            <ul style="    position: fixed;bottom: 80px;font-size: 12px" class="nav">
+                <span>user:{% if user == 'Admin' %}
                     Admin
                     {% else %}{{ user.name|capfirst }}
-                {% endif %} </h4>
+                {% endif %} </span>
             </ul>
-            <ul style="position: fixed;bottom: 0;width:14%;padding-bottom: 20px" class="nav">
-                <span style="color: grey;font-size: 12px;">{{ user.companyID.name }}</span>
+            <ul style="position: fixed;bottom: 0;padding-bottom: 20px" class="nav">
+                <span style="color: grey;font-size: 12px;position: absolute;top: 37px;left: 0;">{{ user.companyID.name }}</span>
                 <a href="{% url 'mamtaApp:logout' %}"
-                   style="font-weight: bold;width:100%;padding-right: 10px;background-color: #2d4760;border-color: #2d4760"
+                   style="font-weight: bold;float: left;padding-right: 10px;background-color: #2d4760;border-color: #2d4760"
                    type="button" class="btn btn-warning">Logout</a>
                 {% if user != 'Admin' %}
-                    <a style="color: #b54f3d;font-size: 13px;cursor: pointer;" data-toggle="modal"
+                    <a style="position:absolute;color: #b54f3d;font-size: 13px;cursor: pointer;" data-toggle="modal"
                        data-target="#ChangePasswordModal"
                        data-whatever="@mdo">
-                        <stong>Change Password</stong>
+                        <stong >Change Password</stong>
                     </a>
                 {% endif %}
             </ul>
@@ -233,6 +237,10 @@
                             <li style="background-color: #e6eaff;" onclick="changeTab('expense')"><a
                                     href="#Expense" data-toggle="tab">Expense</a>
                             </li>
+                              <li style="background-color: #e6eaff;" onclick="changeTab('advance')"><a
+                                    href="#Advance" data-toggle="tab">Advance</a>
+                            </li>
+
 
                         </ul>
                         <div class="tab-content">
@@ -551,6 +559,26 @@
                                         </div>
                                     </div>
                                 </div>
+                             <div role="tabpanel" class="tab-pane fade" id="Advance" style="display:none;">
+                                    <div class="row">
+
+                                        <div class="row" id="collection2">
+                                            <div class="col-sm-6 col-xs-6">
+                                                <div class="form-group"><br><select id="partyNameAdvance"
+                                                                                    class="selectpicker loadBuyer form-control"
+                                                                                    data-show-subtext="true"
+                                                                                    data-live-search="true"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xs-6">
+                                                <div class="form-group"><br><input type="number" class="form-control"
+                                                                                   id="partyAmountAdvance" aria-describedby=""
+                                                                                   placeholder="Rs." value="0"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                                 <div style="text-align: center;">
                                     <button style="padding-right: 30px;padding-left: 30px;display: none;" type="button"
                                             class="btn btn-primary" id="loading">Saving ... Please wait.
@@ -662,6 +690,16 @@
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         <div class="col-sm-6">
+                             <label style="color: #0178fc"> Today's Staff Advance</label>
+                            <div style="padding-top: 5px;overflow-x: scroll;">
+
+                                <div style="width: 100%;height: 30px;">
+                    <span id="todayAdvance">
+
+                     </span>
+                                </div>
+                            </div>
+
 
                         </div>
                         <div class="col-sm-6">
@@ -952,6 +990,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'credit') {
             $('#Card').css('display', 'none');
@@ -970,6 +1009,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'card') {
             $('#Card').css('display', '');
@@ -988,6 +1028,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'collection') {
             $('#Card').css('display', 'none');
@@ -1003,6 +1044,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'cc') {
             $('#Card').css('display', 'none');
@@ -1018,6 +1060,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'return') {
             $('#Card').css('display', 'none');
@@ -1033,6 +1076,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'commission') {
             $('#Card').css('display', 'none');
@@ -1048,6 +1092,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'correction') {
             $('#Card').css('display', 'none');
@@ -1063,6 +1108,7 @@
             $('#Correction').css('display', '');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'mix') {
             $('#Card').css('display', 'none');
@@ -1081,6 +1127,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', '');
             $('#Expense').css('display', 'none');
+             $('#Advance').css('display', 'none');
         }
         if (t === 'expense') {
             $('#Card').css('display', 'none');
@@ -1096,6 +1143,24 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', '');
+            $('#Advance').css('display', 'none');
+        }
+
+          if (t === 'advance') {
+            $('#Card').css('display', 'none');
+            $('#Commentary').css('display', 'none');
+            $('#Videos').css('display', 'none');
+            $('#Collection').css('display', 'none');
+            $('#CashCollection').css('display', 'none');
+            $('#Return').css('display', 'none');
+            $('#Commission').css('display', 'none');
+            $('#billType').val('advance');
+            $('#collectionBtn').css('display', '');
+            getStaffAdvanceDetails();
+            $('#Correction').css('display', 'none');
+            $('#Mix').css('display', 'none');
+            $('#Expense').css('display', 'none');
+            $('#Advance').css('display', '');
         }
     }
 
@@ -1427,7 +1492,8 @@
                 data.append('partyAmount', partyAmount);
                 data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
-                if (partyName === "" || partyAmount === "") {
+
+                if (partyName === null || partyAmount === "") {
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
@@ -1454,10 +1520,56 @@
 
                             $('#SearchForm')[0].reset();
                             getCashCollectionDetails();
+                            $('#save').attr('disabled', false);
                         },
                         error: function () {
                             errMsg();
+                        }
+                    });
+
+                }
+            }
+            if (billType === 'advance') {
+                var partyName = $('#partyNameAdvance').val();
+                var partyAmount = $('#partyAmountAdvance').val();
+                data = new FormData();
+                data.append('partyName', partyName);
+                data.append('partyAmount', partyAmount);
+                data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+                if (partyName === null || partyAmount === "") {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+                }
+                else {
+                    $('#save').attr('disabled', true);
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url 'invoiceApp:staff_advance_post' %}',
+                        data: data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+
+
+                        success: function (response) {
+                            if (response.message === 'success') {
+                                $('#name_status').addClass('validate_data');
+                                $('#name_status').html('New Staff Advance Created.').fadeIn().fadeOut(2000);
+                                $('#SalesForm')[0].reset();
+
+
+
+                            }
+
+                            $('#SearchForm')[0].reset();
+                            getStaffAdvanceDetails();
                             $('#save').attr('disabled', false);
+                        },
+                        error: function () {
+                            errMsg();
+
                         }
                     });
 
@@ -1655,6 +1767,8 @@
         $("#partyName").selectpicker("refresh");
         $("#name").val('');
         $("#name").selectpicker("refresh");
+        $("#partyNameAdvance").val('');
+        $("#partyNameAdvance").selectpicker("refresh");
 
 
     }
@@ -1668,6 +1782,8 @@
         $("#partyName").selectpicker("refresh");
         $("#name").val('');
         $("#name").selectpicker("refresh");
+        $("#partyNameAdvance").val('');
+        $("#partyNameAdvance").selectpicker("refresh");
     }
     $(".tabClass li:first").addClass("active");
 
@@ -1798,6 +1914,25 @@
         });
 
     }
+        function getStaffAdvanceDetails() {
+        $('#todayAdvance').html('');
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_today_staff_advance_by_company' %}",
+            success: function (response) {
+                for (i in response.data) {
+                    todayAdvance = '<span class="label label-info invoiceStyle" ><strong>' + response.data[i].Customer + ' - ₹ ' + response.data[i].Amount + '  </strong></span>';
+
+                    $('#todayAdvance').append(todayAdvance)
+                }
+
+            },
+            error: function () {
+                errMsg();
+            }
+        });
+
+    }
     function addParty() {
         var pName = $('#pName').val();
         var pAddress = $('#pAddress').val();
@@ -1839,6 +1974,8 @@
                             $("#partyName1").selectpicker('refresh');
                             $('#name').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["Name"] + '">' + response.data[i]["Name"] + '</option>');
                             $("#name").selectpicker('refresh');
+                            $('#partyNameAdvance').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["Name"] + '">' + response.data[i]["Name"] + '</option>');
+                            $("#partyNameAdvance").selectpicker('refresh');
                         }
 
                     }
@@ -2065,6 +2202,30 @@
             }
         }
     });
+
+     $(document).on("keydown", "input[aria-controls='bs-select-4']", function (e) {
+        if ((e.keyCode < 38 || e.keyCode > 40)) {
+            if ((e.keyCode !== 13 )) {
+                var inputVal = $(this).val();
+                $('#partyNameAdvance').html('');
+                $.ajax({
+                    type: 'get',
+                    url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
+                    success: function (response) {
+                        $('#partyNameAdvance').append('<option  value="" selected>Search Party</option>');
+                        for (i in response.data) {
+                            $('#partyNameAdvance').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                        }
+                        $("#partyNameAdvance").selectpicker('refresh');
+                    },
+                    error: function () {
+                        errMsg();
+                    }
+                });
+            }
+        }
+    });
+
 
     function errMsg() {
         $('#name_status').addClass('validate_data');

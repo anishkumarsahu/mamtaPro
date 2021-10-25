@@ -62,3 +62,9 @@ class LoginAndLogoutAdmin(admin.ModelAdmin):
     list_display = ['userID','statusType','isDeleted','datetime']
 
 admin.site.register(LoginAndLogoutStatus,LoginAndLogoutAdmin)
+
+
+class StaffAdvanceToBuyerAdmin(admin.ModelAdmin):
+    list_display = ['buyerID','amount','isDeleted','datetime']
+
+admin.site.register(StaffAdvanceToBuyer,StaffAdvanceToBuyerAdmin)

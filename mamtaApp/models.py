@@ -147,3 +147,13 @@ class SupplierInvoiceCollection(models.Model):
     isApproved = models.BooleanField(default=False)
     approvedBy = models.CharField(max_length=100, blank=True, null=True, default='N/A')
 
+
+class StaffAdvanceToBuyer(models.Model):
+    buyerID = models.ForeignKey(Buyer, blank=True, null=True)
+    collectedBy = models.ForeignKey(StaffUser, blank=True, null=True)
+    amount = models.FloatField(default=0.0)
+    remark = models.CharField(max_length=500, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    companyID = models.ForeignKey(Company, blank=True, null=True)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)

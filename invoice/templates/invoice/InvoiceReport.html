@@ -65,22 +65,28 @@
                         <span></span>
                     </div>
                 </div>
-                <div class="col-md-2 col-sm-4 col-xs-4" style="margin-top: 26px;text-align: center!important;">
+                <div class="col-md-1 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
                     <a id="reportUrl" href="{% url 'invoiceApp:generate_net_report_admin' %}"
                        style="background-color: #24b53c;color: white;" type="button" class="btn  waves-effect "
                     >Daily Report
                     </a>
                 </div>
-                <div class="col-md-2 col-sm-4 col-xs-4" style="margin-top: 26px;text-align: center!important;">
+                <div class="col-md-2 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
                     <a id="reportUrlCollection" href="{% url 'invoiceApp:generate_collection_report_admin' %}"
                        style="background-color: #b54fb5;color: white;" type="button" class="btn  waves-effect "
                     >Collection Report
                     </a>
                 </div>
-                <div class="col-md-3 col-sm-4 col-xs-4" style="margin-top: 26px;text-align: center!important;">
+                <div class="col-md-2 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
                     <a id="reportUrlMonthly" href="{% url 'invoiceApp:generate_monthly_report_admin' %}"
                        style="background-color: #b52f58;color: white;" type="button" class="btn  waves-effect "
-                    >Monthly Report
+                    >Monthly Report(I)
+                    </a>
+                </div>
+            <div class="col-md-2 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
+                    <a id="reportUrlMonthlySA" href="{% url 'invoiceApp:generate_monthly_report_staff_advance_admin' %}"
+                       style="background-color: #b56930;color: white;" type="button" class="btn  waves-effect "
+                    >Monthly Report(SA)
                     </a>
                 </div>
             </div>
@@ -590,7 +596,50 @@
                     </div>
                 </div>
             </div>
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
 
+                        <div class="header">
+                            <h2>
+                                STAFF ADVANCE
+                            </h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="staffAdvanceTable"
+                                       class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>CustomerName</th>
+                                        <th>Company</th>
+                                        <th>CollectedBy</th>
+                                        <th>CollectedOn</th>
+                                        <th>Action</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>Amount(₹)</th>
+                                        <th>CustomerName</th>
+                                        <th>Company</th>
+                                        <th>CollectedBy</th>
+                                        <th>CollectedOn</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
     <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
@@ -733,6 +782,28 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="defaultModalDeleteColAdvance" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{% url 'invoiceApp:delete_staff_advance_api' %}" method="post"
+                      id="deleteColFormAdvance">{% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Delete Staff Advance</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this detail?</p>
+                    </div>
+                    <input type="hidden" id="colDelIDAdvance" name="colDelIDAdvance">
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="deleteColNowAdvance()">Yes
+                        </button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="defaultModalColEditCash" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -782,6 +853,61 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="editColCash()">Save</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="defaultModalColEditStaffAdvance" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{% url 'invoiceApp:edit_staff_advance' %}" method="post"
+                      id="EditColFormAdvance"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Edit Staff Advance</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="ColIDAdvance" id="ColIDAdvance">
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">attach_money</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="number" class="form-control date"
+                                               name="amountEColAdvance" id="amountEColAdvance"
+                                               placeholder="Amount *">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">person</i>
+                                        </span>
+                                    <div class="form-line">
+                                        {% comment %} <input type="text" class="form-control"
+                                               placeholder="Customer Name *" name="customerECol"
+                                               id="customerECol">{% endcomment %}
+                                        <select class="form-control show-tick" id="customerEColAdvance"
+                                                name="customerEColAdvance"
+                                                onchange="ChangeCompany()">
+                                            {% for comp in buyer %}
+                                                <option value="{{ comp.pk }}">{{ comp.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="editAdvance()">Save</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
                     </div>
                 </form>
@@ -1248,6 +1374,7 @@
         var correctTab;
         var mixTab;
         var exTab;
+        var staffTab;
 
         $(document).ready(function () {
             var startDate = $('#startDate').val();
@@ -1302,7 +1429,7 @@
 
             });
 
-            mixtab = $('#mixTable').dataTable({
+            mixTab = $('#mixTable').dataTable({
                 dom: 'Blfrtip',
                 buttons: ['excel', 'print'
                 ],
@@ -1481,7 +1608,27 @@
 
             });
 
-            // ...
+            staffTab = $('#staffAdvanceTable').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel', 'print'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "remark", "targets": 1, "orderable": true},
+                    {"name": "amount", "targets": 2, "orderable": true},
+                    {"name": "companyID", "targets": 3, "orderable": true},
+                    {"name": "createdBy", "targets": 4, "orderable": true},
+                    {"name": "datetime", "targets": 5, "orderable": true},
+                    {"name": "action", "targets": 6, "orderable": false},
+                ],
+                aaSorting: [[5, 'desc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'invoiceApp:StaffAdvanceListJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
+
+            });
         });
 
         function getData() {
@@ -1498,8 +1645,9 @@
             commissionTab.api().ajax.url('{% url "invoiceApp:CommissionListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
             cashCollectionTab.api().ajax.url('{% url "invoiceApp:CashCollectionListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
             cardtab.api().ajax.url('{% url "invoiceApp:InvoiceCreatedByCardListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
-            mixtab.api().ajax.url('{% url "invoiceApp:InvoiceCreatedByMixListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
-            extab.api().ajax.url('{% url "invoiceApp:ExpenseListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
+            mixTab.api().ajax.url('{% url "invoiceApp:InvoiceCreatedByMixListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
+            exTab.api().ajax.url('{% url "invoiceApp:ExpenseListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
+            staffTab.api().ajax.url('{% url "invoiceApp:StaffAdvanceListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
         }
         function getImage(url) {
 
@@ -1530,6 +1678,11 @@
             $('#ColIDCash').val(id);
             $('#amountEColCash').val(amount);
             $('#customerEColCash').val(customer);
+        }
+        function getDetailStaffAdvance(id, amount, customer) {
+            $('#ColIDAdvance').val(id);
+            $('#amountEColAdvance').val(amount);
+            $('#customerEColAdvance').val(customer);
         }
         function getDetailReturn(id, invoice, amount) {
             $('#ReturnID').val(id);
@@ -1570,6 +1723,10 @@
             $('#colDelIDCash').val(id)
 
         }
+        function deleteColAdvance(id) {
+            $('#colDelIDAdvance').val(id)
+
+        }
         function deleteDetail() {
 
             $('#deleteSaleForm').submit();
@@ -1586,6 +1743,10 @@
         function deleteColNowCash() {
 
             $('#deleteColFormCash').submit();
+        }
+        function deleteColNowAdvance() {
+
+            $('#deleteColFormAdvance').submit();
         }
 
 
@@ -1663,6 +1824,7 @@
             $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportUrlMonthly").attr("href", "{% url 'invoiceApp:generate_monthly_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+            $("#reportUrlMonthlySA").attr("href", "{% url 'invoiceApp:generate_monthly_report_staff_advance_admin' %}?companyID=" + comp + '&gDate=' + gDate);
 
         }
 
@@ -1762,6 +1924,21 @@
         function deleteExpenseNow() {
 
             $('#deleteExpenseForm').submit();
+        }
+        function editAdvance() {
+            var invoiceID = $('#ColIDAdvance').val();
+            var amountE = $('#amountEColAdvance').val();
+            var customerE = $('#customerEColAdvance').val();
+
+            if (invoiceID === "" || amountE === "" || customerE === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else {
+                $('#EditColFormAdvance').submit();
+            }
+
         }
     </script>
 {% endblock %}
