@@ -1369,17 +1369,17 @@ def generate_net_report(request):
     user = StaffUser.objects.get(userID_id=request.user.pk)
     date = datetime.today().date()
     sales_cash = Sales.objects.filter(datetime__icontains=datetime.today().date(),
-                                      salesType__icontains='cash',
+                                      salesType__icontains='cash',isDeleted__exact=False,
                                       InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID').order_by('numberMain')
     sales_card = Sales.objects.filter(datetime__icontains=datetime.today().date(),
-                                      salesType__icontains='card',
+                                      salesType__icontains='card',isDeleted__exact=False,
                                       InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID').order_by('numberMain')
     sales_credit = Sales.objects.filter(datetime__icontains=datetime.today().date(),
-                                        salesType__icontains='credit',
+                                        salesType__icontains='credit',isDeleted__exact=False,
                                         InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID').order_by('numberMain')
 
     sales_mix = Sales.objects.filter(datetime__icontains=datetime.today().date(),
-                                     salesType__icontains='Mix',
+                                     salesType__icontains='Mix',isDeleted__exact=False,
                                      InvoiceSeriesID__companyID_id=int(user.companyID_id)).order_by('InvoiceSeriesID').order_by('numberMain')
 
     cash_total = 0.0
@@ -1416,14 +1416,14 @@ def generate_net_report(request):
                     skipped_list.append(str(invoice.series) + str(i.number))
         except:
             pass
-    returns = ReturnCollection.objects.filter(datetime__icontains=datetime.today().date(),
+    returns = ReturnCollection.objects.filter(datetime__icontains=datetime.today().date(),isDeleted__exact=False,
                                               companyID_id=user.companyID_id).order_by('actualBillNumber')
-    corrections = CorrectCollection.objects.filter(datetime__icontains=datetime.today().date(),
+    corrections = CorrectCollection.objects.filter(datetime__icontains=datetime.today().date(),isDeleted__exact=False,
                                                    companyID_id=user.companyID_id).order_by('actualBillNumber')
 
-    commissions = Commission.objects.filter(datetime__icontains=datetime.today().date(),
+    commissions = Commission.objects.filter(datetime__icontains=datetime.today().date(),isDeleted__exact=False,
                                             companyID_id=user.companyID_id).order_by('actualBillNumber')
-    expenses = Expense.objects.filter(datetime__icontains=datetime.today().date(),
+    expenses = Expense.objects.filter(datetime__icontains=datetime.today().date(),isDeleted__exact=False,
                                       companyID_id=user.companyID_id).order_by('datetime')
 
     return_total = 0.0
@@ -1442,9 +1442,9 @@ def generate_net_report(request):
     for e in expenses:
         expense_total = expense_total + e.amount
     col = MoneyCollection.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=user.companyID_id,
-                                         isAddedInSales__exact=True).order_by('datetime')
+                                         isAddedInSales__exact=True,isDeleted__exact=False).order_by('datetime')
 
-    advance = StaffAdvanceToBuyer.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=int(user.companyID_id)).order_by('datetime')
+    advance = StaffAdvanceToBuyer.objects.filter(datetime__icontains=datetime.today().date(), companyID_id=int(user.companyID_id),isDeleted__exact=False).order_by('datetime')
     advance_total = 0.0
     for ad in advance:
         advance_total = advance_total + ad.amount
@@ -1492,16 +1492,16 @@ def generate_net_report_admin(request):
     date = datetime.today().date()
     sales_cash = Sales.objects.filter(datetime__icontains=day_string,
                                       salesType__icontains='cash',
-                                      InvoiceSeriesID__companyID_id=int(companyID)).order_by('InvoiceSeriesID').order_by('numberMain')
+                                      InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID').order_by('numberMain')
     sales_card = Sales.objects.filter(datetime__icontains=day_string,
                                       salesType__icontains='card',
-                                      InvoiceSeriesID__companyID_id=int(companyID)).order_by('InvoiceSeriesID').order_by('numberMain')
+                                      InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID').order_by('numberMain')
     sales_credit = Sales.objects.filter(datetime__icontains=day_string,
                                         salesType__icontains='credit',
-                                        InvoiceSeriesID__companyID_id=int(companyID)).order_by('InvoiceSeriesID').order_by('numberMain')
+                                        InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID').order_by('numberMain')
     sales_mix = Sales.objects.filter(datetime__icontains=day_string,
                                      salesType__icontains='Mix',
-                                     InvoiceSeriesID__companyID_id=int(companyID)).order_by('InvoiceSeriesID').order_by('numberMain')
+                                     InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID').order_by('numberMain')
     cash_total = 0.0
     for cash in sales_cash:
         cash_total = cash_total + cash.amount
@@ -1509,10 +1509,11 @@ def generate_net_report_admin(request):
     card_total = 0.0
     for card in sales_card:
         card_total = card_total + card.amount
-
+    credit_cus_list = []
     credit_total = 0.0
     for credit in sales_credit:
         credit_total = credit_total + credit.amount
+        credit_cus_list.append(credit.customerName)
 
     mix_cash_total = 0.0
     mix_card_total = 0.0
@@ -1538,47 +1539,47 @@ def generate_net_report_admin(request):
         except:
             pass
     returns = ReturnCollection.objects.filter(datetime__icontains=day_string,
-                                              companyID_id=int(companyID)).order_by('actualBillNumber')
+                                              companyID_id=int(companyID),isDeleted__exact=False,).order_by('actualBillNumber')
 
     return_total = 0.0
     for am in returns:
         return_total = return_total + am.amount
 
     corrections = CorrectCollection.objects.filter(datetime__icontains=day_string,
-                                                   companyID_id=int(companyID)).order_by('actualBillNumber')
+                                                   companyID_id=int(companyID),isDeleted__exact=False,).order_by('actualBillNumber')
 
     correct_total = 0.0
     for ame in corrections:
         correct_total = correct_total + ame.amount
 
     commissions = Commission.objects.filter(datetime__icontains=day_string,
-                                            companyID_id=int(companyID)).order_by('actualBillNumber')
+                                            companyID_id=int(companyID),isDeleted__exact=False,).order_by('actualBillNumber')
 
     commission_total = 0.0
     for c in commissions:
         commission_total = commission_total + c.amount
 
     expenses = Expense.objects.filter(datetime__icontains=day_string,
-                                      companyID_id=int(companyID)).order_by('datetime')
+                                      companyID_id=int(companyID),isDeleted__exact=False,).order_by('datetime')
 
     expense_total = 0.0
     for e in expenses:
         expense_total = expense_total + e.amount
 
     col = MoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
-                                         isAddedInSales__exact=True).order_by('datetime')
+                                         isAddedInSales__exact=True,isDeleted__exact=False,).order_by('datetime')
     col_total = 0.0
     for c in col:
         col_total = col_total + c.amount
 
     colCash = CashMoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
-                                                 isAddedInSales__exact=True).order_by('datetime')
+                                                 isAddedInSales__exact=True,isDeleted__exact=False,).order_by('datetime')
     col_total_cash = 0.0
     for cash in colCash:
         col_total_cash = col_total_cash + cash.amount
 
     supCash = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
-                                                isApproved__exact=True, paymentMode='Cash').order_by('datetime')
+                                                isApproved__exact=True, paymentMode='Cash',isDeleted__exact=False,).order_by('datetime')
     sup_total_cash = 0.0
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
@@ -1590,7 +1591,7 @@ def generate_net_report_admin(request):
         opening = 0.0
         closing = 0.0
 
-    advance = StaffAdvanceToBuyer.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID)).order_by('datetime')
+    advance = StaffAdvanceToBuyer.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,).order_by('datetime')
     advance_total = 0.0
     for ad in advance:
         advance_total = advance_total + ad.amount
@@ -1623,12 +1624,67 @@ def generate_net_report_admin(request):
         'opening': opening,
         'closing': closing,
         'advance':advance,
-        'advance_total':advance_total
+        'advance_total':advance_total,
+        'credit_cus_list':len(set(credit_cus_list))
     }
 
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = "report.pdf"
     html = render_to_string("invoice/invoicePDFAdmin.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
+    return response
+
+
+def generate_net_report_credit_admin(request):
+    companyID = request.GET.get('companyID')
+    gDate = request.GET.get('gDate')
+    date1 = datetime.strptime(gDate, '%d/%m/%Y')
+    day_string = date1.strftime('%Y-%m-%d')
+    date = datetime.today().date()
+    sales_credit = Sales.objects.filter(datetime__icontains=day_string,
+                                        salesType__icontains='credit',
+                                        InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('customerName').order_by('numberMain')
+
+    party_list = []
+    credit_total = 0.0
+    for credit in sales_credit:
+        credit_total = credit_total + credit.amount
+        party_list.append(credit.customerName)
+    cus_list = []
+    for cre in set(party_list):
+        sales_credit_by_cus = Sales.objects.filter(datetime__icontains=day_string,
+                                           salesType__icontains='credit',customerName__exact=cre,
+                                           InvoiceSeriesID__companyID_id=int(companyID),
+                                           isDeleted__exact=False, ).order_by('InvoiceSeriesID').order_by('numberMain')
+        c_total = 0
+        for c in sales_credit_by_cus:
+            c_total = c_total + c.amount
+
+        c_dic = {
+            'CustomerName':cre,
+            'Amount':c_total
+
+        }
+        cus_list.append(c_dic)
+
+
+
+    company = Company.objects.get(pk=int(companyID))
+    context = {
+
+        'sales_credit': sales_credit,
+        'date': gDate,
+        'credit_total': credit_total,
+        'company': company.name,
+        'cusList':cus_list,
+        'credit_count':len(cus_list),
+
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "report.pdf"
+    html = render_to_string("invoice/invoiceCreditPDFAdmin.html", context)
 
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
     return response
@@ -1641,16 +1697,16 @@ def generate_net_report_accountant(request):
     # date2 = datetime.strptime(endDate, '%d/%m/%Y')
     day_string = date1.strftime('%Y-%m-%d')
     date = datetime.today().date()
-    sales_cash = Sales.objects.filter(datetime__icontains=day_string,
+    sales_cash = Sales.objects.filter(datetime__icontains=day_string,isDeleted__exact=False,
                                       salesType__icontains='cash',
                                       InvoiceSeriesID__companyID_id=int(companyID)).order_by('InvoiceSeriesID').order_by('numberMain')
-    sales_card = Sales.objects.filter(datetime__icontains=day_string,
+    sales_card = Sales.objects.filter(datetime__icontains=day_string,isDeleted__exact=False,
                                       salesType__icontains='card',
                                       InvoiceSeriesID__companyID_id=int(companyID)).order_by('InvoiceSeriesID').order_by('numberMain')
-    sales_credit = Sales.objects.filter(datetime__icontains=day_string,
+    sales_credit = Sales.objects.filter(datetime__icontains=day_string,isDeleted__exact=False,
                                         salesType__icontains='credit',
                                         InvoiceSeriesID__companyID_id=int(companyID)).order_by('InvoiceSeriesID').order_by('numberMain')
-    sales_mix = Sales.objects.filter(datetime__icontains=day_string,
+    sales_mix = Sales.objects.filter(datetime__icontains=day_string,isDeleted__exact=False,
                                      salesType__icontains='Mix',
                                      InvoiceSeriesID__companyID_id=int(companyID)).order_by('InvoiceSeriesID').order_by('numberMain')
 
@@ -1672,18 +1728,18 @@ def generate_net_report_accountant(request):
                     skipped_list.append(str(invoice.series) + str(i.number))
         except:
             pass
-    returns = ReturnCollection.objects.filter(datetime__icontains=day_string,
+    returns = ReturnCollection.objects.filter(datetime__icontains=day_string,isDeleted__exact=False,
                                               companyID_id=int(companyID)).order_by('actualBillNumber')
 
-    corrections = CorrectCollection.objects.filter(datetime__icontains=day_string,
+    corrections = CorrectCollection.objects.filter(datetime__icontains=day_string,isDeleted__exact=False,
                                                    companyID_id=int(companyID)).order_by('actualBillNumber')
 
-    commissions = Commission.objects.filter(datetime__icontains=day_string,
+    commissions = Commission.objects.filter(datetime__icontains=day_string,isDeleted__exact=False,
                                             companyID_id=int(companyID)).order_by('actualBillNumber')
 
-    expenses = Expense.objects.filter(datetime__icontains=day_string,
+    expenses = Expense.objects.filter(datetime__icontains=day_string,isDeleted__exact=False,
                                       companyID_id=int(companyID)).order_by('datetime')
-    advance = StaffAdvanceToBuyer.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID)).order_by('datetime')
+    advance = StaffAdvanceToBuyer.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False).order_by('datetime')
 
     context = {
         'sales_cash': sales_cash,
@@ -1719,6 +1775,8 @@ def generate_monthly_report_admin(request):
 
     g_total = 0.0
     g_total_card = 0.0
+    g_total_mix = 0.0
+    g_total_credit = 0.0
     c_total = 0.0
     c_total_cash = 0.0
     s_total_cash = 0.0
@@ -1726,26 +1784,51 @@ def generate_monthly_report_admin(request):
     si_total_cheque = 0.0
     sale_list = []
     sale_list_card = []
+    sale_list_mix = []
+    sale_list_credit = []
     col_list = []
     col_list_cash = []
     s_list_cash = []
     s_list_cheque = []
     si_list_cheque = []
+    entry_cash = 0
+    entry_card = 0
+    entry_mix = 0
+    entry_credit = 0
     for d in days:
         day_string = d.strftime('%Y-%m-%d')
-        sales_cash = Sales.objects.filter(datetime__contains=day_string,
+        sales_cash = Sales.objects.filter(datetime__contains=day_string,isDeleted__exact=False,
                                           salesType__icontains='cash',
                                           InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
-        sales_card = Sales.objects.filter(datetime__contains=day_string,
+        sales_card = Sales.objects.filter(datetime__contains=day_string,isDeleted__exact=False,
                                           salesType__icontains='card',
                                           InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+        sales_mix = Sales.objects.filter(datetime__contains=day_string,isDeleted__exact=False,
+                                          salesType__icontains='mix',
+                                          InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
+
+        sales_credit = Sales.objects.filter(datetime__contains=day_string, isDeleted__exact=False,
+                                         salesType__icontains='credit',
+                                         InvoiceSeriesID__companyID_id=int(companyID)).order_by('datetime')
         cash_total = 0.0
         for cash in sales_cash:
             cash_total = cash_total + cash.amount
+            entry_cash = entry_cash + 1
 
         card_total = 0.0
         for card in sales_card:
             card_total = card_total + card.amount
+            entry_card = entry_card + 1
+
+        mix_total = 0.0
+        for mix in sales_mix:
+            mix_total = mix_total + mix.amount
+            entry_mix = entry_mix + 1
+
+        credit_total = 0.0
+        for cre in sales_credit:
+            credit_total = credit_total + cre.amount
+            entry_credit = entry_credit + 1
 
         sale_dic = {
             'Date': d,
@@ -1764,7 +1847,27 @@ def generate_monthly_report_admin(request):
         g_total_card = g_total_card + card_total
 
         sale_list_card.append(sale_card_dic)
-        col = MoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+
+
+        sale_mix_dic = {
+            'Date': d,
+            'Total': mix_total
+        }
+
+        g_total_mix = g_total_mix + mix_total
+
+        sale_list_mix.append(sale_mix_dic)
+
+
+        sale_credit_dic = {
+            'Date': d,
+            'Total': credit_total
+        }
+
+        g_total_credit = g_total_credit + credit_total
+
+        sale_list_credit.append(sale_credit_dic)
+        col = MoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
                                              isAddedInSales__exact=True).order_by('datetime')
         col_total = 0.0
         for c in col:
@@ -1778,7 +1881,7 @@ def generate_monthly_report_admin(request):
 
         col_list.append(col_dic)
 
-        colCash = CashMoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+        colCash = CashMoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
                                                      isAddedInSales__exact=True).order_by('datetime')
         col_total_cash = 0.0
         for cash in colCash:
@@ -1793,7 +1896,7 @@ def generate_monthly_report_admin(request):
         col_list_cash.append(col_dic_cash)
 
 
-        supCash = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+        supCash = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
                                                     isApproved__exact=True, paymentMode='Cash')
 
         supplier_cash_total = 0.0
@@ -1809,7 +1912,7 @@ def generate_monthly_report_admin(request):
         s_list_cash.append(sup_dic_cash)
 
 
-        supCheque = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+        supCheque = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
                                                     isApproved__exact=True, paymentMode='Cheque')
 
         supplier_cheque_total = 0.0
@@ -1849,17 +1952,25 @@ def generate_monthly_report_admin(request):
         'collectionCash': col_list_cash,
         's_list_cash': s_list_cash,
         's_list_cheque': s_list_cheque,
+        'sale_list_mix': sale_list_mix,
+        'sale_list_credit': sale_list_credit,
         'si_list_cheque': si_list_cheque,
         's_total_cash': s_total_cash,
         's_total_cheque': s_total_cheque,
         'si_total_cheque': si_total_cheque,
         'Gtotal': g_total,
         'Cardtotal': g_total_card,
+        'Mixtotal': g_total_mix,
+        'Credittotal': g_total_credit,
         'Ctotal': c_total,
         'CtotalCash': c_total_cash,
         'Month': date1.month,
         'Year': date1.year,
         'company': company.name,
+        'entry_cash':entry_cash,
+        'entry_card':entry_card,
+        'entry_mix':entry_mix,
+        'entry_credit':entry_credit,
     }
 
     response = HttpResponse(content_type="application/pdf")
@@ -2243,7 +2354,7 @@ def generate_collection_report_admin(request):
     for cash in colCash:
         col_total_cash = col_total_cash + cash.amount
 
-    supCash = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+    supCash = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
                                                 isApproved__exact=True, paymentMode='Cash').order_by('datetime')
     sup_total_cash = 0.0
     for cash in supCash:
@@ -2256,7 +2367,7 @@ def generate_collection_report_admin(request):
     for cheque in supCheque:
         sup_total_cheque = sup_total_cheque + cheque.amount
 
-    supInvoice = SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(),
+    supInvoice = SupplierInvoiceCollection.objects.filter(datetime__icontains=day_string,
                                                           companyID_id=int(companyID),
                                                           isApproved__exact=True, isDeleted__exact=False,
                                                           ).order_by('datetime')
@@ -2264,7 +2375,7 @@ def generate_collection_report_admin(request):
     for inv in supInvoice:
         sup_total_inv = sup_total_inv + inv.amount
 
-    supInvoice_pending = SupplierInvoiceCollection.objects.filter(datetime__icontains=datetime.today().date(),
+    supInvoice_pending = SupplierInvoiceCollection.objects.filter(datetime__icontains=day_string,
                                                                   companyID_id=int(companyID),
                                                                   isApproved__exact=False, isDeleted__exact=False,
                                                                   ).order_by('datetime')

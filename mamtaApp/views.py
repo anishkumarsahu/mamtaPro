@@ -689,7 +689,7 @@ class SupplierInvoiceCollectionListJson(BaseDatatableView):
 
 
 class SupplierCollectionListCashJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'remark', 'datetime','action']
+    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'remark','Location', 'datetime','action']
 
     def get_initial_queryset(self):
 
@@ -710,7 +710,7 @@ class SupplierCollectionListCashJson(BaseDatatableView):
         search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(
-                Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                Q(Location__icontains=search) | Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
                     collectedBy__name__icontains=search)| Q(
                     buyerID__name__icontains=search)).order_by(
                 '-id')
@@ -734,6 +734,7 @@ class SupplierCollectionListCashJson(BaseDatatableView):
                 escape(item.amount),  # escape HTML for security reasons
                 escape(item.collectedBy.name),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
+                escape(item.Location),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
                 button
 
@@ -744,7 +745,7 @@ class SupplierCollectionListCashJson(BaseDatatableView):
 
 
 class SupplierCollectionAdminListCashJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name','approvedBy', 'remark', 'datetime','action','action1']
+    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name','approvedBy', 'remark','Location', 'datetime','action','action1']
 
     def get_initial_queryset(self):
 
@@ -764,7 +765,7 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
         search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(
-                Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                Q(Location__icontains=search) | Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
                     collectedBy__name__icontains=search)| Q(
                     buyerID__name__icontains=search)).order_by(
                 '-id')
@@ -791,7 +792,7 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
             if item.isApproved == False:
                 button = '''
                  <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
-                           data-target="#defaultModal" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
+                           data-target="#defaultModalApprove" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
             else:
                 button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
 
@@ -802,6 +803,7 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
                 escape(item.collectedBy.name),  # escape HTML for security reasons
                 escape(item.approvedBy),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
+                escape(item.Location),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
                 button,
                 action
@@ -811,10 +813,78 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
         return json_data
 
 
+class SupplierCollectionAdminListChequeJson(BaseDatatableView):
+    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'approvedBy', 'remark','Location', 'datetime','action', 'action1']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+
+        if staff == 'all':
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', isDeleted__exact=False)
+        else:
+            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', isDeleted__exact=False,
+                                                  collectedBy=int(staff))
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(Location__icontains=search) |Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                    collectedBy__name__icontains=search)| Q(
+                    buyerID__name__icontains=search)).order_by(
+                '-id')
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            action = '''<span><a onclick="getSupplierDetail('{}','{}','{}','{}','{}','{}')" class="hideModerator" ><button style="background-color: #3F51B5;color: white;" type="button"
+                                              class="btn  waves-effect " data-toggle="modal"
+                                              data-target="#CollectionModal">
+                                          <i class="material-icons">border_color</i></button> </a>
+
+
+
+                                      <button onclick="deleteCollection('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">
+
+
+                                                                       <i class="material-icons">delete</i></button></span>'''.format(
+                item.pk, item.buyerID.name, item.buyerID.pk, item.amount, item.paymentMode, item.remark, item.pk)
+
+            if item.isApproved == False:
+                button = '''
+                <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
+                           data-target="#defaultModalApprove" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
+            else:
+                button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
+
+            json_data.append([
+                escape(i),
+                escape(item.buyerID.name),
+                escape(item.amount),  # escape HTML for security reasons
+                escape(item.collectedBy.name),  # escape HTML for security reasons
+                escape(item.approvedBy),  # escape HTML for security reasons
+                escape(item.remark),  # escape HTML for security reasons
+                escape(item.Location),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                button,
+                action
+
+            ])
+            i = i + 1
+        return json_data
 
 
 class SupplierCollectionListChequeJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'remark', 'datetime','action']
+    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'remark','Location', 'datetime','action']
 
     def get_initial_queryset(self):
 
@@ -836,7 +906,7 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
         search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(
-                Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                Q(Location__icontains=search) | Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
                     collectedBy__name__icontains=search)| Q(
                     buyerID__name__icontains=search)).order_by(
                 '-id')
@@ -860,6 +930,7 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
                 escape(item.amount),  # escape HTML for security reasons
                 escape(item.collectedBy.name),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
+                escape(item.Location),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
                 button
 
@@ -868,9 +939,65 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
         return json_data
 
 
+class SupplierCollectionInvoiceList(BaseDatatableView):
+    order_columns = ['id', 'buyerID.name', 'amount','invoiceNumber', 'collectedBy.name', 'remark','Location', 'datetime','action']
 
-class SupplierCollectionAdminListChequeJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'approvedBy', 'remark', 'datetime','action']
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+
+        user = StaffUser.objects.get(userID_id=self.request.user.pk)
+        if staff == 'all':
+            return SupplierInvoiceCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),  collectedBy__companyID_id=user.companyID_id, isDeleted__exact=False)
+        else:
+            return SupplierInvoiceCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), isDeleted__exact=False,
+                                                  collectedBy=int(staff), collectedBy__companyID_id=user.companyID_id)
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(invoiceNumber__icontains=search) | Q(Location__icontains=search) | Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                    collectedBy__name__icontains=search)| Q(
+                    buyerID__name__icontains=search)).order_by(
+                '-id')
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            if item.isApproved == False:
+                button = '''
+                <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
+                           data-target="#defaultModalInvoice" onclick="approveCollectionInvoice({})">PENDING</button>'''.format(item.pk)
+            else:
+                button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
+
+            json_data.append([
+                escape(i),
+                escape(item.buyerID.name),
+                escape(item.amount),  # escape HTML for security reasons
+                escape(item.invoiceNumber),  # escape HTML for security reasons
+                escape(item.collectedBy.name),  # escape HTML for security reasons
+                escape(item.remark),  # escape HTML for security reasons
+                escape(item.Location),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                button
+
+            ])
+            i = i + 1
+        return json_data
+
+
+class SupplierCollectionInvoiceListAdmin(BaseDatatableView):
+    order_columns = ['id', 'buyerID.name', 'amount','invoiceNumber','approvedBy', 'collectedBy.name', 'remark','Location', 'datetime','action']
 
     def get_initial_queryset(self):
 
@@ -881,9 +1008,9 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
 
         if staff == 'all':
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', isDeleted__exact=False)
+            return SupplierInvoiceCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), isDeleted__exact=False)
         else:
-            return SupplierCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), paymentMode__exact='Cheque', isDeleted__exact=False,
+            return SupplierInvoiceCollection.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1), isDeleted__exact=False,
                                                   collectedBy=int(staff))
 
     def filter_queryset(self, qs):
@@ -891,7 +1018,7 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
         search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(
-                Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                Q(invoiceNumber__icontains=search) | Q(Location__icontains=search) | Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
                     collectedBy__name__icontains=search)| Q(
                     buyerID__name__icontains=search)).order_by(
                 '-id')
@@ -902,10 +1029,24 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
         json_data = []
         i = 1
         for item in qs:
+
+            action = '''<span><a onclick="getSupplierDetail('{}','{}','{}','{}','{}','{}')" class="hideModerator" ><button style="background-color: #3F51B5;color: white;" type="button"
+                                                  class="btn  waves-effect " data-toggle="modal"
+                                                  data-target="#CollectionModalIn">
+                                              <i class="material-icons">border_color</i></button> </a>
+
+
+
+                                          <button onclick="deleteCollectionIn('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect " data-toggle="modal" data-target="#defaultModalIn">
+
+
+                                                                           <i class="material-icons">delete</i></button></span>'''.format(
+                item.pk, item.buyerID.name, item.buyerID.pk, item.amount, item.invoiceNumber, item.remark, item.pk)
+
             if item.isApproved == False:
                 button = '''
                 <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
-                           data-target="#defaultModal" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
+                           data-target="#defaultModalInvoice" onclick="approveCollectionInvoice({})">PENDING</button>'''.format(item.pk)
             else:
                 button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
 
@@ -913,11 +1054,14 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
                 escape(i),
                 escape(item.buyerID.name),
                 escape(item.amount),  # escape HTML for security reasons
-                escape(item.collectedBy.name),  # escape HTML for security reasons
+                escape(item.invoiceNumber),  # escape HTML for security reasons
                 escape(item.approvedBy),  # escape HTML for security reasons
+                escape(item.collectedBy.name),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
+                escape(item.Location),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
-                button
+                button,
+                action
 
             ])
             i = i + 1
@@ -1669,6 +1813,9 @@ def take_collection_supplier_api(request):
         AmountCol = request.POST.get('AmountCol')
         PayMethodCol = request.POST.get('PayMethodCol')
         RemarkCol = request.POST.get('RemarkCol')
+        lat = request.POST.get('lat')
+        lng = request.POST.get('lng')
+        loc = request.POST.get('loc')
 
         try:
             collection = SupplierCollection()
@@ -1679,6 +1826,10 @@ def take_collection_supplier_api(request):
             collection.paymentMode = PayMethodCol
             collection.remark = RemarkCol
             collection.companyID_id = user.companyID_id
+            collection.lat = lat
+            collection.lng = lng
+            collection.Location = loc
+
             collection.save()
 
             return JsonResponse({'message': 'success'})
@@ -1695,6 +1846,9 @@ def take_collection_invoice_supplier_api(request):
         AmountCol = request.POST.get('AmountCol')
         inv = request.POST.get('Invoice')
         RemarkCol = request.POST.get('RemarkCol')
+        lat = request.POST.get('lat')
+        lng = request.POST.get('lng')
+        loc = request.POST.get('loc')
 
         try:
             collection = SupplierInvoiceCollection()
@@ -1705,6 +1859,9 @@ def take_collection_invoice_supplier_api(request):
             collection.invoiceNumber = inv
             collection.remark = RemarkCol
             collection.companyID_id = user.companyID_id
+            collection.lat = lat
+            collection.lng = lng
+            collection.Location = loc
             collection.save()
 
             return JsonResponse({'message': 'success'})
@@ -1785,6 +1942,30 @@ def approve_collection_supplier_api(request):
 
 
 @csrf_exempt
+def approve_collection_supplier_invoice_api(request):
+    if request.method == 'POST':
+
+        collectionID = request.POST.get('collectionID')
+
+
+        try:
+            collection = SupplierInvoiceCollection.objects.get(pk = int(collectionID))
+            collection.isApproved = True
+            user = StaffUser.objects.get(userID_id=request.user.pk)
+            collection.approvedBy = user.name
+            collection.save()
+            buy = Buyer.objects.get(pk=int(collection.buyerID.pk))
+            buy.closingBalance = buy.closingBalance - float(collection.amount)
+            buy.save()
+            return JsonResponse({'message': 'success'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
+
+
+
+
+@csrf_exempt
 def delete_collection_supplier_api(request):
     if request.method == 'POST':
 
@@ -1793,6 +1974,25 @@ def delete_collection_supplier_api(request):
 
         try:
             collection = SupplierCollection.objects.get(pk = int(collectionID))
+            collection.isDeleted = True
+            collection.save()
+            buy = Buyer.objects.get(pk=int(collection.buyerID.pk))
+            buy.closingBalance = buy.closingBalance - float(collection.amount)
+            buy.save()
+            return JsonResponse({'message': 'success'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
+
+@csrf_exempt
+def delete_collection_supplier_invoice_api(request):
+    if request.method == 'POST':
+
+        collectionID = request.POST.get('collectionID')
+
+
+        try:
+            collection = SupplierInvoiceCollection.objects.get(pk = int(collectionID))
             collection.isDeleted = True
             collection.save()
             buy = Buyer.objects.get(pk=int(collection.buyerID.pk))

@@ -53,7 +53,7 @@ admin.site.register(CashMoneyCollection,CashMoneyCollectionAdmin)
 
 
 class SupplyCollectionAdmin(admin.ModelAdmin):
-    list_display = ['buyerID','collectedBy','amount','remark','datetime']
+    list_display = ['buyerID','collectedBy','amount','remark','Location','datetime']
 
 admin.site.register(SupplierCollection,SupplyCollectionAdmin)
 
@@ -68,3 +68,10 @@ class StaffAdvanceToBuyerAdmin(admin.ModelAdmin):
     list_display = ['buyerID','amount','isDeleted','datetime']
 
 admin.site.register(StaffAdvanceToBuyer,StaffAdvanceToBuyerAdmin)
+
+
+
+class SupplierInvoiceCollectionAdmin(admin.ModelAdmin):
+    list_display = ['buyerID','collectedBy','amount','remark','Location','datetime']
+
+admin.site.register(SupplierInvoiceCollection,SupplierInvoiceCollectionAdmin)

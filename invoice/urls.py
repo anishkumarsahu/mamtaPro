@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^invoice_report/$', invoice_report, name='invoice_report'),
     url(r'^generate_net_report/$', generate_net_report, name='generate_net_report'),
     url(r'^generate_net_report_admin/$', generate_net_report_admin, name='generate_net_report_admin'),
+    url(r'^generate_net_report_credit_admin/$', generate_net_report_credit_admin, name='generate_net_report_credit_admin'),
     url(r'^generate_net_report_accountant/$', generate_net_report_accountant, name='generate_net_report_accountant'),
     url(r'^generate_monthly_report_admin/$', generate_monthly_report_admin, name='generate_monthly_report_admin'),
     url(r'^generate_monthly_report_staff_advance_admin/$', generate_monthly_report_staff_advance_admin, name='generate_monthly_report_staff_advance_admin'),

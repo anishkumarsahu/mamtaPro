@@ -47,7 +47,7 @@
                                                        style="text-decoration: none;color: white">Create Invoice</a>
                     </button>
                 </div>
-                <div class="col-md-3 col-sm-8 col-xs-12">
+                <div class="col-md-2 col-sm-8 col-xs-12">
                     <label for="">Company</label>
                     <select class="form-control show-tick" id="companyID" onchange="ChangeCompany()">
                         {% for comp in company %}
@@ -69,6 +69,12 @@
                     <a id="reportUrl" href="{% url 'invoiceApp:generate_net_report_admin' %}"
                        style="background-color: #24b53c;color: white;" type="button" class="btn  waves-effect "
                     >Daily Report
+                    </a>
+                </div>
+             <div class="col-md-1 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
+                    <a id="reportCreditUrl" href="{% url 'invoiceApp:generate_net_report_credit_admin' %}"
+                       style="background-color: #b5245e;color: white;" type="button" class="btn  waves-effect "
+                    >Credit Report
                     </a>
                 </div>
                 <div class="col-md-2 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
@@ -1822,6 +1828,7 @@
             var comp = $('#companyID').val();
             var gDate = $('#gDate').val();
             $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+            $("#reportCreditUrl").attr("href", "{% url 'invoiceApp:generate_net_report_credit_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportUrlMonthly").attr("href", "{% url 'invoiceApp:generate_monthly_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportUrlMonthlySA").attr("href", "{% url 'invoiceApp:generate_monthly_report_staff_advance_admin' %}?companyID=" + comp + '&gDate=' + gDate);

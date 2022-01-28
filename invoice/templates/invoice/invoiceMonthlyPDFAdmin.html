@@ -30,6 +30,12 @@
         <span style="font-size: 10px;">Month/Year: {{ Month }}/{{ Year }}</span>
         <span style="font-size: 9px;float: right">123DACN Sales Report-({{ company }})</span>
     </div>
+
+ <p style="font-size: 10px; margin: 2px;"><span style="padding-right: 20px">Cash Entry:  <strong>{{ entry_cash }}</strong></span>
+      <span style="padding-right: 20px">Card Entry:  <strong>{{ entry_card }}</strong></span>
+      <span style="padding-right: 20px">Mix Entry:  <strong>{{ entry_mix }}</strong></span>
+      <span style="padding-right: 20px">Credit Entry:  <strong>{{ entry_credit }}</strong></span></p>
+    <br>
     <p style="font-size: 10px; margin: 2px;">Cash<span
             style="float: right">Total: ₹ <strong>{{ Gtotal }}</strong></span></p>
     <section>
@@ -62,6 +68,49 @@
             </thead>
             <tbody>
             {% for foo in sales_card %}
+                <tr>
+                    <td>{{ foo.Date|date }}</td>
+                    <td>{{ foo.Total }}</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+    <p style="font-size: 10px; margin: 2px;">Mix<span
+            style="float: right">Total: ₹ <strong>{{ Mixtotal }}</strong></span></p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Amount(₹)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in sale_list_mix %}
+                <tr>
+                    <td>{{ foo.Date|date }}</td>
+                    <td>{{ foo.Total }}</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+
+<p style="font-size: 10px; margin: 2px;">Credit<span
+            style="float: right">Total: ₹ <strong>{{ Credittotal }}</strong></span></p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Amount(₹)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in sale_list_credit %}
                 <tr>
                     <td>{{ foo.Date|date }}</td>
                     <td>{{ foo.Total }}</td>

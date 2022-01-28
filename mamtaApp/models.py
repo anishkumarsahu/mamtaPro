@@ -122,7 +122,9 @@ class SupplierCollection(models.Model):
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
     isApproved = models.BooleanField(default=False)
     approvedBy = models.CharField(max_length=100, blank=True, null=True, default='N/A')
-
+    Location = models.CharField(max_length=200, blank=True, null=True, default='N/A')
+    lat = models.CharField(max_length=200, blank=True, null=True, default='0.0')
+    lng = models.CharField(max_length=200, blank=True, null=True, default='0.0')
 
 class LoginAndLogoutStatus(models.Model):
     userID = models.ForeignKey(User, blank=True, null=True)
@@ -146,6 +148,9 @@ class SupplierInvoiceCollection(models.Model):
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
     isApproved = models.BooleanField(default=False)
     approvedBy = models.CharField(max_length=100, blank=True, null=True, default='N/A')
+    Location = models.CharField(max_length=200, blank=True, null=True, default='N/A')
+    lat = models.CharField(max_length=200, blank=True, null=True, default='0.0')
+    lng = models.CharField(max_length=200, blank=True, null=True, default='0.0')
 
 
 class StaffAdvanceToBuyer(models.Model):

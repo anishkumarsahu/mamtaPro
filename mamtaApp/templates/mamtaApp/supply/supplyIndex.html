@@ -83,6 +83,10 @@
     </style>
 
     <section class="content">
+     <div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            Please make sure to allow location service. Enable GPS on your mobile to make collections.
+                            Thank you.
+                        </div>
         <div class="container-fluid">
 
             <div class="row clearfix">
@@ -331,12 +335,20 @@
                                     </div>
                                 </div>
                             </div>
+
+
                         </div>
+                        <div class="alert alert-warning" role="alert">
+                            Please make sure to allow location service. Enable GPS on your mobile to make collections.
+                            Thank you.
+                        </div>
+
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="AddParty()">Add New Party
                         </button>
-                        <button type="button" class="btn btn-link waves-effect" onclick="TakePayment()">Save
+                        <button type="button" id="save2" class="btn btn-link waves-effect" onclick="TakePayment()">Save
                         </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
                     </div>
@@ -474,11 +486,15 @@
                                 </div>
                             </div>
                         </div>
+                         <div class="alert alert-warning" role="alert">
+                            Please make sure to allow location service. Enable GPS on your mobile to make collections.
+                            Thank you.
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="AddParty()">Add New Party
                         </button>
-                        <button type="button" class="btn btn-link waves-effect" onclick="TakePaymentInvoice()">Save
+                        <button type="button" id="save1" class="btn btn-link waves-effect" onclick="TakePaymentInvoice()">Save
                         </button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
                     </div>
@@ -486,6 +502,12 @@
             </div>
         </div>
     </div>
+{#    <button onclick="getLocation()">Try It</button>#}
+    <input type="hidden" id="lat" value="24.809611">
+    <input type="hidden" id="lng" value="93.935577">
+    <input type="hidden" id="loc" value="N/A">
+
+<p id="demo"></p>
 {% endblock %}
 {% block js %}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -642,12 +664,15 @@
 
         }
 
+        function confirmTakePayment(){
 
-        function TakePayment() {
+            var lat = $('#lat').val();
+          var lng = $('#lng').val();
             var CustomerCol = $('#supplier').val();
             var AmountCol = $('#AmountCol').val();
             var PayMethodCol = $('#PayMethodCol').val();
             var RemarkCol = $('#RemarkCol').val();
+            var loc = $('#loc').val();
 
 
             if (CustomerCol === "" || AmountCol === "" || PayMethodCol === "") {
@@ -662,6 +687,9 @@
                 data.append('AmountCol', AmountCol);
                 data.append('PayMethodCol', PayMethodCol);
                 data.append('RemarkCol', RemarkCol);
+                data.append('lat', lat);
+                data.append('lng', lng);
+                data.append('loc', loc);
 
 
                 $.ajax({
@@ -697,7 +725,37 @@
                 });
             }
 
+
+  $('#save1').prop('disabled', false);
+
+
         }
+
+
+        function TakePayment() {
+               $('#save1').prop('disabled', true);
+          getReverseLocation();
+               setTimeout(function(){
+               confirmTakePayment();
+            },1500);
+
+
+        }
+
+
+
+        function TakePaymentInvoice() {
+               $('#save2').prop('disabled', true);
+          getReverseLocation();
+               setTimeout(function(){
+               TakePaymentInvoiceConfirm();
+            },1500);
+
+
+        }
+
+
+
         function AddParty() {
             $('#CollectionModalInvoice').modal('hide');
             $('#CollectionModal').modal('hide');
@@ -808,11 +866,15 @@
         });
 
 
-        function TakePaymentInvoice() {
+        function TakePaymentInvoiceConfirm() {
+            var lat = $('#lat').val();
+          var lng = $('#lng').val();
             var CustomerCol = $('#supplierInvoice').val();
             var AmountCol = $('#AmountColInvoice').val();
             var Invoice = $('#Invoice').val();
             var RemarkCol = $('#RemarkColInvoice').val();
+
+            var loc = $('#loc').val();
 
 
             if (CustomerCol === "" || AmountCol === "" || Invoice === "") {
@@ -827,6 +889,9 @@
                 data.append('AmountCol', AmountCol);
                 data.append('Invoice', Invoice);
                 data.append('RemarkCol', RemarkCol);
+                data.append('lat', lat);
+                data.append('lng', lng);
+                data.append('loc', loc);
 
 
                 $.ajax({
@@ -840,7 +905,7 @@
 
                     success: function (response) {
                         if (response.message === 'success') {
-                            etab.api().ajax.reload();
+                            itab.api().ajax.reload();
                             $('#name_status').addClass('validate_data');
                             $('#name_status').html('Collection Invoice Taken Successfully').fadeIn().fadeOut(2000);
                             $('#CollectionFormInvoice')[0].reset();
@@ -861,9 +926,91 @@
                     }
                 });
             }
-
+ $('#save2').prop('disabled', false);
         }
 
 
     </script>
+
+    <script>
+var x = document.getElementById("demo");
+var options = {
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 0
+};
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition,showError);
+  } else {
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude +
+  "<br>Longitude: " + position.coords.longitude;
+   $('#lat').val(position.coords.latitude);
+   $('#lng').val(position.coords.longitude);
+   console.log(position)
+
+
+}
+
+function showError(error) {
+  switch(error.code) {
+    case error.PERMISSION_DENIED:
+      x.innerHTML = "User denied the request for Geolocation."
+      break;
+    case error.POSITION_UNAVAILABLE:
+      x.innerHTML = "Location information is unavailable."
+      break;
+    case error.TIMEOUT:
+      x.innerHTML = "The request to get user location timed out."
+      break;
+    case error.UNKNOWN_ERROR:
+      x.innerHTML = "An unknown error occurred."
+      break;
+  }
+}
+onload(getLocation() );
+navigator.permissions.query({name:'geolocation'}).then(function(result) {
+    console.log(result);
+  if (result.state === 'granted') {
+   $('#save1').prop('disabled', false);
+   $('#save2').prop('disabled', false);
+  } else {
+       $('#save1').prop('disabled', true);
+   $('#save2').prop('disabled', true);
+  }
+  // Don't do anything if the permission was denied.
+});
+
+
+
+function getReverseLocation(){
+                    var lat = $('#lat').val();
+          var lng = $('#lng').val();
+          console.log(lat,lng)
+         $.ajax({
+                    type: 'get',
+                    {#url: "https://nominatim.openstreetmap.org/reverse?lat="+position.coords.latitude +"3&lon="+position.coords.longitude+"&format=json",#}
+                    url: "https://revgeocode.search.hereapi.com/v1/revgeocode?at="+lat+"%2C"+lng+"&lang=en-US&apikey=VtAAEVuyqdswCZr8X1BdBzM-4JTpeAdivmp4_3ILPs4",
+                    success: function (response) {
+                         $('#loc').val(response.items[0].address.label);
+
+
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Unable to locate location.').fadeIn().fadeOut(2000);
+                    }
+
+
+                });
+
+
+}
+</script>
 {% endblock %}

@@ -132,6 +132,7 @@
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
                                         <th>Remark</th>
+                                        <th>Location</th>
                                         <th>Collected On</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -145,6 +146,7 @@
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
                                         <th>Remark</th>
+                                        <th>Location</th>
                                         <th>Collected On</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -182,8 +184,10 @@
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
                                         <th>Remark</th>
+                                        <th>Location</th>
                                         <th>Collected On</th>
                                         <th>Status</th>
+                                        <th>Action</th>
 
                                     </tr>
                                     </thead>
@@ -195,8 +199,10 @@
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
                                         <th>Remark</th>
+                                        <th>Location</th>
                                         <th>Collected On</th>
                                         <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
@@ -207,6 +213,61 @@
                     </div>
                 </div>
             </div>
+
+
+                  <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                COLLECTION (INVOICE)
+                            </h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="collectionTableInvoice"
+                                       class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>PartyName</th>
+                                        <th>Amount(₹)</th>
+                                        <th>InvoiceNo.</th>
+                                        <th>ApprovedBy</th>
+                                        <th>Collected By</th>
+                                        <th>Remark</th>
+                                        <th>Location</th>
+                                        <th>Collected On</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                       <th>Sl. No</th>
+                                        <th>PartyName</th>
+                                        <th>Amount(₹)</th>
+                                        <th>InvoiceNo.</th>
+                                        <th>ApprovedBy</th>
+                                        <th>Collected By</th>
+                                        <th>Remark</th>
+                                        <th>Location</th>
+                                        <th>Collected On</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
         </div>
     </section>
@@ -223,6 +284,25 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-link waves-effect" onclick="ChangeStatus()">Yes</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+       <div class="modal fade" id="defaultModalIn" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Delete Collection?</h4>
+                </div>
+                <form id="ApproveForm">
+                    <input type="hidden" id="collectionIDIn">
+
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="ChangeStatusIn()">Yes</button>
                         <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
                     </div>
                 </form>
@@ -322,6 +402,7 @@
     <script>
         var ctab;
         var dtab;
+        var itab;
 
         $(document).ready(function () {
             $('.bootstrap-select').removeClass('form-control');
@@ -342,11 +423,12 @@
                     {"name": "collectedBy.name", "targets": 3, "orderable": true},
                     {"name": "approvedBy", "targets": 4, "orderable": true},
                     {"name": "remark", "targets": 5, "orderable": true},
-                    {"name": "datetime", "targets": 6, "orderable": true},
-                    {"name": "action", "targets": 7, "orderable": false},
-                    {"name": "action1", "targets": 8, "orderable": false},
+                    {"name": "Location", "targets": 6, "orderable": true},
+                    {"name": "datetime", "targets": 7, "orderable": true},
+                    {"name": "action", "targets": 8, "orderable": false},
+                    {"name": "action1", "targets": 9, "orderable": false},
                 ],
-                aaSorting: [[5, 'desc']],
+                aaSorting: [[7, 'desc']],
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "pageLength": 10,
                 "processing": true,
@@ -366,15 +448,43 @@
                     {"name": "collectedBy.name", "targets": 3, "orderable": true},
                     {"name": "approvedBy", "targets": 4, "orderable": true},
                     {"name": "remark", "targets": 5, "orderable": true},
-                    {"name": "datetime", "targets": 6, "orderable": true},
-                    {"name": "action", "targets": 7, "orderable": false},
+                    {"name": "Location", "targets": 6, "orderable": true},
+                    {"name": "datetime", "targets": 7, "orderable": true},
+                    {"name": "action", "targets": 8, "orderable": false},
+                    {"name": "action1", "targets": 9, "orderable": false},
                 ],
-                aaSorting: [[5, 'desc']],
+                aaSorting: [[7, 'desc']],
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "pageLength": 10,
                 "processing": true,
                 "serverSide": true,
                 "ajax": "{% url 'mamtaApp:SupplierCollectionAdminListChequeJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
+
+            });
+
+            itab = $('#collectionTableInvoice').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel', 'print'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "buyerID.name", "targets": 1, "orderable": true},
+                    {"name": "amount", "targets": 2, "orderable": true},
+                    {"name": "invoiceNumber", "targets": 3, "orderable": true},
+                    {"name": "approvedBy", "targets": 4, "orderable": true},
+                    {"name": "collectedBy.name", "targets": 5, "orderable": true},
+                    {"name": "remark", "targets": 6, "orderable": true},
+                    {"name": "Location", "targets": 7, "orderable": true},
+                    {"name": "datetime", "targets": 8, "orderable": true},
+                    {"name": "action", "targets": 9, "orderable": false},
+                    {"name": "action1", "targets": 10, "orderable": false},
+                ],
+                aaSorting: [[8, 'desc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:SupplierCollectionInvoiceListAdmin' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
 
             });
             // ...
@@ -388,6 +498,7 @@
 
             ctab.api().ajax.url('{% url "mamtaApp:SupplierCollectionAdminListCashJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
             dtab.api().ajax.url('{% url "mamtaApp:SupplierCollectionAdminListChequeJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
+            itab.api().ajax.url('{% url "mamtaApp:SupplierCollectionInvoiceListAdmin" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
         }
         function getImage(url) {
 
@@ -396,6 +507,9 @@
 
         function deleteCollection(id) {
             $('#collectionID').val(id)
+
+        }     function deleteCollectionIn(id) {
+            $('#collectionIDIn').val(id)
 
         }
 
@@ -422,6 +536,47 @@
                         $('#defaultModal').modal('hide');
                         ctab.api().ajax.reload();
                         dtab.api().ajax.reload();
+
+                    }
+
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+
+                    }
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+
+
+        }
+
+
+        function ChangeStatusIn() {
+            var collectionID = $('#collectionIDIn').val();
+
+            data = new FormData();
+            data.append('collectionID', collectionID);
+
+            $.ajax({
+                type: 'post',
+                url: '{% url 'mamtaApp:delete_collection_supplier_invoice_api' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+
+
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Collection Deleted').fadeIn().fadeOut(2000);
+                        $('#defaultModal').modal('hide');
+                        itab.api().ajax.reload();
 
                     }
 

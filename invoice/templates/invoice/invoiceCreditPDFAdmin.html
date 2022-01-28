@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <style>
+        @page {
+            size: A5;
+            margin: .3cm;
+        }
+
+        section {
+            columns: 3;
+        }
+
+        #Credit {
+            columns: 2;
+        }
+
+        .skip {
+            columns: 7;
+        }
+
+        table.table-bordered > thead > tr > th {
+            border: 1px solid grey !important;
+        }
+
+        table.table-bordered > tbody > tr > td {
+            border: 1px solid grey !important;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <span style="font-size: 10px;">Date: {{ date }}</span>
+        <span style="font-size: 9px;float: right">123DACN Sales Report-({{ company }})</span>
+    </div>
+
+    <p style="font-size: 10px; margin: 2px;">Credit Report By Party<span
+            style="float: right">Total: ₹ <strong>{{ credit_total }}</strong></span></p>
+        <p style="font-size: 10px; margin: 2px;">Credit Entry: <strong> {{ credit_count }}</strong></p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Party Name</th>
+                <th scope="col">Amount(₹)</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in cusList %}
+                <tr>
+                    <td>{{ foo.CustomerName }}</td>
+                    <td>{{ foo.Amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+</body>
+</html>

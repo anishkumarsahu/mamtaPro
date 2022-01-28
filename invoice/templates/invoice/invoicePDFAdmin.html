@@ -43,6 +43,10 @@
             style="padding-right: 20px">Opening Balance: ₹ <strong>{{ opening }}</strong></span><span
             style="padding-right: 20px">Closing Balance: ₹ <strong>{{ closing }}</strong></span></p>
     <p style="font-size: 10px; margin: 2px;">Rokad Value: ₹ <strong>{{ rokad }}</strong></p>
+  <p style="font-size: 10px; margin: 2px;"><span style="padding-right: 20px">Cash Entry:  <strong>{{ sales_cash|length }}</strong></span>
+      <span style="padding-right: 20px">Card Entry:  <strong>{{ sales_card|length }}</strong></span>
+      <span style="padding-right: 20px">Mix Entry:  <strong>{{ sales_mix|length }}</strong></span>
+      <span style="padding-right: 20px">Credit Entry:  <strong>{{ credit_cus_list }}</strong></span></p>
     <br>
     <p style="font-size: 10px; margin: 2px;">Cash<span
             style="float: right">Total: ₹ <strong>{{ cash_total }}</strong></span></p>

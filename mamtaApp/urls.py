@@ -23,6 +23,11 @@ urlpatterns = [
     url(r'^SupplierCollectionAdminListCashJson/$', SupplierCollectionAdminListCashJson.as_view(), name='SupplierCollectionAdminListCashJson'),
     url(r'^SupplierCollectionListChequeJson/$', SupplierCollectionListChequeJson.as_view(), name='SupplierCollectionListChequeJson'),
     url(r'^SupplierCollectionAdminListChequeJson/$', SupplierCollectionAdminListChequeJson.as_view(), name='SupplierCollectionAdminListChequeJson'),
+    url(r'^SupplierCollectionInvoiceList/$', SupplierCollectionInvoiceList.as_view(),
+        name='SupplierCollectionInvoiceList'),
+
+    url(r'^SupplierCollectionInvoiceListAdmin/$', SupplierCollectionInvoiceListAdmin.as_view(),
+        name='SupplierCollectionInvoiceListAdmin'),
 
     url(r'^$', home, name='home'),
     # staff
@@ -80,7 +85,9 @@ urlpatterns = [
     url(r'^take_collection_invoice_supplier_api/$', take_collection_invoice_supplier_api, name='take_collection_invoice_supplier_api'),
     url(r'^edit_collection_supplier_api/$', edit_collection_supplier_api, name='edit_collection_supplier_api'),
     url(r'^approve_collection_supplier_api/$', approve_collection_supplier_api, name='approve_collection_supplier_api'),
+    url(r'^approve_collection_supplier_invoice_api/$', approve_collection_supplier_invoice_api, name='approve_collection_supplier_invoice_api'),
     url(r'^delete_collection_supplier_api/$', delete_collection_supplier_api, name='delete_collection_supplier_api'),
+    url(r'^delete_collection_supplier_invoice_api/$', delete_collection_supplier_invoice_api, name='delete_collection_supplier_invoice_api'),
 
     # username exist?
     url(r'^user_name_exist/$', user_name_exist, name='user_name_exist'),
