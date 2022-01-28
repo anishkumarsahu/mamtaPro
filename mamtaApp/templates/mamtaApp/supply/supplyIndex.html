@@ -201,13 +201,13 @@
 
         </div>
 
-        <button style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal"
+        <button style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getReverseLocation()"
                 data-target="#CollectionModal"
                 class="btn btn-success btn-circle-lg waves-effect waves-circle waves-float">
             <i class="material-icons">add</i>
         </button>
 
-        <button style="    left: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal"
+        <button style="    left: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getReverseLocation()"
                 data-target="#CollectionModalInvoice"
                 class="btn btn-danger btn-circle-lg waves-effect waves-circle waves-float">
             <i class="material-icons">add</i>
@@ -734,11 +734,13 @@
 
         function TakePayment() {
                $('#save1').prop('disabled', true);
-          getReverseLocation();
-               setTimeout(function(){
-               confirmTakePayment();
-            },1500);
+          {#getReverseLocation();#}
+          {#     setTimeout(function(){#}
+          {#     confirmTakePayment();#}
+          {#  },1500);#}
 
+            {#var data = getReverseLocation();#}
+            confirmTakePayment();
 
         }
 
@@ -746,10 +748,9 @@
 
         function TakePaymentInvoice() {
                $('#save2').prop('disabled', true);
-          getReverseLocation();
-               setTimeout(function(){
+
                TakePaymentInvoiceConfirm();
-            },1500);
+
 
 
         }
@@ -989,7 +990,8 @@ navigator.permissions.query({name:'geolocation'}).then(function(result) {
 
 
 function getReverseLocation(){
-                    var lat = $('#lat').val();
+    getLocation();
+          var lat = $('#lat').val();
           var lng = $('#lng').val();
           console.log(lat,lng)
          $.ajax({
@@ -997,7 +999,9 @@ function getReverseLocation(){
                     {#url: "https://nominatim.openstreetmap.org/reverse?lat="+position.coords.latitude +"3&lon="+position.coords.longitude+"&format=json",#}
                     url: "https://revgeocode.search.hereapi.com/v1/revgeocode?at="+lat+"%2C"+lng+"&lang=en-US&apikey=VtAAEVuyqdswCZr8X1BdBzM-4JTpeAdivmp4_3ILPs4",
                     success: function (response) {
+                        console.log( response.items[0].address.label)
                          $('#loc').val(response.items[0].address.label);
+
 
 
 
