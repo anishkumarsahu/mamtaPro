@@ -916,13 +916,14 @@
         }
     </style>
     <p><span class="wavy"
-             style="font-size: 17px;width: 100% ;text-align: center;text-transform: uppercase;">{{ user.companyID.name }}</span><br>
+             style="font-size: 18px;width: 100% ;text-align: center;text-transform: uppercase;">{{ user.companyID.name }}</span><br>
 
-    <p style="font-size: 15px"> Created By: <span id="p1">N/A</span></p>
-    <p style="font-size: 15px"> Amount (&#8377): <span id="p2">N/A</span></p>
-    <p style="font-size: 15px"> Bill No.: <span id="p3">N/A</span></p>
-    <p style="font-size: 15px"> Mode: <span id="p5">N/A</span></p>
-    <p style="font-size: 15px"> Datetime: <span id="p4">N/A</span></p>
+    <p style="font-size: 17px; font-weight: bold;"> Created By: <span id="p1">N/A</span></p>
+    <p  style="font-size: 17px; font-weight: bold;"> Amount (&#8377): <span id="p2">N/A</span></p>
+    <p  style="font-size: 17px; font-weight: bold;"> Bill No.: <span id="p3">N/A</span></p>
+    <p  style="font-size: 17px; font-weight: bold;"> Mode: <span id="p5">N/A</span></p>
+    <p  style="font-size: 17px; font-weight: bold;"> Datetime: <span id="p4">N/A</span></p>
+    <p  style="font-size: 17px; font-weight: bold;"> Remark: <span id="p6">N/A</span></p>
 
     </p>
 </div>
@@ -1227,6 +1228,8 @@
                                 $('#p3').html(response.data['billNo']);
                                 $('#p4').html(response.data['datetime']);
                                 $('#p5').html(response.data['ModeOfPayment']);
+                                                                $('#p6').html(response.data['Remark']);
+
                                 window.print();
                             }
                             else {
@@ -1295,6 +1298,8 @@
                                 $('#p3').html(response.data['billNo']);
                                 $('#p4').html(response.data['datetime']);
                                 $('#p5').html(response.data['ModeOfPayment']);
+                                                                $('#p6').html(response.data['Remark']);
+
                                 window.print();
                             }
                             else {
@@ -1363,6 +1368,8 @@
                                 $('#p3').html(response.data['billNo']);
                                 $('#p4').html(response.data['datetime']);
                                 $('#p5').html(response.data['ModeOfPayment']);
+                                                                $('#p6').html(response.data['Remark']);
+
                                 window.print();
                             }
                             else {
@@ -1701,6 +1708,7 @@
                                 $('#p3').html(response.data['billNo']);
                                 $('#p4').html(response.data['datetime']);
                                 $('#p5').html(response.data['ModeOfPayment']);
+                                $('#p6').html(response.data['Remark']);
                                 window.print();
 
 

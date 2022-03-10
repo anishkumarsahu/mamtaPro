@@ -1048,7 +1048,8 @@ def create_invoice(request):
                     'billNo': sale.billNumber,
                     'amount': sale.amount + sale.mixCardAmount,
                     'datetime': sale.datetime.strftime('%d-%m-%Y %I:%M %p'),
-                    'ModeOfPayment': sale.salesType
+                    'ModeOfPayment': sale.salesType,
+                    'Remark': sale.remark
                 }
 
                 return JsonResponse({'message': 'success', 'data': data})
@@ -2409,7 +2410,7 @@ def generate_collection_report_admin(request):
     response['Content-Disposition'] = "report.pdf"
     html = render_to_string("invoice/CollectionPDFAdmin.html", context)
 
-    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5;  }')])
     return response
 
 
