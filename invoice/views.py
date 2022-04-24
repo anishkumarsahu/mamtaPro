@@ -120,7 +120,7 @@ class InvoiceCreatedByCashListJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
         if staff == 'all':
             return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
-                                        salesType__exact='Cash', )
+                                        salesType__exact='Cash', ).filter(datetime__gte=startDate + timedelta(days=90))
         else:
             return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
                                         salesType__exact='Cash',
