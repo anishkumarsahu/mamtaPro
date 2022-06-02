@@ -120,7 +120,7 @@ class InvoiceCreatedByCashListJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
         if staff == 'all':
             return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
-                                        salesType__exact='Cash', ).filter(datetime__gte=startDate + timedelta(days=90))
+                                        salesType__exact='Cash', )
         else:
             return Sales.objects.filter(datetime__gte=startDate, datetime__lte=endDate + timedelta(days=1),
                                         salesType__exact='Cash',
@@ -1371,17 +1371,17 @@ def generate_net_report(request):
     date = datetime.today().date()
     sales_cash = Sales.objects.filter(datetime__icontains=datetime.today().date(),
                                       salesType__icontains='cash',isDeleted__exact=False,
-                                      InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID').order_by('numberMain')
+                                      InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID','numberMain')
     sales_card = Sales.objects.filter(datetime__icontains=datetime.today().date(),
                                       salesType__icontains='card',isDeleted__exact=False,
-                                      InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID').order_by('numberMain')
+                                      InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID','numberMain')
     sales_credit = Sales.objects.filter(datetime__icontains=datetime.today().date(),
                                         salesType__icontains='credit',isDeleted__exact=False,
-                                        InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID').order_by('numberMain')
+                                        InvoiceSeriesID__companyID_id=user.companyID_id).order_by('InvoiceSeriesID','numberMain')
 
     sales_mix = Sales.objects.filter(datetime__icontains=datetime.today().date(),
                                      salesType__icontains='Mix',isDeleted__exact=False,
-                                     InvoiceSeriesID__companyID_id=int(user.companyID_id)).order_by('InvoiceSeriesID').order_by('numberMain')
+                                     InvoiceSeriesID__companyID_id=int(user.companyID_id)).order_by('InvoiceSeriesID','numberMain')
 
     cash_total = 0.0
     for cash in sales_cash:
@@ -1493,16 +1493,16 @@ def generate_net_report_admin(request):
     date = datetime.today().date()
     sales_cash = Sales.objects.filter(datetime__icontains=day_string,
                                       salesType__icontains='cash',
-                                      InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID').order_by('numberMain')
+                                      InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID','numberMain')
     sales_card = Sales.objects.filter(datetime__icontains=day_string,
                                       salesType__icontains='card',
-                                      InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID').order_by('numberMain')
+                                      InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID','numberMain')
     sales_credit = Sales.objects.filter(datetime__icontains=day_string,
                                         salesType__icontains='credit',
-                                        InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID').order_by('numberMain')
+                                        InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID','numberMain')
     sales_mix = Sales.objects.filter(datetime__icontains=day_string,
                                      salesType__icontains='Mix',
-                                     InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID').order_by('numberMain')
+                                     InvoiceSeriesID__companyID_id=int(companyID),isDeleted__exact=False,).order_by('InvoiceSeriesID','numberMain')
     cash_total = 0.0
     for cash in sales_cash:
         cash_total = cash_total + cash.amount
