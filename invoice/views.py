@@ -2334,6 +2334,86 @@ def get_last_three_invoices(request, *args, **kwargs):
     return JsonResponse({'data': data})
 
 
+def generate_collection_report_accounts(request):
+    companyID = request.GET.get('companyID')
+    gDate = request.GET.get('gDate')
+    date1 = datetime.strptime(gDate, '%d/%m/%Y')
+    day_string = date1.strftime('%Y-%m-%d')
+
+    company = Company.objects.get(pk=int(companyID))
+    col = MoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                         isDeleted__exact=False,
+                                         isAddedInSales__exact=True).order_by('datetime')
+    col_total = 0.0
+    for c in col:
+        col_total = col_total + c.amount
+
+    colCash = CashMoneyCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                 isDeleted__exact=False,
+                                                 isAddedInSales__exact=True).order_by('datetime')
+    col_total_cash = 0.0
+    for cash in colCash:
+        col_total_cash = col_total_cash + cash.amount
+
+    supCash = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),isDeleted__exact=False,
+                                                isApproved__exact=True, paymentMode='Cash').order_by('datetime')
+    sup_total_cash = 0.0
+    for cash in supCash:
+        sup_total_cash = sup_total_cash + cash.amount
+
+    supCheque = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                  isDeleted__exact=False,
+                                                  isApproved__exact=True, paymentMode='Cheque').order_by('datetime')
+    sup_total_cheque = 0.0
+    for cheque in supCheque:
+        sup_total_cheque = sup_total_cheque + cheque.amount
+
+    supInvoice = SupplierInvoiceCollection.objects.filter(datetime__icontains=day_string,
+                                                          companyID_id=int(companyID),
+                                                          isApproved__exact=True, isDeleted__exact=False,
+                                                          ).order_by('datetime')
+    sup_total_inv = 0.0
+    for inv in supInvoice:
+        sup_total_inv = sup_total_inv + inv.amount
+
+    supInvoice_pending = SupplierInvoiceCollection.objects.filter(datetime__icontains=day_string,
+                                                                  companyID_id=int(companyID),
+                                                                  isApproved__exact=False, isDeleted__exact=False,
+                                                                  ).order_by('datetime')
+    supCash_pending = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                        isApproved__exact=False, isDeleted__exact=False,
+                                                        paymentMode='Cash').order_by('datetime')
+
+    supCheque_pending = SupplierCollection.objects.filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                          isApproved__exact=False, isDeleted__exact=False,
+                                                          paymentMode='Cheque').order_by('datetime')
+    context = {
+        'date': gDate,
+        'company': company.name,
+        'col': col,
+        'col_total': 0,
+        'colCash': colCash,
+        'col_total_cash': 0,
+        'supCash': supCash,
+        'sup_total_cash': 0,
+        'supCheque': supCheque,
+        'sup_total_cheque': 0,
+        'invoice_total': 0,
+        'invoices': supInvoice,
+        'supInvoice_pending': supInvoice_pending,
+        'supCash_pending': supCash_pending,
+        'supCheque_pending': supCheque_pending,
+
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "report.pdf"
+    html = render_to_string("invoice/CollectionPDFAccounts.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5;  }')])
+    return response
+
+
 def generate_collection_report_admin(request):
     companyID = request.GET.get('companyID')
     gDate = request.GET.get('gDate')
