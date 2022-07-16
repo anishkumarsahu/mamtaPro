@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^generate_net_report_accountant/$', generate_net_report_accountant, name='generate_net_report_accountant'),
     url(r'^generate_monthly_report_admin/$', generate_monthly_report_admin, name='generate_monthly_report_admin'),
     url(r'^generate_monthly_report_staff_advance_admin/$', generate_monthly_report_staff_advance_admin, name='generate_monthly_report_staff_advance_admin'),
+    url(r'^generate_collection_report_for_cashier/$', generate_collection_report_for_cashier, name='generate_collection_report_for_cashier'),
 
     url(r'^search_invoice/$', search_invoice, name='search_invoice'),
     url(r'^skipped_invoice/$', skipped_invoice, name='skipped_invoice'),

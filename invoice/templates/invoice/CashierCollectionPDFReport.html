@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <style>
+        @page {
+            size: A5;
+            margin: .3cm;
+        }
+
+        section {
+            columns: 1;
+        }
+
+        .skip {
+            columns: 7;
+        }
+
+        table.table-bordered > thead > tr > th {
+            border: 1px solid grey !important;
+        }
+
+        table.table-bordered > tbody > tr > td {
+            border: 1px solid grey !important;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <span style="font-size: 10px;">Date: {{ date }}</span>
+        <span style="font-size: 9px;float: right">123DACN Collection Report -({{ user.name }})</span>
+    </div>
+
+     <p style="font-size: 10px; margin: 2px;">Collection<span
+                style="float: right">Total: ₹ <strong>{{ total }}</strong></span></p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;width: 100%">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Party Name</th>
+                <th scope="col">Payment Mode</th>
+                <th scope="col">Remark</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in cashcollection %}
+                <tr>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.paymentMode }}</td>
+                    <td><{{ foo.remark }}/td>
+
+                </tr>
+            {% endfor %}
+
+              {% for foo in invoicecollection %}
+                <tr>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>Invoice</td>
+                    <td><{{ foo.remark }}/td>
+
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </section>
+</div>
+</body>
+</html>

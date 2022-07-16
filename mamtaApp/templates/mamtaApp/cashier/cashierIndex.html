@@ -91,7 +91,7 @@
                         <label for="cc-number" class="control-label mb-1">Start Date</label>
                         <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="startDate"
                                id="startDate" type="text"
-                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}" onchange="ChangeCompany()">
                         <span></span>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                         <span></span>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-12 col-xs-12">
+                <div class="col-md-3 col-sm-12 col-xs-12">
                     <label for="">Staff</label>
                     <select class="form-control show-tick" id="staff">
                         <option value="all">All</option>
@@ -116,12 +116,17 @@
                     </select>
 
                 </div>
-                <div class="col-md-2 col-sm-12 col-xs-12 buttondown "
+                <div class="col-md-3 col-sm-12 col-xs-12 buttondown "
                      style="margin-top: 26px;text-align: center!important;">
 
                     <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
                             onclick="getData()">Search
                     </button>
+                     <a id="reportUrl" href="{% url 'invoiceApp:generate_collection_report_for_cashier' %}" style="background-color: #3fb58e;color: white;" type="button" class="btn  waves-effect "
+                             >Download Report
+                    </a>
+                    <br>
+                    <span style="color: grey">Note:Select the  start date to download the report.</span>
                 </div>
 
             </div>
@@ -413,7 +418,7 @@
                     {"name": "invoiceNumber", "targets": 3, "orderable": true},
                     {"name": "collectedBy.name", "targets": 4, "orderable": true},
                     {"name": "remark", "targets": 5, "orderable": true},
-                    {#{"name": "Location", "targets": 6, "orderable": true},#}
+                    {"name": "Location", "targets": 6, "orderable": true},
                     {"name": "datetime", "targets": 7, "orderable": true},
                     {"name": "action", "targets": 8, "orderable": false},
                 ],
@@ -599,6 +604,12 @@
         function logoutBtn() {
             window.location.href = "{% url 'mamtaApp:logout' %}"
 
+
+        }
+          $(ChangeCompany());
+        function ChangeCompany() {
+            var gDate = $('#startDate').val();
+            $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_collection_report_for_cashier' %}?gDate=" + gDate );
 
         }
 

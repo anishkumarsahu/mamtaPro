@@ -3068,3 +3068,37 @@ def delete_staff_advance_api(request):
         except:
             messages.success(request, 'Error. Please try again.')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+# cashier Report
+def generate_collection_report_for_cashier(request):
+    user = StaffUser.objects.get(userID_id=request.user.pk)
+    gDate = request.GET.get('gDate')
+    date1 = datetime.strptime(gDate, '%d/%m/%Y')
+    day_string = date1.strftime('%Y-%m-%d')
+    total = 0.0
+    cashcollection = SupplierCollection.objects.filter(datetime__icontains=day_string,isApproved__exact=True)
+    invoicecollection = SupplierInvoiceCollection.objects.filter(datetime__icontains=day_string,isApproved__exact=True)
+
+    for a in cashcollection:
+        total = total + a.amount
+
+    for b in invoicecollection:
+        total = total + b.amount
+
+    context = {
+        'date': gDate,
+        'user': user,
+        'cashcollection': cashcollection,
+        'invoicecollection': invoicecollection,
+        'total':total
+
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "report.pdf"
+    html = render_to_string("invoice/CashierCollectionPDFReport.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
+    return response
+
