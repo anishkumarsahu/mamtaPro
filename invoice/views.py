@@ -897,6 +897,30 @@ def index(request):
 
     return render(request, 'invoice/index.html', context)
 
+def new_index(request):
+    if 'Both' in request.user.groups.values_list('name', flat=True):
+        user = 'Admin'
+        invoiceSerial = InvoiceSeries.objects.filter(isDeleted__exact=False).order_by('series')
+    else:
+        user = StaffUser.objects.get(userID_id=request.user.pk)
+        invoiceSerial = InvoiceSeries.objects.filter(companyID_id=user.companyID_id, isDeleted__exact=False).order_by(
+            'series')
+    in_list = []
+    for obj in invoiceSerial:
+        in_dic = {
+            'Series': obj.series,
+            'SeriesID': obj.pk,
+            # 'AssignedTo': obj.assignedTo.userID_id
+        }
+
+        in_list.append(in_dic)
+
+    context = {
+        'InvoiceSeries': in_list,
+        'user': user
+    }
+
+    return render(request, 'invoice/newIndex.html', context)
 
 def generate_serial_invoice_number(request):
     for i in range(1, 10000):
@@ -1526,19 +1550,19 @@ def generate_net_report_admin(request):
                                                  isDeleted__exact=False)
 
     skipped_list = []
-    for invoice in invoiceByUser:
-        try:
-            last_sale = Sales.objects.filter(InvoiceSeriesID_id=invoice.pk).order_by('-numberMain').first()
-
-            for i in InvoiceSerial.objects.filter(numberMain__gte=int(invoice.startsWith),
-                                                  numberMain__lt=int(last_sale.numberMain)
-                                                  ).order_by('-numberMain')[0:200]:
-                try:
-                    sale = Sales.objects.get(numberMain__exact=i.numberMain, InvoiceSeriesID_id=invoice.pk)
-                except:
-                    skipped_list.append(str(invoice.series) + str(i.number))
-        except:
-            pass
+    # for invoice in invoiceByUser:
+    #     try:
+    #         last_sale = Sales.objects.filter(InvoiceSeriesID_id=invoice.pk).order_by('-numberMain').first()
+    #
+    #         for i in InvoiceSerial.objects.filter(numberMain__gte=int(invoice.startsWith),
+    #                                               numberMain__lt=int(last_sale.numberMain)
+    #                                               ).order_by('-numberMain')[0:200]:
+    #             try:
+    #                 sale = Sales.objects.get(numberMain__exact=i.numberMain, InvoiceSeriesID_id=invoice.pk)
+    #             except:
+    #                 skipped_list.append(str(invoice.series) + str(i.number))
+    #     except:
+    #         pass
     returns = ReturnCollection.objects.filter(datetime__icontains=day_string,
                                               companyID_id=int(companyID),isDeleted__exact=False,).order_by('actualBillNumber')
 
@@ -3077,8 +3101,8 @@ def generate_collection_report_for_cashier(request):
     date1 = datetime.strptime(gDate, '%d/%m/%Y')
     day_string = date1.strftime('%Y-%m-%d')
     total = 0.0
-    cashcollection = SupplierCollection.objects.filter(datetime__icontains=day_string,isApproved__exact=True)
-    invoicecollection = SupplierInvoiceCollection.objects.filter(datetime__icontains=day_string,isApproved__exact=True)
+    cashcollection = SupplierCollection.objects.filter(datetime__icontains=day_string,isApproved__exact=True, approvedBy__iexact=user.name)
+    invoicecollection = SupplierInvoiceCollection.objects.filter(datetime__icontains=day_string,isApproved__exact=True, approvedBy__iexact=user.name)
 
     for a in cashcollection:
         total = total + a.amount

@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^CommissionListJson/$', CommissionListJson.as_view(), name='CommissionListJson'),
     url(r'^ExpenseListJson/$', ExpenseListJson.as_view(), name='ExpenseListJson'),
 
+    url(r'^new_index/$', new_index, name='new_index'),
     url(r'^$', index, name='index'),
     url(r'^get_invoice_series/$', get_invoice_series, name='get_invoice_series'),
     url(r'^create_invoice/$', create_invoice, name='create_invoice'),
