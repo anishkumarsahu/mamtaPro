@@ -52,7 +52,7 @@ class StaffLogin(JSONWebTokenSerializer):
         if all(credentials.values()):
             user = authenticate(**credentials)
             if user:
-                query_set = Group.objects.filter(user=user.id)[0]
+                query_set = Group.objects.select_related().filter(user=user.id)[0]
                 if not user.is_active:
                     msg = 'User account is disabled.'
                     raise serializers.ValidationError(msg)
@@ -79,7 +79,7 @@ class StaffDetailView(APIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            staff = StaffUser.objects.get(userID_id=request.user.pk)
+            staff = StaffUser.objects.select_related().get(userID_id=request.user.pk)
             if staff.photo is None:
                 photo = 'NaN'
             else:
@@ -117,7 +117,7 @@ class BuyerListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        buyer = Buyer.objects.filter(isDeleted__exact=False).order_by('name')
+        buyer = Buyer.objects.select_related().filter(isDeleted__exact=False).order_by('name')
         buyer_list = []
         for obj in buyer:
             buyer_dic = {
@@ -162,11 +162,11 @@ class CollectMoneyPostView(APIView):
             if PaymentType == 'Cheque':
                 collect.chequeImage = ChequeImage
 
-            user = StaffUser.objects.get(userID_id=request.user.pk)
+            user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
             collect.collectedBy_id = user.pk
             collect.save()
 
-            buyer = Buyer.objects.get(pk=int(BuyerID))
+            buyer = Buyer.objects.select_related().get(pk=int(BuyerID))
             buyer.closingBalance = buyer.closingBalance - float(AmountCollected)
             buyer.save()
             r = sendSMS(buyer.phoneNumber, AmountCollected)
@@ -195,7 +195,9 @@ class CollectMoneyListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        collection = MoneyCollection.objects.filter(datetime__icontains = datetime.today().date(), collectedBy__userID=request.user.pk).order_by('-id')
+        collection = MoneyCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
+                                                                     collectedBy__userID=request.user.pk).order_by(
+            '-id')
         collection_list = []
         for obj in collection:
             try:
@@ -225,14 +227,14 @@ class ChangePasswordPostView(APIView):
         if serializer.is_valid():
             NewPassword = request.data.get('NewPassword')
             OldPassword = request.data.get('OldPassword')
-            data = StaffUser.objects.get(userID_id=request.user.pk)
+            data = StaffUser.objects.select_related().get(userID_id=request.user.pk)
             if data.password == OldPassword:
 
 
 
                 data.password = NewPassword
                 data.save()
-                user = User.objects.get(pk=request.user.pk)
+                user = User.objects.select_related().get(pk=request.user.pk)
                 user.set_password(NewPassword)
                 user.save()
 
@@ -253,7 +255,7 @@ class CanTakePaymentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        staff = StaffUser.objects.get(userID_id=request.user.pk)
+        staff = StaffUser.objects.select_related().get(userID_id=request.user.pk)
 
         staff_dic = {
             'CanTakePayment':staff.canTakePayment,

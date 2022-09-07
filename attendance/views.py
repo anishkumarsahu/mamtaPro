@@ -26,7 +26,7 @@ class LoginSystemListJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return LoginSystem.objects.filter(isDeleted__exact=False)
+        return LoginSystem.objects.select_related().select_related().filter(isDeleted__exact=False)
 
     def filter_queryset(self, qs):
 
@@ -75,7 +75,7 @@ class EmployeeListJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return Employee.objects.filter(isDeleted__exact=False)
+        return Employee.objects.select_related().filter(isDeleted__exact=False)
 
     def filter_queryset(self, qs):
 
@@ -129,7 +129,7 @@ class EmployeeListForAttendanceJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return Employee.objects.filter(isDeleted__exact=False)
+        return Employee.objects.select_related().filter(isDeleted__exact=False)
 
     def filter_queryset(self, qs):
 
@@ -146,8 +146,8 @@ class EmployeeListForAttendanceJson(BaseDatatableView):
 
         for item in qs:
             try:
-                attend = EmployeeAttendance.objects.get(employeeID__id=item.pk,
-                                                        attendanceDate__icontains=datetime.today().date())
+                attend = EmployeeAttendance.objects.select_related().get(employeeID__id=item.pk,
+                                                                         attendanceDate__icontains=datetime.today().date())
             except:
                 attend = EmployeeAttendance()
                 attend.employeeID_id = item.pk
@@ -204,7 +204,7 @@ class EmployeeListForAttendanceAdminJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return Employee.objects.filter(isDeleted__exact=False)
+        return Employee.objects.select_related().filter(isDeleted__exact=False)
 
     def filter_queryset(self, qs):
 
@@ -223,8 +223,8 @@ class EmployeeListForAttendanceAdminJson(BaseDatatableView):
 
         for item in qs:
             try:
-                attend = EmployeeAttendance.objects.get(employeeID__id=item.pk,
-                                                        attendanceDate__icontains=startDate.date())
+                attend = EmployeeAttendance.objects.select_related().get(employeeID__id=item.pk,
+                                                                         attendanceDate__icontains=startDate.date())
             except:
                 attend = EmployeeAttendance()
                 attend.employeeID_id = item.pk
@@ -299,7 +299,7 @@ class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return Employee.objects.filter(isDeleted__exact=False)
+        return Employee.objects.select_related().filter(isDeleted__exact=False)
 
     def filter_queryset(self, qs):
 
@@ -318,8 +318,8 @@ class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
 
         for item in qs:
             try:
-                attend = EmployeeAttendance.objects.get(employeeID__id=item.pk,
-                                                        attendanceDate__icontains=startDate.date())
+                attend = EmployeeAttendance.objects.select_related().get(employeeID__id=item.pk,
+                                                                         attendanceDate__icontains=startDate.date())
             except:
                 attend = EmployeeAttendance()
                 attend.employeeID_id = item.pk
@@ -383,7 +383,7 @@ def attendance(request):
 def attendanceReport(request):
     request.session['nav'] = 'atten3'
     date = datetime.today().now().strftime('%d/%m/%Y')
-    users = Employee.objects.filter(isDeleted__exact=False).order_by('name')
+    users = Employee.objects.select_related().filter(isDeleted__exact=False).order_by('name')
 
     context = {
         'date': date,
@@ -434,7 +434,7 @@ def add_login_system_api(request):
             sys.location = Saddress
             sys.password = Spass
 
-            sCount = LoginSystem.objects.count()
+            sCount = LoginSystem.objects.select_related().count()
             username = 'SYSTEM' + str(sCount + 1)
             new_user = User()
             new_user.username = username
@@ -445,7 +445,7 @@ def add_login_system_api(request):
             sys.userID_id = new_user.pk
 
             try:
-                g = Group.objects.get(name='System')
+                g = Group.objects.select_related().get(name='System')
                 g.user_set.add(new_user.pk)
                 g.save()
             except:
@@ -474,11 +474,11 @@ def edit_login_system_api(request):
             Saddress = request.POST.get('ESaddress')
             Spass = request.POST.get('ESpass')
 
-            sys = LoginSystem.objects.get(pk=int(id))
+            sys = LoginSystem.objects.select_related().get(pk=int(id))
             sys.systemName = Sname
             sys.location = Saddress
             sys.password = Spass
-            new_user = User.objects.get(pk=sys.userID_id)
+            new_user = User.objects.select_related().get(pk=sys.userID_id)
 
             new_user.set_password(Spass)
             new_user.save()
@@ -537,7 +537,7 @@ def edit_employee_api(request):
             inTime = request.POST.get('inTime')
             outTime = request.POST.get('outTime')
 
-            emp = Employee.objects.get(pk=int(empID))
+            emp = Employee.objects.select_related().get(pk=int(empID))
             emp.name = name
             emp.phoneNumber = phoneNumber
             emp.address = address
@@ -566,7 +566,7 @@ def edit_employee_photo_api(request):
         userID = request.POST.get('empID')
         photo = request.FILES['file']
         try:
-            staff = Employee.objects.get(pk=int(userID))
+            staff = Employee.objects.select_related().get(pk=int(userID))
             staff.photo = photo
             staff.save()
             return JsonResponse({'response': 'ok'}, safe=False)
@@ -581,7 +581,7 @@ def delete_employee_api(request):
     if request.method == 'POST':
         try:
             userID = request.POST.get('userID')
-            staff = Employee.objects.get(pk=int(userID))
+            staff = Employee.objects.select_related().get(pk=int(userID))
             staff.isDeleted = True
 
             staff.save()
@@ -602,9 +602,9 @@ def login_post_api(request):
             loginPassword = request.POST.get('loginPassword')
             loginRemark = request.POST.get('loginRemark')
             photo = request.POST.get('photo')
-            attend = EmployeeAttendance.objects.get(employeeID_id=int(loginEmpID),
-                                                    attendanceDate=datetime.today().date(),
-                                                    employeeID__password__exact=loginPassword)
+            attend = EmployeeAttendance.objects.select_related().get(employeeID_id=int(loginEmpID),
+                                                                     attendanceDate=datetime.today().date(),
+                                                                     employeeID__password__exact=loginPassword)
             attend.loginTime = datetime.now().time()
             attend.loginRemark = loginRemark
             attend.loginSystemID_id = request.user.pk
@@ -630,9 +630,9 @@ def logout_post_api(request):
             logoutPassword = request.POST.get('logoutPassword')
             logoutRemark = request.POST.get('logoutRemark')
             photo = request.POST.get('photo')
-            attend = EmployeeAttendance.objects.get(employeeID_id=int(logoutEmpID),
-                                                    attendanceDate=datetime.today().date(),
-                                                    employeeID__password__exact=logoutPassword)
+            attend = EmployeeAttendance.objects.select_related().get(employeeID_id=int(logoutEmpID),
+                                                                     attendanceDate=datetime.today().date(),
+                                                                     employeeID__password__exact=logoutPassword)
             attend.logoutTime = datetime.now().time()
             attend.logoutRemark = logoutRemark
 
@@ -670,7 +670,7 @@ def genereate_attendence_report(request):
 
         for d in list(x):
 
-            qs = Employee.objects.filter(isDeleted__exact=False)
+            qs = Employee.objects.select_related().filter(isDeleted__exact=False)
             emp_list = []
             for e in qs:
 
@@ -685,8 +685,9 @@ def genereate_attendence_report(request):
                         day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
 
                         try:
-                            attend = EmployeeAttendance.objects.get(employeeID__id=e.pk,
-                                                                                    attendanceDate__icontains=d+ "-{}".format(i))
+                            attend = EmployeeAttendance.objects.select_related().get(employeeID__id=e.pk,
+                                                                                     attendanceDate__icontains=d + "-{}".format(
+                                                                                         i))
 
                             if attend.loginTime is None and attend.logoutTime is None:
                                 if day_name[day] == 'Sunday':
@@ -705,8 +706,9 @@ def genereate_attendence_report(request):
                         day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
 
                         try:
-                            attend = EmployeeAttendance.objects.get(employeeID__id=e.pk,
-                                                                    attendanceDate__icontains=d + "-{}".format(i))
+                            attend = EmployeeAttendance.objects.select_related().get(employeeID__id=e.pk,
+                                                                                     attendanceDate__icontains=d + "-{}".format(
+                                                                                         i))
 
                             if attend.loginTime is None and attend.logoutTime is None:
                                 if day_name[day] == 'Sunday':
@@ -760,7 +762,7 @@ def genereate_attendence_report(request):
 
         for d in list(x):
 
-            qs = Employee.objects.filter(isDeleted__exact=False, pk = int(staff))
+            qs = Employee.objects.select_related().filter(isDeleted__exact=False, pk=int(staff))
             emp_list = []
             for e in qs:
 
@@ -775,8 +777,9 @@ def genereate_attendence_report(request):
 
                     try:
 
-                        attend = EmployeeAttendance.objects.get(employeeID__id=e.pk,
-                                                                attendanceDate__icontains=d + "-{}".format(i))
+                        attend = EmployeeAttendance.objects.select_related().get(employeeID__id=e.pk,
+                                                                                 attendanceDate__icontains=d + "-{}".format(
+                                                                                     i))
 
                         if attend.loginTime is None and attend.logoutTime is None:
 

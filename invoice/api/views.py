@@ -28,7 +28,7 @@ class InvoiceSeriesView(APIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            invoiceSerial = InvoiceSeries.objects.all().order_by('series')
+            invoiceSerial = InvoiceSeries.objects.select_related().all().order_by('series')
             in_list = []
             for obj in invoiceSerial:
                 in_dic = {
@@ -66,10 +66,11 @@ class InvoiceSerialsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        invoiceByUser = InvoiceSeries.objects.get(assignedTo__userID_id=request.user.pk)
+        invoiceByUser = InvoiceSeries.objects.select_related().get(assignedTo__userID_id=request.user.pk)
 
-        salesID = Sales.objects.filter(invoiceSerialID__invoiceSeriesID_id=invoiceByUser.pk,
-                                       datetime__gte=datetime.today().date() - timedelta(days=1)).order_by(
+        salesID = Sales.objects.select_related().filter(invoiceSerialID__invoiceSeriesID_id=invoiceByUser.pk,
+                                                        datetime__gte=datetime.today().date() - timedelta(
+                                                            days=1)).order_by(
             '-invoiceSerialID')
 
         last_used_invoice_number = salesID.first()
@@ -77,7 +78,8 @@ class InvoiceSerialsView(APIView):
         # used
         used_invoice_id_list = []
         un_used_invoice_id_list = []
-        for numbers in InvoiceSerial.objects.filter(series__lt=last_used_invoice_number.invoiceSerialID.serials):
+        for numbers in InvoiceSerial.objects.select_related().filter(
+                series__lt=last_used_invoice_number.invoiceSerialID.serials):
             for sale in salesID:
                 if numbers.pk == sale.invoiceSerialID_id:
 
@@ -95,7 +97,8 @@ class InvoiceSerialsView(APIView):
 
                     un_used_invoice_id_list.append(un_used_invoice_id_dic)
         upcoming_serials_invoice_id_list = []
-        for obj in InvoiceSerial.objects.filter(series__gt=last_used_invoice_number.invoiceSerialID.serials):
+        for obj in InvoiceSerial.objects.select_related().filter(
+                series__gt=last_used_invoice_number.invoiceSerialID.serials):
             upcoming_serials_invoice_id_dic = {
                 'Serial': obj.serials,
                 'SerialID': obj.pk
@@ -137,7 +140,7 @@ class CreateSalesPostView(APIView):
             if SalesType == 'Cheque':
                 sale.isCash = False
 
-            user = StaffUser.objects.get(userID_id=request.user.pk)
+            user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
             sale.createdBy_id = user.pk
             sale.save()
             return Response({'message': 'success'})
