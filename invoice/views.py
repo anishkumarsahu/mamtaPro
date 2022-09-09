@@ -17,6 +17,7 @@ from .models import *
 from datetime import datetime, timedelta, date
 import calendar
 
+last_3_month_date = datetime.today().date() - timedelta(days=90)
 
 def enable_opening_balance(request):
     try:
@@ -121,12 +122,13 @@ class InvoiceCreatedByCashListJson(BaseDatatableView):
         if staff == 'all':
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
-                                                         salesType__exact='Cash', )
+                                                         salesType__exact='Cash', ).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
                                                          salesType__exact='Cash',
-                                                         createdBy=int(staff))
+                                                         createdBy=int(staff)).exclude(datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -199,12 +201,13 @@ class InvoiceCreatedByCardListJson(BaseDatatableView):
         if staff == 'all':
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
-                                                         salesType__exact='Card', )
+                                                         salesType__exact='Card', ).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
                                                          salesType__exact='Card',
-                                                         createdBy=int(staff))
+                                                         createdBy=int(staff)).exclude(datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -278,12 +281,13 @@ class InvoiceCreatedByMixListJson(BaseDatatableView):
         if staff == 'all':
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
-                                                         salesType__exact='Mix', )
+                                                         salesType__exact='Mix', ).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
                                                          salesType__exact='Mix',
-                                                         createdBy=int(staff))
+                                                         createdBy=int(staff)).exclude(datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -361,12 +365,13 @@ class InvoiceCreatedByCreditListJson(BaseDatatableView):
         if staff == 'all':
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
-                                                         salesType__exact='Credit', )
+                                                         salesType__exact='Credit', ).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
                                                          salesType__exact='Credit',
-                                                         createdBy=int(staff))
+                                                         createdBy=int(staff)).exclude(datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -441,12 +446,14 @@ class CollectionListJson(BaseDatatableView):
         if staff == 'all':
             return MoneyCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                    datetime__lte=endDate + timedelta(days=1),
-                                                                   isAddedInSales__exact=True)
+                                                                   isAddedInSales__exact=True).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return MoneyCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                    datetime__lte=endDate + timedelta(days=1),
                                                                    collectedBy_id=int(staff),
-                                                                   isAddedInSales__exact=True)
+                                                                   isAddedInSales__exact=True).exclude(
+                datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -508,12 +515,14 @@ class CashCollectionListJson(BaseDatatableView):
         if staff == 'all':
             return CashMoneyCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                        datetime__lte=endDate + timedelta(days=1),
-                                                                       isAddedInSales__exact=True)
+                                                                       isAddedInSales__exact=True).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return CashMoneyCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                        datetime__lte=endDate + timedelta(days=1),
                                                                        collectedBy_id=int(staff),
-                                                                       isAddedInSales__exact=True)
+                                                                       isAddedInSales__exact=True).exclude(
+                datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -575,11 +584,12 @@ class StaffAdvanceListJson(BaseDatatableView):
         if staff == 'all':
             return StaffAdvanceToBuyer.objects.select_related().filter(datetime__gte=startDate,
                                                                        datetime__lte=endDate + timedelta(days=1),
-                                                                       )
+                                                                       ).exclude(datetime__gt=last_3_month_date)
         else:
             return StaffAdvanceToBuyer.objects.select_related().filter(datetime__gte=startDate,
                                                                        datetime__lte=endDate + timedelta(days=1),
-                                                                       collectedBy_id=int(staff))
+                                                                       collectedBy_id=int(staff)).exclude(
+                datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -640,11 +650,13 @@ class ReturnCollectionListJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
         if staff == 'all':
             return ReturnCollection.objects.select_related().filter(datetime__gte=startDate,
-                                                                    datetime__lte=endDate + timedelta(days=1))
+                                                                    datetime__lte=endDate + timedelta(days=1)).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return ReturnCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                     datetime__lte=endDate + timedelta(days=1),
-                                                                    createdBy_id=int(staff))
+                                                                    createdBy_id=int(staff)).exclude(
+                datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -706,11 +718,13 @@ class CorrectCollectionListJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
         if staff == 'all':
             return CorrectCollection.objects.select_related().filter(datetime__gte=startDate,
-                                                                     datetime__lte=endDate + timedelta(days=1))
+                                                                     datetime__lte=endDate + timedelta(days=1)).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return CorrectCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                      datetime__lte=endDate + timedelta(days=1),
-                                                                     createdBy_id=int(staff))
+                                                                     createdBy_id=int(staff)).exclude(
+                datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -772,11 +786,13 @@ class CommissionListJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
         if staff == 'all':
             return Commission.objects.select_related().filter(datetime__gte=startDate,
-                                                              datetime__lte=endDate + timedelta(days=1))
+                                                              datetime__lte=endDate + timedelta(days=1)).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return Commission.objects.select_related().filter(datetime__gte=startDate,
                                                               datetime__lte=endDate + timedelta(days=1),
-                                                              createdBy_id=int(staff))
+                                                              createdBy_id=int(staff)).exclude(
+                datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -838,11 +854,13 @@ class ExpenseListJson(BaseDatatableView):
         endDate = datetime.strptime(eDate, '%d/%m/%Y')
         if staff == 'all':
             return Expense.objects.select_related().filter(datetime__gte=startDate,
-                                                           datetime__lte=endDate + timedelta(days=1))
+                                                           datetime__lte=endDate + timedelta(days=1)).exclude(
+                datetime__gt=last_3_month_date)
         else:
             return Expense.objects.select_related().filter(datetime__gte=startDate,
                                                            datetime__lte=endDate + timedelta(days=1),
-                                                           createdBy_id=int(staff))
+                                                           createdBy_id=int(staff)).exclude(
+                datetime__gt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -1569,23 +1587,27 @@ def generate_net_report_admin(request):
     sales_cash = Sales.objects.select_related().filter(datetime__icontains=day_string,
                                                        salesType__icontains='cash',
                                                        InvoiceSeriesID__companyID_id=int(companyID),
-                                                       isDeleted__exact=False, ).order_by('InvoiceSeriesID',
-                                                                                          'numberMain')
+                                                       isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('InvoiceSeriesID',
+                                                 'numberMain')
     sales_card = Sales.objects.select_related().filter(datetime__icontains=day_string,
                                                        salesType__icontains='card',
                                                        InvoiceSeriesID__companyID_id=int(companyID),
-                                                       isDeleted__exact=False, ).order_by('InvoiceSeriesID',
-                                                                                          'numberMain')
+                                                       isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('InvoiceSeriesID',
+                                                 'numberMain')
     sales_credit = Sales.objects.select_related().filter(datetime__icontains=day_string,
                                                          salesType__icontains='credit',
                                                          InvoiceSeriesID__companyID_id=int(companyID),
-                                                         isDeleted__exact=False, ).order_by('InvoiceSeriesID',
-                                                                                            'numberMain')
+                                                         isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('InvoiceSeriesID',
+                                                 'numberMain')
     sales_mix = Sales.objects.select_related().filter(datetime__icontains=day_string,
                                                       salesType__icontains='Mix',
                                                       InvoiceSeriesID__companyID_id=int(companyID),
-                                                      isDeleted__exact=False, ).order_by('InvoiceSeriesID',
-                                                                                         'numberMain')
+                                                      isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('InvoiceSeriesID',
+                                                 'numberMain')
     cash_total = 0.0
     for cash in sales_cash:
         cash_total = cash_total + cash.amount
@@ -1624,7 +1646,8 @@ def generate_net_report_admin(request):
     #         pass
     returns = ReturnCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                companyID_id=int(companyID),
-                                                               isDeleted__exact=False, ).order_by('actualBillNumber')
+                                                               isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('actualBillNumber')
 
     return_total = 0.0
     for am in returns:
@@ -1632,7 +1655,8 @@ def generate_net_report_admin(request):
 
     corrections = CorrectCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                     companyID_id=int(companyID),
-                                                                    isDeleted__exact=False, ).order_by(
+                                                                    isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by(
         'actualBillNumber')
 
     correct_total = 0.0
@@ -1641,14 +1665,16 @@ def generate_net_report_admin(request):
 
     commissions = Commission.objects.select_related().filter(datetime__icontains=day_string,
                                                              companyID_id=int(companyID),
-                                                             isDeleted__exact=False, ).order_by('actualBillNumber')
+                                                             isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('actualBillNumber')
 
     commission_total = 0.0
     for c in commissions:
         commission_total = commission_total + c.amount
 
     expenses = Expense.objects.select_related().filter(datetime__icontains=day_string,
-                                                       companyID_id=int(companyID), isDeleted__exact=False, ).order_by(
+                                                       companyID_id=int(companyID), isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by(
         'datetime')
 
     expense_total = 0.0
@@ -1657,7 +1683,8 @@ def generate_net_report_admin(request):
 
     col = MoneyCollection.objects.select_related().filter(datetime__icontains=day_string, companyID_id=int(companyID),
                                                           isAddedInSales__exact=True,
-                                                          isDeleted__exact=False, ).order_by('datetime')
+                                                          isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('datetime')
     col_total = 0.0
     for c in col:
         col_total = col_total + c.amount
@@ -1665,7 +1692,8 @@ def generate_net_report_admin(request):
     colCash = CashMoneyCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                   companyID_id=int(companyID),
                                                                   isAddedInSales__exact=True,
-                                                                  isDeleted__exact=False, ).order_by('datetime')
+                                                                  isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('datetime')
     col_total_cash = 0.0
     for cash in colCash:
         col_total_cash = col_total_cash + cash.amount
@@ -1673,7 +1701,8 @@ def generate_net_report_admin(request):
     supCash = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                  companyID_id=int(companyID),
                                                                  isApproved__exact=True, paymentMode='Cash',
-                                                                 isDeleted__exact=False, ).order_by('datetime')
+                                                                 isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('datetime')
     sup_total_cash = 0.0
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
@@ -1687,7 +1716,8 @@ def generate_net_report_admin(request):
 
     advance = StaffAdvanceToBuyer.objects.select_related().filter(datetime__icontains=day_string,
                                                                   companyID_id=int(companyID),
-                                                                  isDeleted__exact=False, ).order_by('datetime')
+                                                                  isDeleted__exact=False, ).exclude(
+        datetime__gt=last_3_month_date).order_by('datetime')
     advance_total = 0.0
     for ad in advance:
         advance_total = advance_total + ad.amount
