@@ -13,7 +13,7 @@ from rest_framework_jwt.settings import api_settings
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
 from django.contrib.auth.models import Group
 from mamtaApp.models import *
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import urllib.request
 import urllib.parse
@@ -21,6 +21,7 @@ import json
 api_key = 'zqc9vE5iO0U-jhurpShYlOIPyuJp1UZH6ZlFux7Kir'
 
 sender = 'ADDACN'
+last_3_month_date = datetime.today().date() - timedelta(days=90)
 
 
 def sendSMS(numbers,message1):
@@ -196,7 +197,8 @@ class CollectMoneyListView(APIView):
 
     def get(self, request, *args, **kwargs):
         collection = MoneyCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
-                                                                     collectedBy__userID=request.user.pk).order_by(
+                                                                     collectedBy__userID=request.user.pk).exclude(
+            datetime__lt=last_3_month_date).order_by(
             '-id')
         collection_list = []
         for obj in collection:

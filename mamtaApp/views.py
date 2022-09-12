@@ -21,6 +21,7 @@ from django.utils.html import escape
 
 import urllib.request
 import urllib.parse
+last_3_month_date = datetime.today().date() - timedelta(days=90)
 
 
 def Balance():
@@ -77,11 +78,13 @@ class InvoicePrintListJson(BaseDatatableView):
         if staff == 'all':
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
-                                                         ).exclude(salesType__exact='Card')
+                                                         ).exclude(salesType__exact='Card').exclude(
+                datetime__lt=last_3_month_date)
         else:
             return Sales.objects.select_related().filter(datetime__gte=startDate,
                                                          datetime__lte=endDate + timedelta(days=1),
-                                                         createdBy=int(staff)).exclude(salesType__exact='Card')
+                                                         createdBy=int(staff)).exclude(salesType__exact='Card').exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -125,7 +128,9 @@ class LoginListJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return LoginAndLogoutStatus.objects.select_related().filter(isDeleted__exact=False, statusType__exact='Login')
+        return LoginAndLogoutStatus.objects.select_related().filter(isDeleted__exact=False,
+                                                                    statusType__exact='Login').exclude(
+            datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -162,7 +167,9 @@ class LogoutListJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return LoginAndLogoutStatus.objects.select_related().filter(isDeleted__exact=False, statusType__exact='Logout')
+        return LoginAndLogoutStatus.objects.select_related().filter(isDeleted__exact=False,
+                                                                    statusType__exact='Logout').exclude(
+            datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -257,7 +264,8 @@ class ManageCreditListJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return MoneyToCollect.objects.select_related().all()
+        return MoneyToCollect.objects.select_related().exclude(
+            datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -290,7 +298,8 @@ class CreditListJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return MoneyToCollect.objects.select_related().filter(buyerID=int(self.request.GET.get('id')))
+        return MoneyToCollect.objects.select_related().filter(buyerID=int(self.request.GET.get('id'))).exclude(
+            datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -323,7 +332,8 @@ class DebitListJson(BaseDatatableView):
 
     def get_initial_queryset(self):
 
-        return MoneyCollection.objects.select_related().filter(buyerID=int(self.request.GET.get('id')))
+        return MoneyCollection.objects.select_related().filter(buyerID=int(self.request.GET.get('id'))).exclude(
+            datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -396,12 +406,14 @@ class CollectionListCashJson(BaseDatatableView):
         if staff == 'all':
             return MoneyCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                    datetime__lte=endDate + timedelta(days=1),
-                                                                   paymentMode__exact='Cash')
+                                                                   paymentMode__exact='Cash').exclude(
+                datetime__lt=last_3_month_date)
         else:
             return MoneyCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                    datetime__lte=endDate + timedelta(days=1),
                                                                    paymentMode__exact='Cash',
-                                                                   collectedBy=int(staff))
+                                                                   collectedBy=int(staff)).exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -452,12 +464,14 @@ class CollectionListChequeJson(BaseDatatableView):
         if staff == 'all':
             return MoneyCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                    datetime__lte=endDate + timedelta(days=1),
-                                                                   paymentMode__exact='Cheque')
+                                                                   paymentMode__exact='Cheque').exclude(
+                datetime__lt=last_3_month_date)
         else:
             return MoneyCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                    datetime__lte=endDate + timedelta(days=1),
                                                                    paymentMode__exact='Cheque',
-                                                                   collectedBy=int(staff))
+                                                                   collectedBy=int(staff)).exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -632,7 +646,8 @@ class SupplierCollectionListJson(BaseDatatableView):
         startDate = datetime.strptime(sDate, '%d/%m/%Y')
         return SupplierCollection.objects.select_related().filter(datetime__icontains=startDate.date(),
                                                                   collectedBy__userID_id=self.request.user.pk,
-                                                                  isDeleted__exact=False)
+                                                                  isDeleted__exact=False).exclude(
+            datetime__lt=last_3_month_date)
 
 
     def filter_queryset(self, qs):
@@ -670,7 +685,8 @@ class SupplierInvoiceCollectionListJson(BaseDatatableView):
         startDate = datetime.strptime(sDate, '%d/%m/%Y')
         return SupplierInvoiceCollection.objects.select_related().filter(datetime__icontains=startDate.date(),
                                                                          collectedBy__userID_id=self.request.user.pk,
-                                                                         isDeleted__exact=False)
+                                                                         isDeleted__exact=False).exclude(
+            datetime__lt=last_3_month_date)
 
 
     def filter_queryset(self, qs):
@@ -718,14 +734,16 @@ class SupplierCollectionListCashJson(BaseDatatableView):
                                                                       datetime__lte=endDate + timedelta(days=1),
                                                                       paymentMode__exact='Cash',
                                                                       collectedBy__companyID_id=user.companyID_id,
-                                                                      isDeleted__exact=False)
+                                                                      isDeleted__exact=False).exclude(
+                datetime__lt=last_3_month_date)
         else:
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
                                                                       paymentMode__exact='Cash',
                                                                       collectedBy__companyID_id=user.companyID_id,
                                                                       isDeleted__exact=False,
-                                                                      collectedBy=int(staff))
+                                                                      collectedBy=int(staff)).exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -779,12 +797,15 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
         if staff == 'all':
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
-                                                                      paymentMode__exact='Cash', isDeleted__exact=False)
+                                                                      paymentMode__exact='Cash',
+                                                                      isDeleted__exact=False).exclude(
+                datetime__lt=last_3_month_date)
         else:
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
                                                                       paymentMode__exact='Cash', isDeleted__exact=False,
-                                                                      collectedBy=int(staff))
+                                                                      collectedBy=int(staff)).exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -854,13 +875,15 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
                                                                       paymentMode__exact='Cheque',
-                                                                      isDeleted__exact=False)
+                                                                      isDeleted__exact=False).exclude(
+                datetime__lt=last_3_month_date)
         else:
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
                                                                       paymentMode__exact='Cheque',
                                                                       isDeleted__exact=False,
-                                                                      collectedBy=int(staff))
+                                                                      collectedBy=int(staff)).exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -932,14 +955,16 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
                                                                       datetime__lte=endDate + timedelta(days=1),
                                                                       paymentMode__exact='Cheque',
                                                                       collectedBy__companyID_id=user.companyID_id,
-                                                                      isDeleted__exact=False)
+                                                                      isDeleted__exact=False).exclude(
+                datetime__lt=last_3_month_date)
         else:
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
                                                                       paymentMode__exact='Cheque',
                                                                       isDeleted__exact=False,
                                                                       collectedBy=int(staff),
-                                                                      collectedBy__companyID_id=user.companyID_id)
+                                                                      collectedBy__companyID_id=user.companyID_id).exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -995,13 +1020,15 @@ class SupplierCollectionInvoiceList(BaseDatatableView):
             return SupplierInvoiceCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                              datetime__lte=endDate + timedelta(days=1),
                                                                              collectedBy__companyID_id=user.companyID_id,
-                                                                             isDeleted__exact=False)
+                                                                             isDeleted__exact=False).exclude(
+                datetime__lt=last_3_month_date)
         else:
             return SupplierInvoiceCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                              datetime__lte=endDate + timedelta(days=1),
                                                                              isDeleted__exact=False,
                                                                              collectedBy=int(staff),
-                                                                             collectedBy__companyID_id=user.companyID_id)
+                                                                             collectedBy__companyID_id=user.companyID_id).exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
@@ -1056,12 +1083,14 @@ class SupplierCollectionInvoiceListAdmin(BaseDatatableView):
         if staff == 'all':
             return SupplierInvoiceCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                              datetime__lte=endDate + timedelta(days=1),
-                                                                             isDeleted__exact=False)
+                                                                             isDeleted__exact=False).exclude(
+                datetime__lt=last_3_month_date)
         else:
             return SupplierInvoiceCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                              datetime__lte=endDate + timedelta(days=1),
                                                                              isDeleted__exact=False,
-                                                                             collectedBy=int(staff))
+                                                                             collectedBy=int(staff)).exclude(
+                datetime__lt=last_3_month_date)
 
     def filter_queryset(self, qs):
 
