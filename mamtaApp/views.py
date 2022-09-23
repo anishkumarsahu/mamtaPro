@@ -21,7 +21,7 @@ from django.utils.html import escape
 
 import urllib.request
 import urllib.parse
-last_3_month_date = datetime.today().date() - timedelta(days=90)
+last_3_month_date = datetime.today().date() - timedelta(days=45)
 
 
 def Balance():

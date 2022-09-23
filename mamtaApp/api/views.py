@@ -21,7 +21,7 @@ import json
 api_key = 'zqc9vE5iO0U-jhurpShYlOIPyuJp1UZH6ZlFux7Kir'
 
 sender = 'ADDACN'
-last_3_month_date = datetime.today().date() - timedelta(days=90)
+last_3_month_date = datetime.today().date() - timedelta(days=45)
 
 
 def sendSMS(numbers,message1):

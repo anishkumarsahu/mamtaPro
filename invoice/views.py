@@ -17,7 +17,7 @@ from .models import *
 from datetime import datetime, timedelta, date
 import calendar
 
-last_3_month_date = datetime.today().date() - timedelta(days=90)
+last_3_month_date = datetime.today().date() - timedelta(days=45)
 
 
 def enable_opening_balance(request):

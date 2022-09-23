@@ -21,7 +21,7 @@ import base64
 from django.core.files.base import ContentFile
 
 today_date = datetime.today().date()
-last_3_month_date = datetime.today().date() - timedelta(days=90)
+last_3_month_date = datetime.today().date() - timedelta(days=45)
 
 
 class LoginSystemListJson(BaseDatatableView):
