@@ -15,6 +15,9 @@
             columns: 3;
         }
 
+        #card {
+            columns: 2;
+        }
         #Credit {
             columns: 2;
         }
@@ -56,6 +59,7 @@
             <tr>
                 <th scope="col">Bill_No.</th>
                 <th scope="col">Amount(₹)</th>
+                 <th scope="col">E-Time</th>
             </tr>
             </thead>
             <tbody>
@@ -63,6 +67,7 @@
                 <tr>
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.amount }}</td>
+                    <td>{{ foo.datetime|time:"h:i a" }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -70,13 +75,14 @@
     </section>
     <p style="font-size: 10px; margin: 2px;">Card<span
             style="float: right">Total: ₹ <strong>{{ card_total }}</strong></span></p>
-    <section>
+    <section id="card">
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
             <tr>
                 <th scope="col">Bill_No.</th>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Remark(₹)</th>
+                 <th scope="col">E-Time</th>
             </tr>
             </thead>
             <tbody>
@@ -85,6 +91,7 @@
                     <td>{{ foo.billNumber }}</td>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.remark }}</td>
+                <td>{{ foo.datetime|time:"h:i a" }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -121,9 +128,10 @@
             <thead>
             <tr>
                 <th scope="col">Bill_No.</th>
-                <th scope="col">CashAmount(₹).</th>
-                <th scope="col">CardAmount(₹)</th>
+                <th scope="col">CashAmt.(₹)</th>
+                <th scope="col">CardAmt.(₹)</th>
                 <th scope="col">Card Remark</th>
+                 <th scope="col">E-Time</th>
             </tr>
             </thead>
             <tbody>
@@ -133,6 +141,7 @@
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.mixCardAmount }}</td>
                     <td>{{ foo.remark }}</td>
+                <td>{{ foo.datetime|time:"h:i a" }}</td>
                 </tr>
             {% endfor %}
             </tbody>
