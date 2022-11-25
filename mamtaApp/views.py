@@ -1340,6 +1340,18 @@ def add_staff_user_api(request):
                     h.save()
                     h.user_set.add(new_user.pk)
                     h.save()
+            elif staffType =='6':
+                try:
+                    h = Group.objects.select_related().get(name='Order Team')
+                    h.user_set.add(new_user.pk)
+                    h.save()
+
+                except:
+                    h = Group()
+                    h.name = "Order Team"
+                    h.save()
+                    h.user_set.add(new_user.pk)
+                    h.save()
             else:
                 try:
                     g = Group.objects.select_related().get(name='Staff')
@@ -1438,6 +1450,13 @@ def edit_staff_user_api(request):
                 new_user.groups.clear()
                 new_user.save()
                 h = Group.objects.select_related().get(name='Cashier')
+                h.user_set.add(new_user.pk)
+                h.save()
+            elif staffType == '6':
+                new_user = User.objects.select_related().get(pk=staff.userID_id)
+                new_user.groups.clear()
+                new_user.save()
+                h = Group.objects.select_related().get(name='Order Team')
                 h.user_set.add(new_user.pk)
                 h.save()
             else :
@@ -1738,6 +1757,8 @@ def loginApp(request):
                 return redirect('/supplyHome/')
             if 'Cashier' in request.user.groups.values_list('name', flat=True):
                 return redirect('/cashierHome/')
+            if 'Order Team' in request.user.groups.values_list('name', flat=True):
+                return redirect('/order_home/')
 
         else:
             messages.success(request, "Wrong Credential! Please try again.")
@@ -2100,5 +2121,95 @@ def login_and_logout_report(request):
     request.session['nav'] = '10'
 
     return render(request, 'mamtaApp/loginAndLogoutReport.html')
+
+
+# -------------------Order Team--------------------------------------
+@check_group('Order Team')
+def order_home(request):
+    user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
+    date = datetime.today().now().strftime('%d/%m/%Y')
+
+    context = {
+        'user':user,
+        'date': date,
+    }
+
+    return render(request, 'mamtaApp/order/orderIndex.html', context)
+
+@csrf_exempt
+def take_order_api(request):
+    if request.method == 'POST':
+
+        orderFrom = request.POST.get('orderFrom')
+        detail = request.POST.get('detail')
+
+        lat = request.POST.get('lat')
+        lng = request.POST.get('lng')
+        loc = request.POST.get('loc')
+
+        try:
+            obj = TakeOrder()
+            obj.orderTakenFrom = orderFrom
+            try:
+                images = request.FILES['img']
+                obj.orderPic = images
+            except:
+                pass
+            user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
+            obj.orderTakenBy_id = user.pk
+            obj.details = detail
+            obj.companyID_id = user.companyID_id
+            obj.lat = lat
+            obj.lng = lng
+            obj.location = loc
+
+            obj.save()
+
+            return JsonResponse({'message': 'success'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
+
+
+class OrderListByUserPerDayJson(BaseDatatableView):
+    order_columns = ['id', 'orderTakenFrom','details', 'datetime']
+
+    def get_initial_queryset(self):
+        sDate = self.request.GET.get('startDate')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        return TakeOrder.objects.select_related().filter(datetime__icontains=startDate.date(),
+                                                                  orderTakenBy__userID_id=self.request.user.pk,
+                                                                  isDeleted__exact=False).exclude(
+            datetime__lt=last_3_month_date)
+
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+             Q(orderTakenFrom__icontains=search) | Q(details__icontains=search) | Q(datetime__icontains=search))
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            button = '''<a href="/invoice/share_order_to_whatsapp_pdf/?ID={}" type="button" class="btn btn-primary waves-effect"
+                             >Share</a>'''.format(
+                item.pk)
+
+            json_data.append([
+                escape(i),
+                escape(item.orderTakenFrom),
+                escape(item.details),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                button
+
+            ])
+            i = i + 1
+        return json_data
+
 
 

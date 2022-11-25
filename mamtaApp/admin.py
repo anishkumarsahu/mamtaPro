@@ -75,3 +75,9 @@ class SupplierInvoiceCollectionAdmin(admin.ModelAdmin):
     list_display = ['buyerID','collectedBy','amount','remark','Location','datetime']
 
 admin.site.register(SupplierInvoiceCollection,SupplierInvoiceCollectionAdmin)
+
+
+class TakeOrderAdmin(admin.ModelAdmin):
+    list_display = ['orderTakenFrom','details','orderTakenBy','location','datetime']
+
+admin.site.register(TakeOrder,TakeOrderAdmin)

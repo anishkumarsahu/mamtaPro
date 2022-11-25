@@ -3351,3 +3351,29 @@ def generate_collection_report_for_cashier(request):
 
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
     return response
+
+
+
+def share_order_to_whatsapp_pdf(request):
+    date = datetime.today().date()
+    ID = request.GET.get('ID')
+    col = TakeOrder.objects.select_related().get(datetime__icontains=datetime.today().date(),
+                                                          orderTakenBy__userID_id=request.user.pk,
+                                                          isDeleted__exact=False,pk = int(ID) )
+
+
+    context = {
+
+        'date': date,
+        'col': col,
+        # 'url':'http://'+request.get_host()
+        'url':'https://'+request.get_host()
+
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "order.pdf"
+    html = render_to_string("invoice/shareOrderPDF.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
+    return response

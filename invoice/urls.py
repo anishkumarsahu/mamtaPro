@@ -105,4 +105,7 @@ urlpatterns = [
     url(r'^edit_staff_advance/$', edit_staff_advance, name='edit_staff_advance'),
     url(r'^delete_staff_advance_api/$', delete_staff_advance_api, name='delete_staff_advance_api'),
 
+    # Take order PDF
+    url(r'^share_order_to_whatsapp_pdf/$', share_order_to_whatsapp_pdf, name='share_order_to_whatsapp_pdf'),
+
 ]

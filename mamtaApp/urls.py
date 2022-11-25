@@ -101,4 +101,9 @@ urlpatterns = [
     #print Report
     url(r'^print_report/$', print_report, name='print_report'),
 
+    # Order Team
+    url(r'^order_home/$', order_home, name='order_home'),
+    url(r'^api/take_order_api/$', take_order_api, name='take_order_api'),
+    url(r'^api/OrderListByUserPerDayJson/$', OrderListByUserPerDayJson.as_view(), name='OrderListByUserPerDayJson'),
+
 ]

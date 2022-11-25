@@ -1,0 +1,575 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+{% block body %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
+
+    <style>
+        #leftsidebar {
+            display: none;
+        }
+
+        .bars {
+            display: none !important;
+        }
+
+        section.content {
+            margin-left: 15px;
+        }
+
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+                position: relative;
+                min-height: 1px;
+                padding-right: 0px !important;
+                padding-left: 0px !important;
+            }
+
+            .buttondown {
+                margin-bottom: 10px;
+            }
+        }
+
+        .dt-buttons {
+            padding-top: 10px;
+        }
+
+        .datepicker {
+            top: 200px !important;
+            left: 45px;
+            z-index: 10;
+            display: block;
+        }
+
+        @media (max-width: 767px) {
+            .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
+                margin-left: 0 !important;
+                width: 73%;
+            }
+        }
+
+        .input-group .form-control {
+            position: initial !important;
+            z-index: 2;
+            float: left;
+            width: 100% !important;
+            margin-bottom: 0;
+        }
+
+        .select2-container {
+            box-sizing: border-box;
+            display: inline-block;
+            margin: 0;
+            position: relative;
+            vertical-align: middle;
+            width: 100% !important;
+        }
+
+        .select2-drop-active {
+            margin-top: -25px !important;
+        }
+    </style>
+
+    <section class="content">
+     <div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            Please make sure to allow location service. Enable GPS on your mobile to make collections.
+                            Thank you.
+                        </div>
+        <div class="container-fluid">
+
+            <div class="row clearfix">
+
+                <div class="col-md-4 col-sm-4 col-xs-5" style="padding-right: 2px!important;">
+                    <div class="form-group ">
+                        <label for="cc-number" class="control-label mb-1">Date</label>
+                        <input data-date-end-date="0d" disabled data-provide="datepicker" data-role="datepicker" name="startDate"
+                               id="startDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                        <span></span>
+                    </div>
+                </div>
+{#                <div class="col-md-4 col-sm-4 col-xs-3 buttondown "#}
+{#                     style="text-align: center!important;margin-top: 30px;">#}
+{#                    <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "#}
+{#                            onclick="getData()">Search#}
+{#                    </button>#}
+{##}
+{##}
+{#                </div>#}
+
+
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                MY TODAY'S ORDER
+                            </h2>
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="collectionTableCollect"
+                                       class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>Order From</th>
+                                        <th>Detail</th>
+                                        <th>Datetime</th>
+                                        <th>Share</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>Order From</th>
+                                        <th>Detail</th>
+                                        <th>Datetime</th>
+                                        <th>Share</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <button style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getReverseLocation()"
+                data-target="#CollectionModal"
+                class="btn btn-success btn-circle-lg waves-effect waves-circle waves-float">
+            <i class="material-icons">add</i>
+        </button>
+
+    </section>
+
+    <div class="modal fade" id="ProfileModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" id="PasswordForm"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Welcome {{ user.name|capfirst }},</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">remove_red_eye</i>
+                                        </span>
+                                    <div class="form-line">
+                                      <span
+                                              style="color: grey;font-size: 10px;"> Note - Password should be at least 5 character long.</span>
+                                        <input autocomplete="off" type="password" class="form-control" id="nPass"
+                                               placeholder="New Password">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">remove_red_eye</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input autocomplete="off" type="password" class="form-control" id="rPass"
+                                               placeholder="Confirm Password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="ChangePassword()">Save</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div class="image" style="position: fixed; top: 2rem;right: 5em;z-index: 100;cursor: pointer" data-toggle="modal"
+         data-target="#ProfileModal">
+        <img style="border-radius: 50%" src="{{ user.photo.url }}" width="40" height="40" alt="User">
+    </div>
+
+    <button onclick="logoutBtn()" type="button" style=" position: fixed;top: 1.5em;right: 1em;z-index: 100;"
+            class="btn bg-light-blue btn-circle waves-effect waves-circle waves-float">
+        <i class="material-icons">power_settings_new</i>
+    </button>
+    <div class="modal fade" id="CollectionModal" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" id="CollectionForm" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Take New Order</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">location_on</i>
+                                        </span>
+                                    <label for="orderFrom">Order Taken From (Required)</label>
+                                    <div class="form-line">
+                                    <select class="form-control show-tick" id="orderFrom"
+                                                name="orderFrom">
+                                            <option value="" selected disabled>Order Taken From</option>
+                                            <option value="Field Visit">Field Visit</option>
+                                            <option value="Others">Others</option>
+                                        </select>
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row clearfix">
+
+                            <div class="col-md-12">
+                                <div class="input-group required">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">receipt</i>
+                                        </span>
+                                      <label for="detail">Order Details (Required)</label>
+
+                                    <div class="form-line">
+                                        <textarea type="text" class="form-control" id="detail" rows="4"
+                                                  name="detail" placeholder="Any Remark"> </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">image</i>
+                                        </span>
+                                   <div class="form-group">
+                        <label for="imageDoc">Upload Image</label>
+                        <input type="file" id="imageDoc">
+                        <p class="help-block">Any image</p>
+                      </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                            Please make sure to allow location service. Enable GPS on your mobile to make collections.
+                            Thank you.
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="save2" class="btn btn-link waves-effect" onclick="TakePayment()">Save
+                        </button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="lat" value="24.809611">
+    <input type="hidden" id="lng" value="93.935577">
+    <input type="hidden" id="loc" value="N/A">
+
+<p id="demo"></p>
+{% endblock %}
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
+    <script>
+        $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+        $('.datepicker').datepicker({});
+    </script>
+    <script>
+        var etab;
+        var itab;
+        var startDate = $('#startDate').val();
+
+        $(document).ready(function () {
+            $('.bootstrap-select').removeClass('form-control');
+
+            etab = $('#collectionTableCollect').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "orderTakenFrom", "targets": 1, "orderable": true},
+                    {"name": "details", "targets": 2, "orderable": true},
+                    {"name": "datetime", "targets": 3, "orderable": true},
+                    {"name": "button", "targets": 4, "orderable": false},
+                ],
+                aaSorting: [[3, 'desc']],
+                "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
+                "pageLength": 8,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:OrderListByUserPerDayJson' %}?startDate=" + startDate
+
+            });
+
+
+        });
+
+        function getData() {
+            var startDate = $('#startDate').val();
+
+
+            etab.api().ajax.url("{% url 'mamtaApp:OrderListByUserPerDayJson' %}?startDate=" + startDate).load();
+        }
+        function ChangePassword() {
+            var nPass = $('#nPass').val();
+            var rPass = $('#rPass').val();
+
+
+            data = new FormData();
+            data.append('nPass', nPass);
+
+            if (nPass === "" || rPass === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else if (nPass != rPass) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password not matched. Please try again.').fadeIn().fadeOut(2000);
+
+            }
+            else if (nPass.length < 5) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password should be atleast 5 character long.').fadeIn().fadeOut(2000);
+
+            }
+
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:change_password_for_sales_user' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Password Changed Successfully').fadeIn().fadeOut(2000);
+                            $('#PasswordForm')[0].reset();
+                            $('#ChangePasswordModal').modal('hide');
+
+                        }
+
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error').fadeIn().fadeOut(2000);
+                        }
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+
+        }
+
+        function logoutBtn() {
+            window.location.href = "{% url 'mamtaApp:logout' %}"
+
+
+        }
+
+        function confirmTakePayment(){
+
+            var lat = $('#lat').val();
+          var lng = $('#lng').val();
+            var orderFrom = $('#orderFrom').val();
+            var detail = $('#detail').val();
+            var loc = $('#loc').val();
+            var img = document.getElementById("imageDoc").files[0];
+
+            if (orderFrom === null || detail.trim('') === "" ) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+
+            }
+
+            else {
+                data = new FormData();
+                data.append('orderFrom', orderFrom);
+                data.append('detail',  detail);
+                data.append('img', img);
+                data.append('lat', lat);
+                data.append('lng', lng);
+                data.append('loc', loc);
+
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'mamtaApp:take_order_api' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            etab.api().ajax.reload();
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Order Taken Taken Successfully').fadeIn().fadeOut(2000);
+                            $('#CollectionForm')[0].reset();
+                            $('#CollectionModal').modal('hide');
+
+
+                        }
+
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error').fadeIn().fadeOut(2000);
+                        }
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+
+
+  $('#save1').prop('disabled', false);
+
+
+        }
+
+
+        function TakePayment() {
+               $('#save1').prop('disabled', true);
+
+            confirmTakePayment();
+
+        }
+
+
+    </script>
+
+    <script>
+var x = document.getElementById("demo");
+var options = {
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 0
+};
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition,showError);
+  } else {
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  x.innerHTML = "Latitude: " + position.coords.latitude +
+  "<br>Longitude: " + position.coords.longitude;
+   $('#lat').val(position.coords.latitude);
+   $('#lng').val(position.coords.longitude);
+   console.log(position)
+
+
+}
+
+function showError(error) {
+  switch(error.code) {
+    case error.PERMISSION_DENIED:
+      x.innerHTML = "User denied the request for Geolocation."
+      break;
+    case error.POSITION_UNAVAILABLE:
+      x.innerHTML = "Location information is unavailable."
+      break;
+    case error.TIMEOUT:
+      x.innerHTML = "The request to get user location timed out."
+      break;
+    case error.UNKNOWN_ERROR:
+      x.innerHTML = "An unknown error occurred."
+      break;
+  }
+}
+onload(getLocation() );
+navigator.permissions.query({name:'geolocation'}).then(function(result) {
+    console.log(result);
+  if (result.state === 'granted') {
+   $('#save1').prop('disabled', false);
+   $('#save2').prop('disabled', false);
+  } else {
+       $('#save1').prop('disabled', true);
+   $('#save2').prop('disabled', true);
+  }
+  // Don't do anything if the permission was denied.
+});
+
+
+
+function getReverseLocation(){
+    getLocation();
+          var lat = $('#lat').val();
+          var lng = $('#lng').val();
+          console.log(lat,lng)
+         $.ajax({
+                    type: 'get',
+                    {#url: "https://nominatim.openstreetmap.org/reverse?lat="+position.coords.latitude +"3&lon="+position.coords.longitude+"&format=json",#}
+                    url: "https://revgeocode.search.hereapi.com/v1/revgeocode?at="+lat+"%2C"+lng+"&lang=en-US&apikey=VtAAEVuyqdswCZr8X1BdBzM-4JTpeAdivmp4_3ILPs4",
+                    success: function (response) {
+                        console.log( response.items[0].address.label)
+                         $('#loc').val(response.items[0].address.label);
+
+
+
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Unable to locate location.').fadeIn().fadeOut(2000);
+                    }
+
+
+                });
+
+
+}
+function sharePDF(id) {
+$("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+
+
+}
+</script>
+{% endblock %}

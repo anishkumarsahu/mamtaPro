@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+<style>
+        @page {
+            size: A5;
+            margin: .3cm;
+        }
+
+
+    </style>
+     <style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <span style="font-size: 10px;">Date: {{ date }}</span>
+        <span style="font-size: 9px;float: right">123DACN Order Detail - ({{ col.orderTakenBy.companyID.name }})</span>
+    </div>
+
+    <p style="font-size: 10px; margin: 2px;">Order Details</p>
+
+
+<table style="font-size: 10px">
+  <tr>
+    <th>Order Taken By</th>
+    <td>{{ col.orderTakenBy.name }}  <span style="font-size: 6px">on {{ col.datetime }}</span></td>
+  </tr>
+  <tr>
+    <th>Order Taken From</th>
+    <td>{{ col.orderTakenFrom }}</td>
+  </tr>
+  <tr>
+    <th>Location</th>
+    <td>{{ col.location }}</td>
+  </tr>
+  <tr>
+    <th>Order Detail</th>
+    <td>{{ col.details }}</td>
+  </tr>
+      <tr>
+    <th>Image</th>
+          {% if col.orderPic %}
+              <td>
+              <img src="{{ url }}{{ col.orderPic.url }}" alt="" style="width: 50%">
+</td>
+          {% else %}
+    <td>Not Available</td>
+           {% endif %}
+  </tr>
+
+</table>
+</div>
+
+</body>
+</html>

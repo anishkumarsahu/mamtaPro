@@ -162,3 +162,18 @@ class StaffAdvanceToBuyer(models.Model):
     companyID = models.ForeignKey(Company, blank=True, null=True)
     datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
+
+class TakeOrder(models.Model):
+    orderTakenFrom = models.CharField(max_length=200, blank=True, null=True)
+    orderPic = models.ImageField(upload_to='OrderPics', blank=True, null=True)
+    details = models.TextField(blank=True, null=True)
+    latitude = models.CharField(max_length=200, default='0.0')
+    longitude = models.CharField(max_length=200, default='0.0')
+    location = models.TextField(blank=True, null=True)
+    orderTakenBy = models.ForeignKey(StaffUser, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    companyID = models.ForeignKey(Company, blank=True, null=True)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
