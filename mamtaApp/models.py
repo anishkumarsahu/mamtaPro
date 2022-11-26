@@ -169,6 +169,7 @@ class TakeOrder(models.Model):
     orderTakenFrom = models.CharField(max_length=200, blank=True, null=True)
     orderPic = models.ImageField(upload_to='OrderPics', blank=True, null=True)
     details = models.TextField(blank=True, null=True)
+    remark = models.TextField(blank=True, null=True)
     latitude = models.CharField(max_length=200, default='0.0')
     longitude = models.CharField(max_length=200, default='0.0')
     location = models.TextField(blank=True, null=True)

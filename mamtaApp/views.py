@@ -2146,6 +2146,7 @@ def take_order_api(request):
         lat = request.POST.get('lat')
         lng = request.POST.get('lng')
         loc = request.POST.get('loc')
+        remark = request.POST.get('remark')
 
         try:
             obj = TakeOrder()
@@ -2162,6 +2163,7 @@ def take_order_api(request):
             obj.lat = lat
             obj.lng = lng
             obj.location = loc
+            obj.remark = remark
 
             obj.save()
 
@@ -2172,7 +2174,7 @@ def take_order_api(request):
 
 
 class OrderListByUserPerDayJson(BaseDatatableView):
-    order_columns = ['id', 'orderTakenFrom','details', 'datetime']
+    order_columns = ['id', 'orderTakenFrom', 'details', 'remark', 'datetime']
 
     def get_initial_queryset(self):
         sDate = self.request.GET.get('startDate')
@@ -2188,7 +2190,8 @@ class OrderListByUserPerDayJson(BaseDatatableView):
         search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(
-             Q(orderTakenFrom__icontains=search) | Q(details__icontains=search) | Q(datetime__icontains=search))
+                Q(orderTakenFrom__icontains=search) | Q(details__icontains=search) | Q(datetime__icontains=search) |
+                Q(remark__icontains=search))
 
         return qs
 
@@ -2204,6 +2207,7 @@ class OrderListByUserPerDayJson(BaseDatatableView):
                 escape(i),
                 escape(item.orderTakenFrom),
                 escape(item.details),  # escape HTML for security reasons
+                escape(item.remark),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
                 button
 

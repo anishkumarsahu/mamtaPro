@@ -45,28 +45,37 @@ tr:nth-child(even) {
     <th>Order Taken By</th>
     <td>{{ col.orderTakenBy.name }}  <span style="font-size: 6px">on {{ col.datetime }}</span></td>
   </tr>
-  <tr>
-    <th>Order Taken From</th>
-    <td>{{ col.orderTakenFrom }}</td>
-  </tr>
-  <tr>
-    <th>Location</th>
-    <td>{{ col.location }}</td>
-  </tr>
-  <tr>
-    <th>Order Detail</th>
-    <td>{{ col.details }}</td>
-  </tr>
-      <tr>
-    <th>Image</th>
-          {% if col.orderPic %}
-              <td>
-              <img src="{{ url }}{{ col.orderPic.url }}" alt="" style="width: 50%">
-</td>
-          {% else %}
-    <td>Not Available</td>
-           {% endif %}
-  </tr>
+    <tr>
+        <th>Order Taken From</th>
+        <td>{{ col.orderTakenFrom }}</td>
+    </tr>
+    <tr>
+        <th>Location</th>
+        <td>{{ col.location }}</td>
+    </tr>
+    <tr>
+        <th>Order Detail</th>
+        <td>
+            <pre>{{ col.details }}</pre>
+        </td>
+    </tr>
+    <tr>
+        <th>Remark</th>
+        <td>
+            <pre>{{ col.remark }}</pre>
+        </td>
+    </tr>
+    <tr>
+        <th>Image</th>
+        {% if col.orderPic %}
+            <td>
+                <img src="{{ url1 }}{{ col.orderPic.url }}" alt="" style="width: 50%">
+                <img src="{{ url2 }}{{ col.orderPic.url }}" alt="" style="width: 50%">
+            </td>
+        {% else %}
+            <td>Not Available</td>
+        {% endif %}
+    </tr>
 
 </table>
 </div>

@@ -1,7 +1,6 @@
 {% extends 'mamtaApp/index.html' %}
 {% load staticfiles %}
 {% block body %}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
     <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
 
     <style>
@@ -83,31 +82,27 @@
     </style>
 
     <section class="content">
-     <div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            Please make sure to allow location service. Enable GPS on your mobile to make collections.
-                            Thank you.
-                        </div>
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+            Please make sure to allow location service. Enable GPS on your mobile to make collections.
+            Thank you.
+        </div>
         <div class="container-fluid">
 
             <div class="row clearfix">
 
-                <div class="col-md-4 col-sm-4 col-xs-5" style="padding-right: 2px!important;">
+                <div class="col-md-4 col-sm-4 col-xs-5" style="padding-right: 2px!important;display: none">
                     <div class="form-group ">
                         <label for="cc-number" class="control-label mb-1">Date</label>
-                        <input data-date-end-date="0d" disabled data-provide="datepicker" data-role="datepicker" name="startDate"
+                        <input data-date-end-date="0d" disabled data-provide="datepicker" data-role="datepicker"
+                               name="startDate"
                                id="startDate" type="text"
                                class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
                         <span></span>
                     </div>
                 </div>
-{#                <div class="col-md-4 col-sm-4 col-xs-3 buttondown "#}
-{#                     style="text-align: center!important;margin-top: 30px;">#}
-{#                    <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "#}
-{#                            onclick="getData()">Search#}
-{#                    </button>#}
-{##}
-{##}
-{#                </div>#}
+
 
 
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -127,6 +122,7 @@
                                         <th>Sl.No</th>
                                         <th>Order From</th>
                                         <th>Detail</th>
+                                        <th>Remark</th>
                                         <th>Datetime</th>
                                         <th>Share</th>
 
@@ -137,6 +133,7 @@
                                         <th>Sl.No</th>
                                         <th>Order From</th>
                                         <th>Detail</th>
+                                        <th>Remark</th>
                                         <th>Datetime</th>
                                         <th>Share</th>
                                     </tr>
@@ -234,11 +231,11 @@
                                         </span>
                                     <label for="orderFrom">Order Taken From (Required)</label>
                                     <div class="form-line">
-                                    <select class="form-control show-tick" id="orderFrom"
+                                        <select class="form-control show-tick" id="orderFrom"
                                                 name="orderFrom">
                                             <option value="" selected disabled>Order Taken From</option>
                                             <option value="Field Visit">Field Visit</option>
-                                            <option value="Others">Others</option>
+                                            <option value="Telephonic">Telephonic</option>
                                         </select>
 
 
@@ -254,11 +251,11 @@
                                         <span class="input-group-addon">
                                             <i class="material-icons">receipt</i>
                                         </span>
-                                      <label for="detail">Order Details (Required)</label>
+                                    <label for="detail">Order Details (Required)</label>
 
                                     <div class="form-line">
-                                        <textarea type="text" class="form-control" id="detail" rows="4"
-                                                  name="detail" placeholder="Any Remark"> </textarea>
+                                        <textarea type="text" class="form-control" id="detail" rows="3"
+                                                  name="detail" placeholder="Order Detail"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -267,14 +264,26 @@
                                         <span class="input-group-addon">
                                             <i class="material-icons">image</i>
                                         </span>
-                                   <div class="form-group">
-                        <label for="imageDoc">Upload Image</label>
-                        <input type="file" id="imageDoc">
-                        <p class="help-block">Any image</p>
-                      </div>
+                                    <div class="form-group">
+                                        <label for="imageDoc">Upload Image</label>
+                                        <input type="file" id="imageDoc" accept="image/*">
+                                        <p class="help-block">Any image</p>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="col-md-12">
+                                <div class="input-group required">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">border_color</i>
+                                        </span>
+                                    <label for="detail">Any Remark</label>
 
+                                    <div class="form-line">
+                                        <textarea type="text" class="form-control" id="remark" rows="3"
+                                                  name="remark" placeholder="Any Remark"></textarea>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                         <div class="alert alert-warning" role="alert">
@@ -301,7 +310,6 @@
 <p id="demo"></p>
 {% endblock %}
 {% block js %}
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
     <script>
         $.fn.datepicker.defaults.format = "dd/mm/yyyy";
@@ -323,10 +331,11 @@
                     {"name": "id", "targets": 0, "orderable": false},
                     {"name": "orderTakenFrom", "targets": 1, "orderable": true},
                     {"name": "details", "targets": 2, "orderable": true},
-                    {"name": "datetime", "targets": 3, "orderable": true},
-                    {"name": "button", "targets": 4, "orderable": false},
+                    {"name": "remark", "targets": 3, "orderable": true},
+                    {"name": "datetime", "targets": 4, "orderable": true},
+                    {"name": "button", "targets": 5, "orderable": false},
                 ],
-                aaSorting: [[3, 'desc']],
+                aaSorting: [[4, 'desc']],
                 "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
                 "pageLength": 8,
                 "processing": true,
@@ -408,29 +417,29 @@
 
         }
 
-        function confirmTakePayment(){
+        function confirmTakePayment() {
 
             var lat = $('#lat').val();
-          var lng = $('#lng').val();
+            var lng = $('#lng').val();
             var orderFrom = $('#orderFrom').val();
             var detail = $('#detail').val();
+            var remark = $('#remark').val();
             var loc = $('#loc').val();
             var img = document.getElementById("imageDoc").files[0];
 
-            if (orderFrom === null || detail.trim('') === "" ) {
+            if (orderFrom === null || detail.trim('') === "") {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
 
-            }
-
-            else {
+            } else {
                 data = new FormData();
                 data.append('orderFrom', orderFrom);
-                data.append('detail',  detail);
+                data.append('detail', detail);
                 data.append('img', img);
                 data.append('lat', lat);
                 data.append('lng', lng);
                 data.append('loc', loc);
+                data.append('remark', remark);
 
 
                 $.ajax({

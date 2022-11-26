@@ -3366,8 +3366,8 @@ def share_order_to_whatsapp_pdf(request):
 
         'date': date,
         'col': col,
-        # 'url':'http://'+request.get_host()
-        'url':'https://'+request.get_host()
+        'url1': "https://123dacn.in",
+        'url2': "http://localhost:8000"
 
     }
 
