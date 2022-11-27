@@ -67,10 +67,10 @@ tr:nth-child(even) {
     </tr>
     <tr>
         <th>Image</th>
+
         {% if col.orderPic %}
             <td>
-                <img src="{{ url1 }}{{ col.orderPic.url }}" alt="" style="width: 50%">
-                <img src="{{ url2 }}{{ col.orderPic.url }}" alt="" style="width: 50%">
+                <img src="data:image/jpeg;base64,{{ img }}" alt="not" style="width: 50%">
             </td>
         {% else %}
             <td>Not Available</td>

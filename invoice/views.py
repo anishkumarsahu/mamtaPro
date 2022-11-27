@@ -3353,6 +3353,7 @@ def generate_collection_report_for_cashier(request):
     return response
 
 
+import base64
 
 def share_order_to_whatsapp_pdf(request):
     date = datetime.today().date()
@@ -3360,14 +3361,20 @@ def share_order_to_whatsapp_pdf(request):
     col = TakeOrder.objects.select_related().get(datetime__icontains=datetime.today().date(),
                                                           orderTakenBy__userID_id=request.user.pk,
                                                           isDeleted__exact=False,pk = int(ID) )
+    try:
+        # with open(col.orderPic, "rb") as img_file:
+        my_string = base64.b64encode(col.orderPic.file.read())
 
-
+    except:
+        my_string = "b'NAN"
+    img = str(my_string).split("b'")
     context = {
 
         'date': date,
         'col': col,
         'url1': "https://123dacn.in",
-        'url2': "http://localhost:8000"
+        'url2': "http://localhost:8000",
+        'img': img[1]
 
     }
 
