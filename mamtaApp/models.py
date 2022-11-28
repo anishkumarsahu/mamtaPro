@@ -166,6 +166,7 @@ class StaffAdvanceToBuyer(models.Model):
 
 
 class TakeOrder(models.Model):
+    partyName = models.CharField(max_length=200, blank=True, null=True)
     orderTakenFrom = models.CharField(max_length=200, blank=True, null=True)
     orderPic = models.ImageField(upload_to='OrderPics', blank=True, null=True)
     details = models.TextField(blank=True, null=True)

@@ -12,23 +12,23 @@
 
 
     </style>
-     <style>
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 5px;
+        }
 
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-</style>
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -40,18 +40,22 @@ tr:nth-child(even) {
     <p style="font-size: 10px; margin: 2px;">Order Details</p>
 
 
-<table style="font-size: 10px">
-  <tr>
-    <th>Order Taken By</th>
-    <td>{{ col.orderTakenBy.name }}  <span style="font-size: 6px">on {{ col.datetime }}</span></td>
-  </tr>
-    <tr>
-        <th>Order Taken From</th>
-        <td>{{ col.orderTakenFrom }}</td>
-    </tr>
-    <tr>
-        <th>Location</th>
-        <td>{{ col.location }}</td>
+    <table style="font-size: 10px">
+        <tr>
+            <th>Party Name</th>
+            <td>{{ col.partyName }}</td>
+        </tr>
+        <tr>
+            <th>Order Taken By</th>
+            <td>{{ col.orderTakenBy.name }} <span style="font-size: 6px">on {{ col.datetime }}</span></td>
+        </tr>
+        <tr>
+            <th>Order Taken From</th>
+            <td>{{ col.orderTakenFrom }}</td>
+        </tr>
+        <tr>
+            <th>Location</th>
+            <td>{{ col.location }}</td>
     </tr>
     <tr>
         <th>Order Detail</th>
