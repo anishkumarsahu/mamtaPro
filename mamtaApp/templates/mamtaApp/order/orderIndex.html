@@ -449,6 +449,7 @@
                 $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
 
             } else {
+                  $('#save2').prop('disabled', true);
                 data = new FormData();
                 data.append('partyName', partyName);
                 data.append('orderFrom', orderFrom);
@@ -476,6 +477,7 @@
                             $('#name_status').html('Order Taken Taken Successfully').fadeIn().fadeOut(2000);
                             $('#CollectionForm')[0].reset();
                             $('#CollectionModal').modal('hide');
+                              $('#save2').prop('disabled', false);
 
 
                         }
@@ -483,26 +485,23 @@
                         else {
                             $('#name_status').addClass('validate_data');
                             $('#name_status').html('error').fadeIn().fadeOut(2000);
+                              $('#save2').prop('disabled', false);
                         }
 
                     },
                     error: function () {
                         $('#name_status').addClass('validate_data');
                         $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                          $('#save2').prop('disabled', false);
                     }
                 });
             }
-
-
-  $('#save1').prop('disabled', false);
 
 
         }
 
 
         function TakePayment() {
-               $('#save1').prop('disabled', true);
-
             confirmTakePayment();
 
         }
@@ -531,6 +530,7 @@ function showPosition(position) {
    $('#lat').val(position.coords.latitude);
    $('#lng').val(position.coords.longitude);
    console.log(position)
+      $('#save2').prop('disabled', false);
 
 
 }
@@ -555,10 +555,8 @@ onload(getLocation() );
 navigator.permissions.query({name:'geolocation'}).then(function(result) {
     console.log(result);
   if (result.state === 'granted') {
-   $('#save1').prop('disabled', false);
    $('#save2').prop('disabled', false);
   } else {
-       $('#save1').prop('disabled', true);
    $('#save2').prop('disabled', true);
   }
   // Don't do anything if the permission was denied.
