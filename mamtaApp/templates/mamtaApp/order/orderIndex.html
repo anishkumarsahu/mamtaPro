@@ -557,7 +557,7 @@ navigator.permissions.query({name:'geolocation'}).then(function(result) {
   if (result.state === 'granted') {
    $('#save2').prop('disabled', false);
   } else {
-   $('#save2').prop('disabled', true);
+   $('#save2').prop('disabled', false);
   }
   // Don't do anything if the permission was denied.
 });
