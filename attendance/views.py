@@ -163,9 +163,17 @@ class EmployeeListForAttendanceJson(BaseDatatableView):
             else:
 
                 if attend.loginTime is None:
-                    action = action + '''<button type="button" class="btn btn-primary" data-toggle="modal"
-                                                data-target="#myModal" onclick="loginModal({})">LOGIN
-                                        </button>  '''.format(item.pk)
+                    d = datetime.strptime('10:15', '%H:%M')
+                    dnow = datetime.now()
+                    if dnow.time() > d.time():
+
+                        action = action + '''<button type="button" class="btn btn-primary disabled"  >LOGIN
+                                            </button>  '''.format(item.pk)
+                    else:
+                        action = action + '''<button type="button" class="btn btn-primary" data-toggle="modal"
+                                                                            data-target="#myModal" onclick="loginModal({})">LOGIN
+                                                                    </button>  '''.format(item.pk)
+
                 else:
                     action = action + '''<button type="button" class="btn btn-success">{}
                                         </button>   '''.format(attend.loginTime.strftime('%I:%M %p'))
