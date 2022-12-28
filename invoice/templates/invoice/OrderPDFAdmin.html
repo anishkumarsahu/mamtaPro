@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <style>
+        @page {
+            size: A5;
+            margin: .3cm;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 5px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <span style="font-size: 10px;">Date: {{ date }}</span>
+        <span style="font-size: 9px;float: right">123DACN Order Report-({{ company }})</span>
+    </div>
+
+    <p style="font-size: 10px; margin: 2px;">Orders</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">OrderTiming</th>
+                <th scope="col">Location</th>
+                <th scope="col">PartyName</th>
+                <th scope="col">VisitType</th>
+                <th scope="col">OperatorName</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in col %}
+                <tr>
+                    <td>{{ foo.datetime|time:'h:i A'  }}</td>
+                    <td>{{ foo.location }}</td>
+                    <td>{{ foo.partyName }}</td>
+                    <td>{{ foo.orderTakenFrom }}</td>
+                    <td>{{ foo.orderTakenBy }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+</div>
+</body>
+</html>

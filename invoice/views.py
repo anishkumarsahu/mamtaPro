@@ -3359,7 +3359,6 @@ def share_order_to_whatsapp_pdf(request):
     date = datetime.today().date()
     ID = request.GET.get('ID')
     col = TakeOrder.objects.select_related().get(datetime__icontains=datetime.today().date(),
-                                                          orderTakenBy__userID_id=request.user.pk,
                                                           isDeleted__exact=False,pk = int(ID) )
     try:
         # with open(col.orderPic, "rb") as img_file:
@@ -3383,4 +3382,31 @@ def share_order_to_whatsapp_pdf(request):
     html = render_to_string("invoice/shareOrderPDF.html", context)
 
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .3cm ; }')])
+    return response
+
+
+
+def generate_order_report_admin(request):
+    companyID = request.GET.get('companyID')
+    gDate = request.GET.get('gDate')
+    date1 = datetime.strptime(gDate, '%d/%m/%Y')
+    day_string = date1.strftime('%Y-%m-%d')
+
+    company = Company.objects.select_related().get(pk=int(companyID))
+    col = TakeOrder.objects.select_related().filter(datetime__icontains=day_string, companyID_id=int(companyID),
+                                                          isDeleted__exact=False).exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+
+    context = {
+        'date': gDate,
+        'company': company.name,
+        'col': col,
+
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "report.pdf"
+    html = render_to_string("invoice/OrderPDFAdmin.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5;  }')])
     return response

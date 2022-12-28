@@ -2219,5 +2219,72 @@ class OrderListByUserPerDayJson(BaseDatatableView):
             i = i + 1
         return json_data
 
+class OrderListAdminJson(BaseDatatableView):
+    order_columns = ['id', 'partyName', 'orderTakenFrom', 'details','location', 'remark','orderTakenBy', 'datetime']
 
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        if staff == 'all':
+            return TakeOrder.objects.select_related().filter(datetime__gte=startDate,
+                                                                      datetime__lte=endDate + timedelta(days=1),
+                                                                      isDeleted__exact=False).exclude(
+                datetime__lt=last_3_month_date)
+        else:
+            return TakeOrder.objects.select_related().filter(datetime__gte=startDate,
+                                                                      datetime__lte=endDate + timedelta(days=1), isDeleted__exact=False,
+                                                                      orderTakenBy=int(staff)).exclude(
+                datetime__lt=last_3_month_date)
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(partyName__icontains=search) | Q(orderTakenFrom__icontains=search) | Q(details__icontains=search) | Q(
+                    datetime__icontains=search) |
+                Q(location__icontains=search)| Q(orderTakenBy__name__icontains=search)|
+                Q(remark__icontains=search))
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            button = '''<a href="/invoice/share_order_to_whatsapp_pdf/?ID={}" type="button" class="btn btn-primary waves-effect"
+                             >Share</a>'''.format(
+                item.pk)
+
+            json_data.append([
+                escape(i),
+                escape(item.partyName),
+                escape(item.orderTakenFrom),
+                escape(item.details),  # escape HTML for security reasons
+                escape(item.location),  # escape HTML for security reasons
+                escape(item.remark),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                escape(item.orderTakenBy),  # escape HTML for security reasons
+                button
+
+            ])
+            i = i + 1
+        return json_data
+
+
+
+# ---------------Order List-------------
+
+def order_list_admin(request):
+    request.session['nav'] = 'o_l'
+    users = StaffUser.objects.select_related().filter(isDeleted__exact=False).order_by('name')
+    date = datetime.today().now().strftime('%d/%m/%Y')
+    context = {
+        'users': users,
+        'date': date
+    }
+    return render(request, 'mamtaApp/order/OrderReport.html', context)
 

@@ -65,37 +65,46 @@
                         <span></span>
                     </div>
                 </div>
-                <div class="col-md-1 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
+
+            </div>
+        <div class="col-xs-12" >
+             <div class="col-md-2 col-sm-6 col-xs-6" style="padding: 2px">
                     <a id="reportUrl" href="{% url 'invoiceApp:generate_net_report_admin' %}"
                        style="background-color: #24b53c;color: white;" type="button" class="btn  waves-effect "
                     >Daily Report
                     </a>
                 </div>
-             <div class="col-md-1 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
-              {% comment %}      <a id="reportCreditUrl" href="{% url 'invoiceApp:generate_net_report_credit_admin' %}"
+            {% comment %} <div class="col-md-2 col-sm-6 col-xs-6" >
+             <a id="reportCreditUrl" href="{% url 'invoiceApp:generate_net_report_credit_admin' %}"
                        style="background-color: #b5245e;color: white;" type="button" class="btn  waves-effect "
                     >Credit Report
-                    </a>{% endcomment %}
-                </div>
-                <div class="col-md-2 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
+                    </a>
+                </div>{% endcomment %}
+                <div class="col-md-2 col-sm-6 col-xs-6" style="padding: 2px">
                     <a id="reportUrlCollection" href="{% url 'invoiceApp:generate_collection_report_admin' %}"
                        style="background-color: #b54fb5;color: white;" type="button" class="btn  waves-effect "
                     >Collection Report
                     </a>
                 </div>
-                <div class="col-md-2 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
+            <div class="col-md-2 col-sm-6 col-xs-6" style="padding: 2px">
+                    <a id="reportUrlOrder" href="{% url 'invoiceApp:generate_order_report_admin' %}"
+                       style="background-color: #0e4220;color: white;" type="button" class="btn  waves-effect "
+                    >Order Report
+                    </a>
+                </div>
+                <div class="col-md-2 col-sm-6 col-xs-6" style="padding: 2px">
                     <a id="reportUrlMonthly" href="{% url 'invoiceApp:generate_monthly_report_admin' %}"
                        style="background-color: #b52f58;color: white;" type="button" class="btn  waves-effect "
                     >Monthly Report(I)
                     </a>
                 </div>
-            <div class="col-md-2 col-sm-6 col-xs-6" style="margin-top: 26px;text-align: center!important;">
+            <div class="col-md-2 col-sm-6 col-xs-6" style="padding: 2px">
                     <a id="reportUrlMonthlySA" href="{% url 'invoiceApp:generate_monthly_report_staff_advance_admin' %}"
                        style="background-color: #b56930;color: white;" type="button" class="btn  waves-effect "
                     >Monthly Report(SA)
                     </a>
                 </div>
-            </div>
+        </div>
             <hr>
             <div class="row clearfix" style="margin-top: 5px;">
                 <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
@@ -1830,6 +1839,7 @@
             $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportCreditUrl").attr("href", "{% url 'invoiceApp:generate_net_report_credit_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+            $("#reportUrlOrder").attr("href", "{% url 'invoiceApp:generate_order_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportUrlMonthly").attr("href", "{% url 'invoiceApp:generate_monthly_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
             $("#reportUrlMonthlySA").attr("href", "{% url 'invoiceApp:generate_monthly_report_staff_advance_admin' %}?companyID=" + comp + '&gDate=' + gDate);
 

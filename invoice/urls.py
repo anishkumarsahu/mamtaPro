@@ -107,5 +107,6 @@ urlpatterns = [
 
     # Take order PDF
     url(r'^share_order_to_whatsapp_pdf/$', share_order_to_whatsapp_pdf, name='share_order_to_whatsapp_pdf'),
+    url(r'^generate_order_report_admin/$', generate_order_report_admin, name='generate_order_report_admin'),
 
 ]

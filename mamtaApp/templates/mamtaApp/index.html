@@ -216,7 +216,22 @@
                         </ul>
 
                     </li>
+                <li {% if request.session.nav == 'o_l' or request.session.nav == 'o_l' %} class="active" {% endif %} >
+                        <a href="#" class="menu-toggle waves-effect waves-block">
+                            <i class="material-icons">border_color</i>
+                            <span>Order History</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li {% if request.session.nav == 'o_l' %} class="active" {% endif %}>
+                                <a href="{% url 'mamtaApp:order_list_admin' %}">
 
+                                    <span>Order List</span>
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </li>
 
                     <li {% if request.session.nav == '6' %} class="active" {% endif %} >
                         <a href="{% url 'mamtaApp:profile' %}">
