@@ -2220,7 +2220,7 @@ class OrderListByUserPerDayJson(BaseDatatableView):
         return json_data
 
 class OrderListAdminJson(BaseDatatableView):
-    order_columns = ['id', 'partyName', 'orderTakenFrom', 'details','location', 'remark','orderTakenBy', 'datetime']
+    order_columns = ['id', 'partyName', 'orderTakenFrom', 'details','location', 'orderTakenBy', 'datetime','remark']
 
     def get_initial_queryset(self):
 
@@ -2265,9 +2265,9 @@ class OrderListAdminJson(BaseDatatableView):
                 escape(item.orderTakenFrom),
                 escape(item.details),  # escape HTML for security reasons
                 escape(item.location),  # escape HTML for security reasons
-                escape(item.remark),  # escape HTML for security reasons
-                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
                 escape(item.orderTakenBy),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                escape(item.remark),
                 button
 
             ])

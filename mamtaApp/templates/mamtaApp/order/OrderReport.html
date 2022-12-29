@@ -111,7 +111,7 @@
 
                         <div class="header">
                             <h2>
-                               Order List
+                                Order List
                             </h2>
                             <button onclick="location.reload();" title="Refresh" style="    background-color: #4af3aa;color: white;top: 12px;position: absolute;right: 10px;
     border-radius: 32%;" type="button"
@@ -123,7 +123,7 @@
 
                         <div class="body">
                             <div class="table-responsive">
-                                       <table id="collectionTableCollect"
+                                <table id="collectionTableCollect"
                                        class="table table-bordered table-striped table-hover">
                                     <thead>
                                     <tr>
@@ -132,31 +132,30 @@
                                         <th>OrderFrom</th>
                                         <th>Detail</th>
                                         <th>Location</th>
-                                        <th>Remark</th>
-                                                                                <th>Datetime</th>
-
                                         <th>CreatedBy</th>
+                                        <th>Datetime</th>
+                                        <th>Remark</th>
                                         <th>Share</th>
 
                                     </tr>
                                     </thead>
                                     <tfoot>
                                     <tr>
-                                     <th>Sl.No</th>
+                                         <th>Sl.No</th>
                                         <th>PartyName</th>
                                         <th>OrderFrom</th>
                                         <th>Detail</th>
                                         <th>Location</th>
-                                        <th>Remark</th>
+                                        <th>CreatedBy</th>
                                         <th>Datetime</th>
-                                                                                <th>CreatedBy</th>
-
+                                        <th>Remark</th>
                                         <th>Share</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
                                     </tbody>
-                                </table> </div>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -176,11 +175,10 @@
     </script>
 
     <script>
-           var etab;
-        var itab;
-            var startDate = $('#startDate').val();
-            var endDate = $('#endDate').val();
-            var staff = $('#staff').val();
+        var etab;
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var staff = $('#staff').val();
 
 
         $(document).ready(function () {
@@ -196,12 +194,12 @@
                     {"name": "orderTakenFrom", "targets": 2, "orderable": true},
                     {"name": "details", "targets": 3, "orderable": true},
                     {"name": "location", "targets": 4, "orderable": true},
-                    {"name": "remark", "targets": 5, "orderable": true},
-                    {"name": "orderTakenBy", "targets": 6, "orderable": true},
-                    {"name": "datetime", "targets": 7, "orderable": true},
+                    {"name": "orderTakenBy", "targets": 5, "orderable": true},
+                    {"name": "datetime", "targets": 6, "orderable": true},
+                    {"name": "remark", "targets": 7, "orderable": true},
                     {"name": "button", "targets": 8, "orderable": false},
                 ],
-                aaSorting: [[7, 'desc']],
+                aaSorting: [[6, 'desc']],
                 "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
                 "pageLength": 8,
                 "processing": true,
@@ -222,10 +220,10 @@
             etab.api().ajax.url('{% url "mamtaApp:OrderListAdminJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
         }
 
-function sharePDF(id) {
-$("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+        function sharePDF(id) {
+            $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
 
 
-}
+        }
     </script>
 {% endblock %}
