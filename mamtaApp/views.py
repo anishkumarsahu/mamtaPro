@@ -1352,6 +1352,18 @@ def add_staff_user_api(request):
                     h.save()
                     h.user_set.add(new_user.pk)
                     h.save()
+            elif staffType =='7':
+                try:
+                    h = Group.objects.select_related().get(name='Order Manager')
+                    h.user_set.add(new_user.pk)
+                    h.save()
+
+                except:
+                    h = Group()
+                    h.name = "Order Manager"
+                    h.save()
+                    h.user_set.add(new_user.pk)
+                    h.save()
             else:
                 try:
                     g = Group.objects.select_related().get(name='Staff')
@@ -1457,6 +1469,13 @@ def edit_staff_user_api(request):
                 new_user.groups.clear()
                 new_user.save()
                 h = Group.objects.select_related().get(name='Order Team')
+                h.user_set.add(new_user.pk)
+                h.save()
+            elif staffType == '7':
+                new_user = User.objects.select_related().get(pk=staff.userID_id)
+                new_user.groups.clear()
+                new_user.save()
+                h = Group.objects.select_related().get(name='Order Manager')
                 h.user_set.add(new_user.pk)
                 h.save()
             else :
@@ -1759,6 +1778,8 @@ def loginApp(request):
                 return redirect('/cashierHome/')
             if 'Order Team' in request.user.groups.values_list('name', flat=True):
                 return redirect('/order_home/')
+            if 'Order Manager' in request.user.groups.values_list('name', flat=True):
+                return redirect('/order_manager_home/')
 
         else:
             messages.success(request, "Wrong Credential! Please try again.")
@@ -2136,6 +2157,36 @@ def order_home(request):
 
     return render(request, 'mamtaApp/order/orderIndex.html', context)
 
+
+@check_group('Order Manager')
+def order_manager_home(request):
+    request.session['nav'] = 'o_m'
+    user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
+    date = datetime.today().now().strftime('%d/%m/%Y')
+
+    context = {
+        'user':user,
+        'date': date,
+    }
+
+    return render(request, 'mamtaApp/order/orderManagerIndex.html', context)
+
+
+@check_group('Order Manager')
+def assigned_staff_to_manager(request):
+    request.session['nav'] = 'o_m_staff'
+    user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
+    date = datetime.today().now().strftime('%d/%m/%Y')
+
+    context = {
+        'user':user,
+        'date': date,
+    }
+
+    return render(request, 'mamtaApp/order/assignedStaffToManagers.html', context)
+
+
+
 @csrf_exempt
 def take_order_api(request):
     if request.method == 'POST':
@@ -2288,3 +2339,234 @@ def order_list_admin(request):
     }
     return render(request, 'mamtaApp/order/OrderReport.html', context)
 
+def manage_order_managers(request):
+    request.session['nav'] = 'o_l_manager'
+    a_list = []
+    assigned_objs = OrderManagerStaff.objects.filter(isDeleted=False)
+    for a in assigned_objs:
+        if a.staffID is not None:
+            a_list.append(a.staffID_id)
+
+
+    managers = StaffUser.objects.select_related().filter(isDeleted=False,staffTypeID__name='Order Manager').order_by('staffTypeID__name')
+    staffs = StaffUser.objects.select_related().filter(isDeleted=False,staffTypeID__name='Order Team').order_by('staffTypeID__name').exclude(id__in = a_list)
+    date = datetime.today().now().strftime('%d/%m/%Y')
+
+    context = {
+        'managers':managers,
+        'staffs':staffs,
+        'date': date,
+    }
+
+    return render(request, 'mamtaApp/order/orderManagers.html', context)
+
+
+
+# ------------------ money to collect(credit)--------------------
+@check_group('Both')
+def add_staff_to_manager_api(request):
+    if request.method == 'POST':
+        try:
+            managerID = request.POST.get('managerID')
+            staffID = request.POST.get('staffID')
+            obj = OrderManagerStaff()
+            obj.managerID_id = int(managerID)
+            obj.staffID_id = int(staffID)
+            obj.save()
+            messages.success(request, 'Staff assigned to manager successfully.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class ManagerAssignedListJson(BaseDatatableView):
+    order_columns = ['id', 'managerID', 'staffID', 'datetime']
+
+    def get_initial_queryset(self):
+
+        return OrderManagerStaff.objects.select_related().filter(isDeleted__exact=False)
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(managerID__name__icontains=search) | Q(staffID__name__icontains=search)
+                | Q(datetime__icontains=search), isDeleted__exact=False)
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
+                action = '''<span><a > <button data-toggle="modal" data-target="#editModal" onclick="editStaff('{}','{}','{}','{}')" style="background-color: #f77b3a;color: white;" type="button"
+            class="btn  waves-effect ">
+        <i class="material-icons">remove_red_eye</i></button> </a>
+
+                </span>'''.format(item.managerID.pk,item.staffID.pk, item.staffID.name,item.pk )
+            else:
+                action = '''<span><a class="hideModerator"><button data-toggle="modal" onclick="editStaff('{}','{}','{}','{}')" data-target="#editModal" style="background-color: #3F51B5;color: white;" type="button"
+                           class="btn  waves-effect " >
+                       <i class="material-icons">border_color</i></button> </a>
+
+
+
+                   <button onclick="getStaffID('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">
+
+
+                                                    <i class="material-icons">delete</i></button></span>'''.format(item.managerID.pk,
+                    item.staffID.pk, item.staffID.name, item.pk, item.pk)
+
+
+
+            if item.staffID is None:
+                staff = 'N/A'
+            else:
+                staff = item.staffID.name
+            json_data.append([
+                escape(i),
+                escape(item.managerID.name),  # escape HTML for security reasons
+                staff,
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                action,
+
+            ])
+            i = i + 1
+        return json_data
+
+
+@check_group('Both')
+@csrf_exempt
+def delete_assign_manager_staff_user_api(request):
+    if request.method == 'POST':
+        try:
+            userID = request.POST.get('userID')
+            staff = OrderManagerStaff.objects.select_related().get(pk=int(userID))
+            staff.isDeleted = True
+            staff.save()
+            messages.success(request, 'Detail deleted successfully.')
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@check_group('Both')
+def edit_staff_to_manager_api(request):
+    if request.method == 'POST':
+        try:
+            managerID = request.POST.get('managerIDEdit')
+            staffID = request.POST.get('staffIDEdit')
+            editID = request.POST.get('editID')
+            obj = OrderManagerStaff.objects.get(pk=int(editID))
+            obj.managerID_id = int(managerID)
+            obj.staffID_id = int(staffID)
+            obj.save()
+            messages.success(request, 'Staff assigned to manager successfully.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class OrderListManagerJson(BaseDatatableView):
+    order_columns = ['id', 'partyName', 'orderTakenFrom', 'details','location', 'orderTakenBy', 'datetime','remark']
+
+    def get_initial_queryset(self):
+
+        sDate = self.request.GET.get('startDate')
+        eDate = self.request.GET.get('endDate')
+        staff = self.request.GET.get('staff')
+        startDate = datetime.strptime(sDate, '%d/%m/%Y')
+        endDate = datetime.strptime(eDate, '%d/%m/%Y')
+        a_list = []
+        assigned_objs = OrderManagerStaff.objects.filter(isDeleted=False, managerID__userID_id=self.request.user.pk)
+        for a in assigned_objs:
+            if a.staffID is not None:
+                a_list.append(a.staffID_id)
+
+        if staff == 'all':
+            return TakeOrder.objects.select_related().filter(datetime__gte=startDate,
+                                                                      datetime__lte=endDate + timedelta(days=1),
+                                                                      isDeleted__exact=False, orderTakenBy__in=a_list).exclude(
+                datetime__lt=last_3_month_date)
+        else:
+            return TakeOrder.objects.select_related().filter(datetime__gte=startDate,
+                                                                      datetime__lte=endDate + timedelta(days=1), isDeleted__exact=False,
+                                                                      orderTakenBy=int(staff)).exclude(
+                datetime__lt=last_3_month_date)
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(partyName__icontains=search) | Q(orderTakenFrom__icontains=search) | Q(details__icontains=search) | Q(
+                    datetime__icontains=search) |
+                Q(location__icontains=search)| Q(orderTakenBy__name__icontains=search)|
+                Q(remark__icontains=search))
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            button = '''<a href="/invoice/share_order_to_whatsapp_pdf/?ID={}" type="button" class="btn btn-primary waves-effect"
+                             >Share</a>'''.format(
+                item.pk)
+
+            json_data.append([
+                escape(i),
+                escape(item.partyName),
+                escape(item.orderTakenFrom),
+                escape(item.details),  # escape HTML for security reasons
+                escape(item.location),  # escape HTML for security reasons
+                escape(item.orderTakenBy),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                escape(item.remark),
+                button
+
+            ])
+            i = i + 1
+        return json_data
+
+class MyManagerAssignedStaffListJson(BaseDatatableView):
+    order_columns = ['id', 'staffID', 'datetime']
+
+    def get_initial_queryset(self):
+
+        return OrderManagerStaff.objects.select_related().filter(isDeleted__exact=False, managerID__userID_id=self.request.user.pk)
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(managerID__name__icontains=search) | Q(staffID__name__icontains=search)
+                | Q(datetime__icontains=search), isDeleted__exact=False)
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+
+            if item.staffID is None:
+                staff = 'N/A'
+            else:
+                staff = item.staffID.name
+            json_data.append([
+                escape(i),
+                staff,
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+            ])
+            i = i + 1
+        return json_data

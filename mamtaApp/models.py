@@ -179,3 +179,13 @@ class TakeOrder(models.Model):
     companyID = models.ForeignKey(Company, blank=True, null=True)
     datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
+class OrderManagerStaff(models.Model):
+    managerID = models.ForeignKey(StaffUser, blank=True, null=True, related_name='Manager_name')
+    staffID = models.ForeignKey(StaffUser, blank=True, null=True, related_name='Staff_name')
+    remark = models.CharField(max_length=500, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
+

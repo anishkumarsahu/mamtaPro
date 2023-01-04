@@ -3358,8 +3358,7 @@ import base64
 def share_order_to_whatsapp_pdf(request):
     date = datetime.today().date()
     ID = request.GET.get('ID')
-    col = TakeOrder.objects.select_related().get(datetime__icontains=datetime.today().date(),
-                                                          isDeleted__exact=False,pk = int(ID) )
+    col = TakeOrder.objects.select_related().get(isDeleted__exact=False,pk = int(ID) )
     try:
         # with open(col.orderPic, "rb") as img_file:
         my_string = base64.b64encode(col.orderPic.file.read())
@@ -3407,6 +3406,36 @@ def generate_order_report_admin(request):
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = "report.pdf"
     html = render_to_string("invoice/OrderPDFAdmin.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5;  }')])
+    return response
+
+
+
+def generate_order_report_manager(request):
+    gDate = request.GET.get('gDate')
+    date1 = datetime.strptime(gDate, '%d/%m/%Y')
+    day_string = date1.strftime('%Y-%m-%d')
+    a_list = []
+    user = StaffUser.objects.get(userID_id=request.user.pk)
+    assigned_objs = OrderManagerStaff.objects.filter(isDeleted=False, managerID__userID_id=request.user.pk)
+    for a in assigned_objs:
+        if a.staffID is not None:
+            a_list.append(a.staffID_id)
+    col = TakeOrder.objects.select_related().filter(datetime__icontains=day_string,
+                                                          isDeleted__exact=False, orderTakenBy__in=a_list).exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+
+    context = {
+        'name':user.name,
+        'date': gDate,
+        'col': col,
+
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "report.pdf"
+    html = render_to_string("invoice/OrderPDFManager.html", context)
 
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5;  }')])
     return response

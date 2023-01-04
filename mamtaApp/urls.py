@@ -104,8 +104,16 @@ urlpatterns = [
     # Order Team
     url(r'^order_list_admin/$', order_list_admin, name='order_list_admin'),
     url(r'^order_home/$', order_home, name='order_home'),
+    url(r'^order_manager_home/$', order_manager_home, name='order_manager_home'),
+    url(r'^assigned_staff_to_manager/$', assigned_staff_to_manager, name='assigned_staff_to_manager'),
+    url(r'^manage_order_managers/$', manage_order_managers, name='manage_order_managers'),
     url(r'^api/take_order_api/$', take_order_api, name='take_order_api'),
+    url(r'^api/add_staff_to_manager_api/$', add_staff_to_manager_api, name='add_staff_to_manager_api'),
+    url(r'^api/edit_staff_to_manager_api/$', edit_staff_to_manager_api, name='edit_staff_to_manager_api'),
+    url(r'^api/delete_assign_manager_staff_user_api/$', delete_assign_manager_staff_user_api, name='delete_assign_manager_staff_user_api'),
     url(r'^api/OrderListByUserPerDayJson/$', OrderListByUserPerDayJson.as_view(), name='OrderListByUserPerDayJson'),
     url(r'^api/OrderListAdminJson/$', OrderListAdminJson.as_view(), name='OrderListAdminJson'),
+    url(r'^api/ManagerAssignedListJson/$', ManagerAssignedListJson.as_view(), name='ManagerAssignedListJson'),
+    url(r'^api/MyManagerAssignedStaffListJson/$', MyManagerAssignedStaffListJson.as_view(), name='MyManagerAssignedStaffListJson'),
 
 ]

@@ -1,0 +1,322 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+{% block body %}
+    <link href="{% static 'date/bootstrap-datepicker.css' %}" rel="stylesheet">
+    <style>
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+                position: relative;
+                min-height: 1px;
+                padding-right: 0px !important;
+                padding-left: 0px !important;
+            }
+
+            .buttondown {
+                margin-bottom: 10px;
+            }
+        }
+
+        .dt-buttons {
+            padding-top: 10px;
+        }
+
+        .datepicker {
+            top: 200px !important;
+            left: 45px;
+            z-index: 10;
+            display: block;
+        }
+    </style>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-md-12 col-sm-12 col-xs-12" style="text-align: right">
+                    <a id="reportUrlOrder" href="{% url 'invoiceApp:generate_order_report_manager' %}"
+                       style="color: white;" type="button" class="btn btn-primary waves-effect "
+                    >Generate Today's Report
+                    </a>
+                </div>
+            </div>
+            <div class="row clearfix" style="margin-top: 5px;">
+                <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
+                    <div class="form-group ">
+                        <label for="cc-number" class="control-label mb-1">Start Date</label>
+                        <input onchange="ChangeCompany()" data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="startDate"
+                               id="startDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                        <span></span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-6" style="padding-left: 2px!important;">
+                    <div class="form-group  ">
+                        <label for="cc-number" class="control-label mb-1">End Date</label>
+                        <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="endDate"
+                               id="endDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                        <span></span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label for="">Staff</label>
+                    <select class="form-control show-tick" id="staff">
+                        <option value="all">All</option>
+                        {% for user in users %}
+                            <option value="{{ user.pk }}">{{ user.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 col-sm-12 col-xs-12 buttondown "
+                     style="margin-top: 26px;text-align: center!important;">
+                    <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
+                            onclick="getData()">Search
+                    </button>
+                </div>
+            </div>
+               <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                Order List
+                            </h2>
+                            <button onclick="location.reload();" title="Refresh" style="    background-color: #4af3aa;color: white;top: 12px;position: absolute;right: 10px;
+    border-radius: 32%;" type="button"
+                                    class="btn  waves-effect ">
+                                <i class="material-icons">refresh</i></button>
+
+                        </div>
+
+
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="collectionTableCollect"
+                                       class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl.No</th>
+                                        <th>PartyName</th>
+                                        <th>OrderFrom</th>
+                                        <th>Detail</th>
+                                        <th>Location</th>
+                                        <th>CreatedBy</th>
+                                        <th>Datetime</th>
+                                        <th>Remark</th>
+                                        <th>Share</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                         <th>Sl.No</th>
+                                        <th>PartyName</th>
+                                        <th>OrderFrom</th>
+                                        <th>Detail</th>
+                                        <th>Location</th>
+                                        <th>CreatedBy</th>
+                                        <th>Datetime</th>
+                                        <th>Remark</th>
+                                        <th>Share</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+    <div class="modal fade" id="ChangePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="background-color: lightgrey;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="exampleModalLabel">Change Password</h4>
+                </div>
+                <form id="PasswordForm"> {% csrf_token %}
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="nPass" class="control-label">New Password: <span
+                                    style="color: grey;font-size: 10px;"> Note - Password should be at least 5 character long.</span></label>
+                            <input autocomplete="off" type="password" class="form-control" id="nPass">
+                        </div>
+                        <div class="form-group">
+                            <label for="rPass" class="control-label">Confirm New Password:</label>
+                            <input autocomplete="off" type="password" class="form-control" id="rPass">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="ChangePassword()">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <ul style="    position: fixed;top: 20px;right: 20px;padding-bottom: 20px;z-index: 100; text-align: center">
+        <a href="{% url 'mamtaApp:logout' %}"
+           style="width:100%;padding-right: 10px;background-color: #3aabfb!important; color: white!important;"
+           type="button" class="btn ">Logout</a>
+        <a style="color: white;font-size: 13px;cursor: pointer;" data-toggle="modal"
+           data-target="#ChangePasswordModal"
+           data-whatever="@mdo">
+            <strong>Change Password</strong>
+        </a>
+    </ul>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
+    <script>
+        $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+        $('.datepicker').datepicker({});
+    </script>
+    <script>
+
+
+
+        $(ChangeCompany());
+        function ChangeCompany() {
+            var comp = $('#companyID').val();
+            var gDate = $('#gDate').val();
+            $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_accountant' %}?companyID=" + comp + '&gDate=' + gDate);
+
+            $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+
+        }
+        function ChangePassword() {
+            var nPass = $('#nPass').val();
+            var rPass = $('#rPass').val();
+
+
+            data = new FormData();
+            data.append('nPass', nPass);
+
+            if (nPass === "" || rPass === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
+
+            }
+            else if (nPass != rPass) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password not matched. Please try again.').fadeIn().fadeOut(2000);
+
+            }
+            else if (nPass.length < 5) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Password should be atleast 5 character long.').fadeIn().fadeOut(2000);
+
+            }
+
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url 'invoiceApp:change_password_for_sales_user' %}',
+                    data: data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+
+                    success: function (response) {
+                        if (response.message === 'success') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('Password Changed Successfully').fadeIn().fadeOut(2000);
+                            $('#PasswordForm')[0].reset();
+                            $('#ChangePasswordModal').modal('hide');
+
+                        }
+
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html('error').fadeIn().fadeOut(2000);
+                        }
+
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                    }
+                });
+            }
+
+        }
+    </script>
+        <script>
+        var etab;
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var staff = $('#staff').val();
+
+
+        $(document).ready(function () {
+            $('.bootstrap-select').removeClass('form-control');
+
+            etab = $('#collectionTableCollect').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "partyName", "targets": 1, "orderable": true},
+                    {"name": "orderTakenFrom", "targets": 2, "orderable": true},
+                    {"name": "details", "targets": 3, "orderable": true},
+                    {"name": "location", "targets": 4, "orderable": true},
+                    {"name": "orderTakenBy", "targets": 5, "orderable": true},
+                    {"name": "datetime", "targets": 6, "orderable": true},
+                    {"name": "remark", "targets": 7, "orderable": true},
+                    {"name": "button", "targets": 8, "orderable": false},
+                ],
+                aaSorting: [[6, 'desc']],
+                "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
+                "pageLength": 8,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:OrderListAdminJson' %}?staff=" + staff + "&startDate=" + startDate + "&endDate=" + endDate
+
+            });
+
+
+        });
+
+        function getData() {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var staff = $('#staff').val();
+
+
+            etab.api().ajax.url('{% url "mamtaApp:OrderListAdminJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
+        }
+
+        function sharePDF(id) {
+            $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+
+
+        }
+           $(ChangeCompany());
+        function ChangeCompany() {
+            var gDate = $('#startDate').val();
+            $("#reportUrlOrder").attr("href", "{% url 'invoiceApp:generate_order_report_manager' %}?gDate=" + gDate );
+
+        }
+    </script>
+{% endblock %}

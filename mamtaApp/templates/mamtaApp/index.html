@@ -216,16 +216,22 @@
                         </ul>
 
                     </li>
-                <li {% if request.session.nav == 'o_l' or request.session.nav == 'o_l' %} class="active" {% endif %} >
+                <li {% if request.session.nav == 'o_l' or request.session.nav == 'o_l_manager' %} class="active" {% endif %} >
                         <a href="#" class="menu-toggle waves-effect waves-block">
                             <i class="material-icons">border_color</i>
-                            <span>Order History</span>
+                            <span>Manage Order</span>
                         </a>
                         <ul class="ml-menu">
                             <li {% if request.session.nav == 'o_l' %} class="active" {% endif %}>
                                 <a href="{% url 'mamtaApp:order_list_admin' %}">
 
                                     <span>Order List</span>
+                                </a>
+                            </li>
+                            <li {% if request.session.nav == 'o_l_manager' %} class="active" {% endif %}>
+                                <a href="{% url 'mamtaApp:manage_order_managers' %}">
+
+                                    <span>Order Manager List</span>
                                 </a>
                             </li>
 
@@ -288,8 +294,23 @@
 
                     </li>
 
-                {% endif %}
+            {% elif request.user|has_group:"Order Manager" %}
 
+                    <li {% if request.session.nav == 'o_m' %} class="active" {% endif %}>
+                        <a href="{% url 'mamtaApp:order_manager_home' %}">
+                            <i class="material-icons">home</i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li {% if request.session.nav == 'o_m_staff' %} class="active" {% endif %}>
+                        <a href="{% url 'mamtaApp:assigned_staff_to_manager' %}">
+                            <i class="material-icons">person_add</i>
+                            <span>Assigned Staffs</span>
+                        </a>
+                    </li>
+
+
+                {% endif %}
 
             </ul>
         </div>
