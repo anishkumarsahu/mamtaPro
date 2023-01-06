@@ -348,8 +348,8 @@
                  $('#staffIDEdit').append('<option value="{{ user.pk }}"> {{ user.name }} </option>')
              {% endfor %}
 
-            $('#staffIDEdit').append('<option value="'+userID+'" selected >'+userName+'</option>')
-
+            {#$('#staffIDEdit').append('<option value="'+userID+'" selected >'+userName+'</option>')#}
+$('#staffIDEdit').val(userID).change();
 
         }
         function getStaffID(id) {

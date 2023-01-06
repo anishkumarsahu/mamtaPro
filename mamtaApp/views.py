@@ -2343,13 +2343,14 @@ def manage_order_managers(request):
     request.session['nav'] = 'o_l_manager'
     a_list = []
     assigned_objs = OrderManagerStaff.objects.filter(isDeleted=False)
-    for a in assigned_objs:
-        if a.staffID is not None:
-            a_list.append(a.staffID_id)
+    # for a in assigned_objs:
+    #     if a.staffID is not None:
+    #         a_list.append(a.staffID_id)
 
 
     managers = StaffUser.objects.select_related().filter(isDeleted=False,staffTypeID__name='Order Manager').order_by('staffTypeID__name')
-    staffs = StaffUser.objects.select_related().filter(isDeleted=False,staffTypeID__name='Order Team').order_by('staffTypeID__name').exclude(id__in = a_list)
+    # staffs = StaffUser.objects.select_related().filter(isDeleted=False,staffTypeID__name='Order Team').order_by('staffTypeID__name').exclude(id__in = a_list)
+    staffs = StaffUser.objects.select_related().filter(isDeleted=False,staffTypeID__name='Order Team').order_by('staffTypeID__name')
     date = datetime.today().now().strftime('%d/%m/%Y')
 
     context = {

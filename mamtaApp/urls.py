@@ -113,6 +113,7 @@ urlpatterns = [
     url(r'^api/delete_assign_manager_staff_user_api/$', delete_assign_manager_staff_user_api, name='delete_assign_manager_staff_user_api'),
     url(r'^api/OrderListByUserPerDayJson/$', OrderListByUserPerDayJson.as_view(), name='OrderListByUserPerDayJson'),
     url(r'^api/OrderListAdminJson/$', OrderListAdminJson.as_view(), name='OrderListAdminJson'),
+    url(r'^api/OrderListManagerJson/$', OrderListManagerJson.as_view(), name='OrderListManagerJson'),
     url(r'^api/ManagerAssignedListJson/$', ManagerAssignedListJson.as_view(), name='ManagerAssignedListJson'),
     url(r'^api/MyManagerAssignedStaffListJson/$', MyManagerAssignedStaffListJson.as_view(), name='MyManagerAssignedStaffListJson'),
 
