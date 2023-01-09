@@ -168,6 +168,7 @@ class StaffAdvanceToBuyer(models.Model):
 class TakeOrder(models.Model):
     partyName = models.CharField(max_length=200, blank=True, null=True)
     orderTakenFrom = models.CharField(max_length=200, blank=True, null=True)
+    stockGroup = models.CharField(max_length=300, blank=True, null=True)
     orderPic = models.ImageField(upload_to='OrderPics', blank=True, null=True)
     details = models.TextField(blank=True, null=True)
     remark = models.TextField(blank=True, null=True)
@@ -184,6 +185,21 @@ class TakeOrder(models.Model):
 class OrderManagerStaff(models.Model):
     managerID = models.ForeignKey(StaffUser, blank=True, null=True, related_name='Manager_name')
     staffID = models.ForeignKey(StaffUser, blank=True, null=True, related_name='Staff_name')
+    remark = models.CharField(max_length=500, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+
+class StockGroup(models.Model):
+    name = models.CharField(max_length=500, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+class ManagerAssignedStockGroup(models.Model):
+    managerID = models.ForeignKey(StaffUser, blank=True, null=True, related_name='stock_group_assign_to')
+    stockGroupID = models.ForeignKey(StockGroup, blank=True, null=True, related_name='stock_group')
     remark = models.CharField(max_length=500, blank=True, null=True)
     isDeleted = models.BooleanField(default=False)
     datetime = models.DateTimeField(auto_now_add=True, auto_now=False)

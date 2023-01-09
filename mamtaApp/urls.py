@@ -105,6 +105,7 @@ urlpatterns = [
     url(r'^order_list_admin/$', order_list_admin, name='order_list_admin'),
     url(r'^order_home/$', order_home, name='order_home'),
     url(r'^order_manager_home/$', order_manager_home, name='order_manager_home'),
+    url(r'^assigned_stock_group_to_manager/$', assigned_stock_group_to_manager, name='assigned_stock_group_to_manager'),
     url(r'^assigned_staff_to_manager/$', assigned_staff_to_manager, name='assigned_staff_to_manager'),
     url(r'^manage_order_managers/$', manage_order_managers, name='manage_order_managers'),
     url(r'^api/take_order_api/$', take_order_api, name='take_order_api'),
@@ -116,5 +117,16 @@ urlpatterns = [
     url(r'^api/OrderListManagerJson/$', OrderListManagerJson.as_view(), name='OrderListManagerJson'),
     url(r'^api/ManagerAssignedListJson/$', ManagerAssignedListJson.as_view(), name='ManagerAssignedListJson'),
     url(r'^api/MyManagerAssignedStaffListJson/$', MyManagerAssignedStaffListJson.as_view(), name='MyManagerAssignedStaffListJson'),
+
+    url(r'^manage_order_group/$', manage_order_group, name='manage_order_group'),
+    url(r'^manage_stock_group_managers/$', manage_stock_group_managers, name='manage_stock_group_managers'),
+    url(r'^api/add_stock_group_api/$', add_stock_group_api, name='add_stock_group_api'),
+    url(r'^api/edit_stock_group_api/$', edit_stock_group_api, name='edit_stock_group_api'),
+    url(r'^api/StockGroupListJson/$', StockGroupListJson.as_view(), name='StockGroupListJson'),
+    url(r'^api/add_stock_group_to_manager_api/$', add_stock_group_to_manager_api, name='add_stock_group_to_manager_api'),
+    url(r'^api/edit_stock_group_to_manager_api/$', edit_stock_group_to_manager_api, name='edit_stock_group_to_manager_api'),
+    url(r'^api/delete_assign_manager_stock_group_api/$', delete_assign_manager_stock_group_api, name='delete_assign_manager_stock_group_api'),
+    url(r'^api/ManagerStockGroupAssignedListJson/$', ManagerStockGroupAssignedListJson.as_view(), name='ManagerStockGroupAssignedListJson'),
+    url(r'^api/MyManagerAssignedStockGroupListJson/$', MyManagerAssignedStockGroupListJson.as_view(), name='MyManagerAssignedStockGroupListJson'),
 
 ]

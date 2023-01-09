@@ -2149,10 +2149,11 @@ def login_and_logout_report(request):
 def order_home(request):
     user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
     date = datetime.today().now().strftime('%d/%m/%Y')
-
+    stockGroup = StockGroup.objects.filter(isDeleted__exact=False).order_by('name')
     context = {
         'user':user,
         'date': date,
+        'stockGroup':stockGroup
     }
 
     return render(request, 'mamtaApp/order/orderIndex.html', context)
@@ -2199,6 +2200,7 @@ def take_order_api(request):
         loc = request.POST.get('loc')
         remark = request.POST.get('remark')
         partyName = request.POST.get('partyName')
+        stockGroup = request.POST.get('stockGroup')
 
         try:
             obj = TakeOrder()
@@ -2217,6 +2219,7 @@ def take_order_api(request):
             obj.location = loc
             obj.remark = remark
             obj.partyName = partyName
+            obj.stockGroup = stockGroup
 
             obj.save()
 
@@ -2227,7 +2230,7 @@ def take_order_api(request):
 
 
 class OrderListByUserPerDayJson(BaseDatatableView):
-    order_columns = ['id', 'partyName', 'orderTakenFrom', 'details', 'remark', 'datetime']
+    order_columns = ['id', 'partyName', 'orderTakenFrom','stockGroup', 'details', 'remark', 'datetime']
 
     def get_initial_queryset(self):
         sDate = self.request.GET.get('startDate')
@@ -2243,8 +2246,8 @@ class OrderListByUserPerDayJson(BaseDatatableView):
         search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(
-                Q(partyName__icontains=search) | Q(orderTakenFrom__icontains=search) | Q(details__icontains=search) | Q(
-                    datetime__icontains=search) |
+                Q(partyName__icontains=search) | Q(orderTakenFrom__icontains=search) | Q(details__icontains=search)
+                | Q(datetime__icontains=search) | Q(stockGroup__icontains=search) |
                 Q(remark__icontains=search))
 
         return qs
@@ -2261,6 +2264,7 @@ class OrderListByUserPerDayJson(BaseDatatableView):
                 escape(i),
                 escape(item.partyName),
                 escape(item.orderTakenFrom),
+                escape(item.stockGroup),  # escape HTML for security reasons
                 escape(item.details),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
@@ -2297,7 +2301,7 @@ class OrderListAdminJson(BaseDatatableView):
             qs = qs.filter(
                 Q(partyName__icontains=search) | Q(orderTakenFrom__icontains=search) | Q(details__icontains=search) | Q(
                     datetime__icontains=search) |
-                Q(location__icontains=search)| Q(orderTakenBy__name__icontains=search)|
+                Q(location__icontains=search)| Q(orderTakenBy__name__icontains=search)| Q(stockGroup__icontains=search)|
                 Q(remark__icontains=search))
 
         return qs
@@ -2314,6 +2318,7 @@ class OrderListAdminJson(BaseDatatableView):
                 escape(i),
                 escape(item.partyName),
                 escape(item.orderTakenFrom),
+                escape(item.stockGroup),  # escape HTML for security reasons
                 escape(item.details),  # escape HTML for security reasons
                 escape(item.location),  # escape HTML for security reasons
                 escape(item.orderTakenBy),  # escape HTML for security reasons
@@ -2360,6 +2365,28 @@ def manage_order_managers(request):
     }
 
     return render(request, 'mamtaApp/order/orderManagers.html', context)
+
+def manage_stock_group_managers(request):
+    request.session['nav'] = 'o_group_assign'
+    a_list = []
+    assigned_objs = OrderManagerStaff.objects.filter(isDeleted=False)
+    # for a in assigned_objs:
+    #     if a.staffID is not None:
+    #         a_list.append(a.staffID_id)
+
+
+    managers = StaffUser.objects.select_related().filter(isDeleted=False,staffTypeID__name='Order Manager').order_by('staffTypeID__name')
+    # staffs = StaffUser.objects.select_related().filter(isDeleted=False,staffTypeID__name='Order Team').order_by('staffTypeID__name').exclude(id__in = a_list)
+    staffs = StockGroup.objects.select_related().filter(isDeleted=False).order_by('name')
+    date = datetime.today().now().strftime('%d/%m/%Y')
+
+    context = {
+        'managers':managers,
+        'staffs':staffs,
+        'date': date,
+    }
+
+    return render(request, 'mamtaApp/order/assignStockGroupToManager.html', context)
 
 
 
@@ -2478,7 +2505,7 @@ def edit_staff_to_manager_api(request):
 
 
 class OrderListManagerJson(BaseDatatableView):
-    order_columns = ['id', 'partyName', 'orderTakenFrom', 'details','location', 'orderTakenBy', 'datetime','remark']
+    order_columns = ['id', 'partyName', 'orderTakenFrom', 'stockGroup','details','location', 'orderTakenBy', 'datetime','remark']
 
     def get_initial_queryset(self):
 
@@ -2492,11 +2519,15 @@ class OrderListManagerJson(BaseDatatableView):
         for a in assigned_objs:
             if a.staffID is not None:
                 a_list.append(a.staffID_id)
-
+        s_list = []
+        assigned_stocks = ManagerAssignedStockGroup.objects.filter(isDeleted=False, managerID__userID_id=self.request.user.pk)
+        for b in assigned_stocks:
+            if b.stockGroupID is not None:
+                s_list.append(b.stockGroupID.name)
         if staff == 'all':
             return TakeOrder.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
-                                                                      isDeleted__exact=False, orderTakenBy__in=a_list).exclude(
+                                                                      isDeleted__exact=False, orderTakenBy__in=a_list, stockGroup__in=s_list).exclude(
                 datetime__lt=last_3_month_date)
         else:
             return TakeOrder.objects.select_related().filter(datetime__gte=startDate,
@@ -2510,7 +2541,7 @@ class OrderListManagerJson(BaseDatatableView):
             qs = qs.filter(
                 Q(partyName__icontains=search) | Q(orderTakenFrom__icontains=search) | Q(details__icontains=search) | Q(
                     datetime__icontains=search) |
-                Q(location__icontains=search)| Q(orderTakenBy__name__icontains=search)|
+                Q(stockGroup__icontains=search)|Q(location__icontains=search)| Q(orderTakenBy__name__icontains=search)|
                 Q(remark__icontains=search))
 
         return qs
@@ -2527,6 +2558,7 @@ class OrderListManagerJson(BaseDatatableView):
                 escape(i),
                 escape(item.partyName),
                 escape(item.orderTakenFrom),
+                escape(item.stockGroup),  # escape HTML for security reasons
                 escape(item.details),  # escape HTML for security reasons
                 escape(item.location),  # escape HTML for security reasons
                 escape(item.orderTakenBy),  # escape HTML for security reasons
@@ -2567,6 +2599,241 @@ class MyManagerAssignedStaffListJson(BaseDatatableView):
             json_data.append([
                 escape(i),
                 staff,
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+            ])
+            i = i + 1
+        return json_data
+
+@check_group('Both')
+def manage_order_group(request):
+    request.session['nav'] = 'o_group'
+
+    return render(request, 'mamtaApp/order/manageOderGroup.html')
+
+@check_group('Both')
+def add_stock_group_api(request):
+    if request.method == 'POST':
+        try:
+            Cname = request.POST.get('Cname')
+
+            obj = StockGroup()
+            obj.name = Cname
+            obj.save()
+            messages.success(request, 'New stock group added successfully.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+class StockGroupListJson(BaseDatatableView):
+    order_columns = ['id','name',  'datetime']
+
+    def get_initial_queryset(self):
+
+        return StockGroup.objects.select_related().filter(isDeleted__exact=False)
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(name__icontains=search) |  Q(datetime__icontains=search)).order_by('-name')
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
+                action = '''N/A'''
+            else:
+                action = '''<span><a class="hideModerator" data-toggle="modal" data-target="#defaultModalEdit" onclick="editCompany('{}','{}')"><button style="background-color: #3F51B5;color: white;" type="button"
+                               class="btn  waves-effect " data-toggle="modal"
+                               data-target="#largeModalEdit">
+                           <i class="material-icons">border_color</i></button> </a></span>'''.format(item.pk, item.name)
+
+            json_data.append([
+                escape(i),
+                escape(item.name),  # escape HTML for security reasons
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                action,
+
+            ])
+            i = i + 1
+        return json_data
+
+@check_group('Both')
+def edit_stock_group_api(request):
+    if request.method == 'POST':
+        try:
+            ECID = request.POST.get('ECID')
+            Cname = request.POST.get('ECname')
+
+            obj = StockGroup.objects.get(pk = int(ECID))
+            obj.name = Cname
+            obj.save()
+            messages.success(request, 'Stock group updated successfully.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@check_group('Both')
+def add_stock_group_to_manager_api(request):
+    if request.method == 'POST':
+        try:
+            managerID = request.POST.get('managerID')
+            groupID = request.POST.get('staffID')
+            obj = ManagerAssignedStockGroup()
+            obj.managerID_id = int(managerID)
+            obj.stockGroupID_id = int(groupID)
+            obj.save()
+            messages.success(request, 'Stock Group assigned to manager successfully.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class ManagerStockGroupAssignedListJson(BaseDatatableView):
+    order_columns = ['id', 'managerID', 'stockGroupID', 'datetime']
+
+    def get_initial_queryset(self):
+
+        return ManagerAssignedStockGroup.objects.select_related().filter(isDeleted__exact=False)
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(managerID__name__icontains=search) | Q(stockGroupID__name__icontains=search)
+                | Q(datetime__icontains=search), isDeleted__exact=False)
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+            if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
+                action = '''<span><a > <button data-toggle="modal" data-target="#editModal" onclick="editStaff('{}','{}','{}','{}')" style="background-color: #f77b3a;color: white;" type="button"
+            class="btn  waves-effect ">
+        <i class="material-icons">remove_red_eye</i></button> </a>
+
+                </span>'''.format(item.managerID.pk,item.stockGroupID.pk, item.stockGroupID.name,item.pk )
+            else:
+                action = '''<span><a class="hideModerator"><button data-toggle="modal" onclick="editStaff('{}','{}','{}','{}')" data-target="#editModal" style="background-color: #3F51B5;color: white;" type="button"
+                           class="btn  waves-effect " >
+                       <i class="material-icons">border_color</i></button> </a>
+
+
+
+                   <button onclick="getStaffID('{}')" style="background-color: #e91e63;color: white;" type="button" class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">
+
+
+                                                    <i class="material-icons">delete</i></button></span>'''.format(item.managerID.pk,
+                    item.stockGroupID.pk, item.stockGroupID.name, item.pk, item.pk)
+
+
+
+            if item.stockGroupID is None:
+                staff = 'N/A'
+            else:
+                staff = item.stockGroupID.name
+            json_data.append([
+                escape(i),
+                escape(item.managerID.name),  # escape HTML for security reasons
+                staff,
+                escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
+                action,
+
+            ])
+            i = i + 1
+        return json_data
+
+@check_group('Both')
+def edit_stock_group_to_manager_api(request):
+    if request.method == 'POST':
+        try:
+            managerID = request.POST.get('managerIDEdit')
+            staffID = request.POST.get('staffIDEdit')
+            editID = request.POST.get('editID')
+            obj = ManagerAssignedStockGroup.objects.get(pk=int(editID))
+            obj.managerID_id = int(managerID)
+            obj.stockGroupID_id = int(staffID)
+            obj.save()
+            messages.success(request, 'Stock group assigned to manager successfully.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@check_group('Both')
+@csrf_exempt
+def delete_assign_manager_stock_group_api(request):
+    if request.method == 'POST':
+        try:
+            userID = request.POST.get('userID')
+            staff = ManagerAssignedStockGroup.objects.select_related().get(pk=int(userID))
+            staff.isDeleted = True
+            staff.save()
+            messages.success(request, 'Detail deleted successfully.')
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+        except:
+            messages.success(request, 'Error. Please try again.')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@check_group('Order Manager')
+def assigned_stock_group_to_manager(request):
+    request.session['nav'] = 'o_m_stock'
+    user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
+    date = datetime.today().now().strftime('%d/%m/%Y')
+
+    context = {
+        'user':user,
+        'date': date,
+    }
+
+    return render(request, 'mamtaApp/order/assignedStockGroupToManagers.html', context)
+
+class MyManagerAssignedStockGroupListJson(BaseDatatableView):
+    order_columns = ['id', 'stockGroupID', 'datetime']
+
+    def get_initial_queryset(self):
+
+        return ManagerAssignedStockGroup.objects.select_related().filter(isDeleted__exact=False, managerID__userID_id=self.request.user.pk)
+
+    def filter_queryset(self, qs):
+
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            qs = qs.filter(
+                Q(managerID__name__icontains=search) | Q(stockGroupID__name__icontains=search)
+                | Q(datetime__icontains=search), isDeleted__exact=False)
+
+        return qs
+
+    def prepare_results(self, qs):
+        json_data = []
+        i = 1
+        for item in qs:
+
+            if item.stockGroupID is None:
+                stockGroupID = 'N/A'
+            else:
+                stockGroupID = item.stockGroupID.name
+            json_data.append([
+                escape(i),
+                stockGroupID,
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
             ])
             i = i + 1

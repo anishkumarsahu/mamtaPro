@@ -122,6 +122,7 @@
                                         <th>Sl.No</th>
                                         <th>PartyName</th>
                                         <th>OrderFrom</th>
+                                        <th>StockGroup</th>
                                         <th>Detail</th>
                                         <th>Remark</th>
                                         <th>Datetime</th>
@@ -134,6 +135,7 @@
                                         <th>Sl.No</th>
                                         <th>PartyName</th>
                                         <th>OrderFrom</th>
+                                        <th>StockGroup</th>
                                         <th>Detail</th>
                                         <th>Remark</th>
                                         <th>Datetime</th>
@@ -257,6 +259,27 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">add_shopping_cart</i>
+                                        </span>
+                                    <label for="orderFrom">Stock Group (Required)</label>
+                                    <div class="form-line">
+                                        <select class="form-control show-tick" id="stockGroup"
+                                                name="stockGroup">
+                                            <option value="" selected disabled>Stock Group</option>
+                                            {% for foo in stockGroup %}
+                                            <option value="{{ foo.name}}">{{ foo.name}}</option>
+                                            {% endfor %}
+
+
+                                        </select>
+
+
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                         <div class="row clearfix">
@@ -346,12 +369,13 @@
                     {"name": "id", "targets": 0, "orderable": false},
                     {"name": "partyName", "targets": 1, "orderable": true},
                     {"name": "orderTakenFrom", "targets": 2, "orderable": true},
-                    {"name": "details", "targets": 3, "orderable": true},
-                    {"name": "remark", "targets": 4, "orderable": true},
-                    {"name": "datetime", "targets": 5, "orderable": true},
-                    {"name": "button", "targets": 6, "orderable": false},
+                    {"name": "stockGroup", "targets": 3, "orderable": true},
+                    {"name": "details", "targets": 4, "orderable": true},
+                    {"name": "remark", "targets": 5, "orderable": true},
+                    {"name": "datetime", "targets": 6, "orderable": true},
+                    {"name": "button", "targets": 7, "orderable": false},
                 ],
-                aaSorting: [[5, 'desc']],
+                aaSorting: [[6, 'desc']],
                 "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
                 "pageLength": 8,
                 "processing": true,
@@ -439,12 +463,13 @@
             var lat = $('#lat').val();
             var lng = $('#lng').val();
             var orderFrom = $('#orderFrom').val();
+            var stockGroup = $('#stockGroup').val();
             var detail = $('#detail').val();
             var remark = $('#remark').val();
             var loc = $('#loc').val();
             var img = document.getElementById("imageDoc").files[0];
 
-            if (orderFrom === null || partyName.trim('') === "" || detail.trim('') === "") {
+            if (stockGroup === null ||orderFrom === null || partyName.trim('') === "" || detail.trim('') === "") {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
 
@@ -459,6 +484,7 @@
                 data.append('lng', lng);
                 data.append('loc', loc);
                 data.append('remark', remark);
+                data.append('stockGroup', stockGroup);
 
 
                 $.ajax({

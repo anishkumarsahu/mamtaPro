@@ -43,7 +43,7 @@
                     {% if not request.user|has_group:"Moderator" %}
 
                         <button style="background-color: #3F51B5;color: white;margin-bottom: 10px" type="button"
-                                class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">Add Company
+                                class="btn  waves-effect " data-toggle="modal" data-target="#defaultModal">Add Stock Group
                         </button>
                     {% endif %}
                 </div>
@@ -54,7 +54,7 @@
 
                         <div class="header">
                             <h2>
-                                COMPANY LIST
+                                STOCK GROUP LIST
                             </h2>
 
                         </div>
@@ -64,9 +64,7 @@
                                     <thead>
                                     <tr>
                                         <th>Sl. No</th>
-                                        <th>CompanyName</th>
-                                        <th>PhoneNumber</th>
-                                        <th>Address</th>
+                                        <th>GroupName</th>
                                         <th>Datetime</th>
                                         <th>Action</th>
 
@@ -75,9 +73,7 @@
                                     <tfoot>
                                     <tr>
                                         <th>Sl. No</th>
-                                        <th>CompanyName</th>
-                                        <th>PhoneNumber</th>
-                                        <th>Address</th>
+                                        <th>GroupName</th>
                                         <th>Datetime</th>
                                         <th>Action</th>
                                     </tr>
@@ -97,10 +93,10 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="defaultModalLabel">Add Company</h4>
+                    <h4 class="modal-title" id="defaultModalLabel">Add Stock Group</h4>
                 </div>
                 <div class="modal-body">
-                    <form action="{% url 'mamtaApp:add_company_api' %}" id="AddCompanyForm"
+                    <form action="{% url 'mamtaApp:add_stock_group_api' %}" id="AddCompanyForm"
                           method="post"> {% csrf_token %}
                         <div class="row clearfix">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -112,47 +108,17 @@
                                             <div class="col-md-12">
                                                 <div class="input-group">
                                         <span class="input-group-addon">
-                                            <i class="material-icons">location_city</i>
+                                            <i class="material-icons">receipt</i>
                                         </span>
                                                     <div class="form-line">
                                                         <input type="text" class="form-control date"
-                                                               placeholder="Company Name" name="Cname" id="Cname">
+                                                               placeholder="Group Name" name="Cname" id="Cname">
 
                                                     </div>
                                                 </div>
                                             </div>
 
                                         </div>
-                                        <div class="row clearfix">
-                                            <div class="col-md-12">
-                                                <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <i class="material-icons">local_phone</i>
-                                        </span>
-                                                    <div class="form-line">
-                                                        <input type="number" class="form-control date"
-                                                               placeholder="Phone Number" name="Cphone" id="Cphone">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-
-                                        <div class="row clearfix">
-                                            <div class="col-md-12">
-                                                <div class="input-group">
-                                        <span class="input-group-addon">
-                                        <i class="material-icons">location_on</i>
-                                        </span>
-                                                    <div class="form-line">
-                                                        <input type="text" class="form-control" placeholder="Address"
-                                                               name="Caddress" id="Caddress">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
 
                                     </div>
                                 </div>
@@ -172,10 +138,10 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="defaultModalLabel">Edit Company</h4>
+                    <h4 class="modal-title" id="defaultModalLabel">Edit Stock Group</h4>
                 </div>
                 <div class="modal-body">
-                    <form action="{% url 'mamtaApp:edit_company_api' %}" id="EditCompanyForm"
+                    <form action="{% url 'mamtaApp:edit_stock_group_api' %}" id="EditCompanyForm"
                           method="post"> {% csrf_token %}
                         <div class="row clearfix">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -187,48 +153,15 @@
                                             <div class="col-md-12">
                                                 <div class="input-group">
                                         <span class="input-group-addon">
-                                            <i class="material-icons">location_city</i>
+                                            <i class="material-icons">receipt</i>
                                         </span>
                                                     <div class="form-line">
                                                         <input type="text" class="form-control date"
-                                                               placeholder="Company Name" name="ECname" id="ECname">
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="row clearfix">
-                                            <div class="col-md-12">
-                                                <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <i class="material-icons">local_phone</i>
-                                        </span>
-                                                    <div class="form-line">
-                                                        <input type="number" class="form-control date"
-                                                               placeholder="Phone Number" name="ECphone" id="ECphone">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-
-                                        <div class="row clearfix">
-                                            <div class="col-md-12">
-                                                <div class="input-group">
-                                        <span class="input-group-addon">
-                                        <i class="material-icons">location_on</i>
-                                        </span>
-                                                    <div class="form-line">
-                                                        <input type="text" class="form-control" placeholder="Address"
-                                                               name="ECaddress" id="ECaddress">
+                                                               placeholder="Group Name" name="ECname" id="ECname">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -254,30 +187,26 @@
                 "columnDefs": [
                     {"name": "id", "targets": 0, "orderable": false},
                     {"name": "name", "targets": 1, "orderable": true},
-                    {"name": "phoneNumber", "targets": 2, "orderable": true},
-                    {"name": "address", "targets": 3, "orderable": true},
-                    {"name": "datetime", "targets": 4, "orderable": true},
-                    {"name": "action", "targets": 5, "orderable": false},
+                    {"name": "datetime", "targets": 2, "orderable": true},
+                    {"name": "action", "targets": 3, "orderable": false},
 
                 ],
-                aaSorting: [[4, 'desc']],
+                aaSorting: [[2, 'desc']],
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "pageLength": 10,
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{% url 'mamtaApp:ManageCompanyListJson' %}"
+                "ajax": "{% url 'mamtaApp:StockGroupListJson' %}"
             });
         });
 
         function AddCompany() {
             var Cname = $('#Cname').val();
-            var Cphone = $('#Cphone').val();
-            var Caddress = $('#Caddress').val();
 
 
             if (Cname === "") {
                 $('#name_status').addClass('validate_data');
-                $('#name_status').html('Company name required.');
+                $('#name_status').html('Group name required.');
                 $('#name_status').fadeIn().fadeOut(2000);
 
             }
@@ -288,11 +217,10 @@
             }
         }
 
-        function editCompany(id, name, phone, address) {
+        function editCompany(id, name) {
             $('#ECID').val(id);
             $('#ECname').val(name);
-            $('#ECphone').val(phone);
-            $('#ECaddress').val(address);
+
 
         }
 
@@ -302,7 +230,7 @@
 
             if (ECname === "") {
                 $('#name_status').addClass('validate_data');
-                $('#name_status').html('Company name required.');
+                $('#name_status').html('Group name required.');
                 $('#name_status').fadeIn().fadeOut(2000);
 
             }

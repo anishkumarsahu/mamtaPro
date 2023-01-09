@@ -3417,13 +3417,19 @@ def generate_order_report_manager(request):
     date1 = datetime.strptime(gDate, '%d/%m/%Y')
     day_string = date1.strftime('%Y-%m-%d')
     a_list = []
+    s_list = []
     user = StaffUser.objects.get(userID_id=request.user.pk)
     assigned_objs = OrderManagerStaff.objects.filter(isDeleted=False, managerID__userID_id=request.user.pk)
     for a in assigned_objs:
         if a.staffID is not None:
             a_list.append(a.staffID_id)
+
+    assigned_stocks = ManagerAssignedStockGroup.objects.filter(isDeleted=False, managerID__userID_id=request.user.pk)
+    for b in assigned_stocks:
+        if b.stockGroupID is not None:
+            s_list.append(b.stockGroupID.name)
     col = TakeOrder.objects.select_related().filter(datetime__icontains=day_string,
-                                                          isDeleted__exact=False, orderTakenBy__in=a_list).exclude(
+                                                          isDeleted__exact=False, orderTakenBy__in=a_list, stockGroup__in=s_list).exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
 
     context = {

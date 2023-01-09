@@ -216,7 +216,7 @@
                         </ul>
 
                     </li>
-                <li {% if request.session.nav == 'o_l' or request.session.nav == 'o_l_manager' %} class="active" {% endif %} >
+                <li {% if request.session.nav == 'o_group_assign' or request.session.nav == 'o_l' or request.session.nav == 'o_l_manager' or request.session.nav == 'o_group' %} class="active" {% endif %} >
                         <a href="#" class="menu-toggle waves-effect waves-block">
                             <i class="material-icons">border_color</i>
                             <span>Manage Order</span>
@@ -232,6 +232,18 @@
                                 <a href="{% url 'mamtaApp:manage_order_managers' %}">
 
                                     <span>Order Manager List</span>
+                                </a>
+                            </li>
+                            <li {% if request.session.nav == 'o_group' %} class="active" {% endif %}>
+                                <a href="{% url 'mamtaApp:manage_order_group' %}">
+
+                                    <span>Manage Stock Group</span>
+                                </a>
+                            </li>
+                         <li {% if request.session.nav == 'o_group_assign' %} class="active" {% endif %}>
+                                <a href="{% url 'mamtaApp:manage_stock_group_managers' %}">
+
+                                    <span>Assign Stock Group List</span>
                                 </a>
                             </li>
 
@@ -306,6 +318,12 @@
                         <a href="{% url 'mamtaApp:assigned_staff_to_manager' %}">
                             <i class="material-icons">person_add</i>
                             <span>Assigned Staffs</span>
+                        </a>
+                    </li>
+                    <li {% if request.session.nav == 'o_m_stock' %} class="active" {% endif %}>
+                        <a href="{% url 'mamtaApp:assigned_stock_group_to_manager' %}">
+                            <i class="material-icons">add_shopping_cart</i>
+                            <span>Assigned Stocks Group</span>
                         </a>
                     </li>
 

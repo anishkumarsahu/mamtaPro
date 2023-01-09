@@ -1,0 +1,353 @@
+{% extends 'mamtaApp/index.html' %}
+{% load staticfiles %}
+{% block body %}
+    <style>
+        .zoom {
+
+            transition: transform .2s; /* Animation */
+            width: 30px;
+            height: 30px;
+            margin: 0 auto;
+        }
+
+        .zoom:hover {
+            transform: scale(4); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+        }
+
+        .card {
+            background: #fff;
+            min-height: 50px;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+            position: relative;
+            margin-bottom: 30px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            -ms-border-radius: 2px;
+            border-radius: 2px;
+        }
+
+    </style>
+
+
+    <section class="content">
+        {% if request.user|has_group:"Moderator" %}
+
+        {% endif %}
+        <div class="container-fluid">
+            <div style="float: right">
+                {% if not request.user|has_group:"Moderator" %}
+
+
+                        <button style="background-color: #3F51B5;color: white;margin-bottom: 10px" type="button"
+                                class="btn  waves-effect " data-toggle="modal" data-target="#addModal">Assign Stock Group to Manager
+                        </button>
+                {% endif %}
+            </div>
+            <!-- Striped Rows -->
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-right: 0;padding-left: 0">
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                ASSIGNED STOCK GROUP LIST
+                            </h2>
+                        </div>
+                        <div class="body table-responsive">
+                            <table id="buyerCreditTable" class="table table-bordered table-striped table-hover">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>ManagerName</th>
+                                    <th>StockGroup</th>
+                                    <th>AddedOn</th>
+                                    <th>Take_Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                                  <tfoot>
+                                     <tr>
+                                     <th>#</th>
+                                    <th>ManagerName</th>
+                                    <th>StockGroup</th>
+                                    <th>AddedOn</th>
+                                    <th>Take_Action</th>
+                                </tr>
+                                    </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- #END# Striped Rows -->
+        </div>
+    </section>
+       <div class="modal fade" id="addModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Assign</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'mamtaApp:add_stock_group_to_manager_api' %}" id="AssignStaffForm"
+                          method="post"> {% csrf_token %}
+                        <div class="row clearfix">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="card">
+
+                                    <div class="body">
+
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">face</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                        <label for="managerID">Select Manager *</label>
+                                                        <select class="form-control show-tick" name="managerID"
+                                                                id="managerID">
+                                                            <option value="" selected disabled> Select Manager</option>
+
+                                                            {% for user in managers %}
+                                                                <option value="{{ user.pk }}"> {{ user.name }}
+                                                                </option>
+
+                                                            {% endfor %}
+
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                     <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">face</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                     <label for="staffID">Select Stock Group *</label>
+                                                        <select class="form-control show-tick" name="staffID"
+                                                                id="staffID">
+                                                            <option value="" selected disabled> Select Stock Group </option>
+
+                                                            {% for user in staffs %}
+                                                                <option value="{{ user.pk }}"> {{ user.name }}
+                                                                </option>
+
+                                                            {% endfor %}
+
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link waves-effect" onclick="AssignStaff()">Submit</button>
+                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Edit Assign</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'mamtaApp:edit_stock_group_to_manager_api' %}" id="EditAssignStaffForm"
+                          method="post"> {% csrf_token %}
+                        <div class="row clearfix">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="card">
+
+                                    <div class="body">
+
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">face</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                        <label for="managerIDEdit">Select Manager *</label>
+                                                        <select class="form-control show-tick" name="managerIDEdit"
+                                                                id="managerIDEdit">
+
+                                                            {% for user in managers %}
+                                                                <option value="{{ user.pk }}"> {{ user.name }}
+                                                                </option>
+
+                                                            {% endfor %}
+
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                     <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">face</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                     <label for="staffIDEdit">Select Stock Group *</label>
+                                                        <select class="form-control show-tick" name="staffIDEdit"
+                                                                id="staffIDEdit">
+
+
+
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="editID" name="editID">
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link waves-effect" onclick="AssignStaffEdit()">Submit</button>
+                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="{% url 'mamtaApp:delete_assign_manager_stock_group_api' %}" id="DeleteStaffForm"
+                      method="post">{% csrf_token %}
+                    <input type="hidden" name="userID" id="userID">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Confirm</h4>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this data?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="deleteStaff()">Yes</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">No</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/pages/ui/modals.js' %}"></script>
+    <script>
+   function editStaff(managerID,userID,userName,pk) {
+        $('#staffIDEdit').html('');
+        $('#managerIDEdit').val(managerID).change();
+        $('#editID').val(pk);
+
+             {% for user in staffs %}
+                 $('#staffIDEdit').append('<option value="{{ user.pk }}"> {{ user.name }} </option>')
+             {% endfor %}
+
+            {#$('#staffIDEdit').append('<option value="'+userID+'" selected >'+userName+'</option>')#}
+$('#staffIDEdit').val(userID).change();
+
+        }
+        function getStaffID(id) {
+            $('#userID').val(id)
+
+        }
+        function deleteStaff() {
+            $('#DeleteStaffForm').submit();
+
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#buyerCreditTable').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel', 'print'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "managerID", "targets": 1, "orderable": true},
+                    {"name": "stockGroupID", "targets": 2, "orderable": true},
+                    {"name": "datetime", "targets": 3, "orderable": true},
+                    {"name": "action", "targets": 4, "orderable": false},
+
+                ],
+                aaSorting: [[3, 'asc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:ManagerStockGroupAssignedListJson' %}"
+            });
+        });
+              function AssignStaff() {
+            var managerID = $('#managerID').val();
+            var staffID = $('#staffID').val();
+
+            if (managerID === null || staffID === null) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                $('#AssignStaffForm').submit();
+
+            }
+
+
+        }
+              function AssignStaffEdit() {
+            var managerID = $('#managerIDEdit').val();
+            var staffID = $('#staffIDEdit').val();
+            var editID = $('#editID').val();
+debugger;
+            if (managerID === null || staffID === null) {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('* fields are required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                $('#EditAssignStaffForm').submit();
+
+            }
+
+
+        }
+
+    </script>
+
+{% endblock %}
