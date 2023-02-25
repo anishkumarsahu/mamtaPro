@@ -178,10 +178,14 @@ class EmployeeListForAttendanceJson(BaseDatatableView):
                     action = action + '''<button type="button" class="btn btn-success">{}
                                         </button>   '''.format(attend.loginTime.strftime('%I:%M %p'))
 
-                if attend.logoutTime is None:
+                if attend.logoutTime is None and attend.loginTime is not None :
                     action = action + '''   <button type="button" class="btn btn-danger" data-toggle="modal"
                                                 data-target="#myModal_out" onclick="logoutModal({})">LOGOUT</button>'''.format(
                         item.pk)
+                elif attend.logoutTime is None and attend.loginTime is None:
+                    action = action + '''   <button type="button" class="btn btn-danger disabled" data-toggle="modal"
+                                                           data-target="#myModal_out">LOGOUT</button>'''.format(
+                    item.pk)
                 else:
 
                     action = action + '''   <button type="button" class="btn btn-success">{}
