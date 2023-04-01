@@ -201,13 +201,13 @@
 
         </div>
 
-        <button style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getReverseLocation()"
+        <button style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getLocation()"
                 data-target="#CollectionModal"
                 class="btn btn-success btn-circle-lg waves-effect waves-circle waves-float">
             <i class="material-icons">add</i>
         </button>
 
-        <button style="    left: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getReverseLocation()"
+        <button style="    left: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getLocation()"
                 data-target="#CollectionModalInvoice"
                 class="btn btn-danger btn-circle-lg waves-effect waves-circle waves-float">
             <i class="material-icons">add</i>
@@ -503,8 +503,8 @@
         </div>
     </div>
 {#    <button onclick="getLocation()">Try It</button>#}
-    <input type="hidden" id="lat" value="24.809611">
-    <input type="hidden" id="lng" value="93.935577">
+    <input type="hidden" id="lat" >
+    <input type="hidden" id="lng" >
     <input type="hidden" id="loc" value="N/A">
 
 <p id="demo"></p>
@@ -935,19 +935,68 @@
 
     <script>
 var x = document.getElementById("demo");
-var options = {
+{% comment %}var options = {
   enableHighAccuracy: true,
   timeout: 10000,
   maximumAge: 0
-};
+};{% endcomment %}
+let locationPrompted = false;
 function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition,showError,options);
+    if (navigator.geolocation) {
+        const options = {
+    maximumAge: 0,
+    timeout: 10000,
+    enableHighAccuracy: true
+  };
+        if (!locationPrompted || localStorage.getItem('locationAllowed')) {
+      navigator.geolocation.getCurrentPosition(
+        // On success callback
+        function(position) {
+            islocationEnabled();
+            x.innerHTML = "Latitude: " + position.coords.latitude +
+          "<br>Longitude: " + position.coords.longitude;
+           $('#lat').val(position.coords.latitude);
+           $('#lng').val(position.coords.longitude);
+           console.log(position)
+getReverseLocation();
+          localStorage.setItem('locationAllowed', true);
+        },
+              function(error) {
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              alert("You declined to share your location. Please enable location services to continue.");
+              locationPrompted = true;
+              islocationEnabled();
+              break;
+            case error.POSITION_UNAVAILABLE:
+              alert("Location information is unavailable. Please try again later.");
+              islocationEnabled();
+              break;
+            case error.TIMEOUT:
+                islocationEnabled();
+              alert("The request to get your location timed out. Please try again.");
+              break;
+            default:
+              alert("An unknown error occurred. Please try again.");
+              islocationEnabled();
+              break;
+          }
+        },
+        options
+      );
+    } else {
+      // If the user has previously declined location access, display an error message
+      alert("Please enable location services in your browser settings to continue.");
+      islocationEnabled();
+    }
+
+    {#navigator.geolocation.getCurrentPosition(showPosition,showError,options);#}
   } else {
     x.innerHTML = "Geolocation is not supported by this browser.";
+    islocationEnabled();
   }
 }
-
+{% comment %}
 function showPosition(position) {
   x.innerHTML = "Latitude: " + position.coords.latitude +
   "<br>Longitude: " + position.coords.longitude;
@@ -956,12 +1005,13 @@ function showPosition(position) {
    console.log(position)
 
 
-}
-
+}{% endcomment %}
+{% comment %}
 function showError(error) {
   switch(error.code) {
     case error.PERMISSION_DENIED:
       x.innerHTML = "User denied the request for Geolocation."
+        getLocation();
       break;
     case error.POSITION_UNAVAILABLE:
       x.innerHTML = "Location information is unavailable."
@@ -973,9 +1023,11 @@ function showError(error) {
       x.innerHTML = "An unknown error occurred."
       break;
   }
-}
+}{% endcomment %}
 onload(getLocation() );
-navigator.permissions.query({name:'geolocation'}).then(function(result) {
+
+function islocationEnabled() {
+    navigator.permissions.query({name:'geolocation'}).then(function(result) {
     console.log(result);
   if (result.state === 'granted') {
    $('#save1').prop('disabled', false);
@@ -986,11 +1038,12 @@ navigator.permissions.query({name:'geolocation'}).then(function(result) {
   }
   // Don't do anything if the permission was denied.
 });
+}
+
 
 
 
 function getReverseLocation(){
-    getLocation();
           var lat = $('#lat').val();
           var lng = $('#lng').val();
           console.log(lat,lng)
