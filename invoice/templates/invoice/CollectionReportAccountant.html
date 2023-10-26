@@ -460,7 +460,7 @@
             var gDate = $('#gDate').val();
             $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_accountant' %}?companyID=" + comp + '&gDate=' + gDate);
 
-            $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+            $("#reportUrlCollection").attr("href", "{% url 'invoiceApp:generate_collection_report_accounts' %}?companyID=" + comp + '&gDate=' + gDate);
 
         }
         function ChangePassword() {
