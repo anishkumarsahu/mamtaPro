@@ -20,6 +20,15 @@
 {% endif %}
 <span id="name_status"></span>
 <style>
+    .bs-searchbox .open .inner {
+        width: 50px !important;
+    }
+
+    .bs-searchbox a {
+        height: 40px;
+        background-color: red;
+    }
+
     .validate_data {
         position: fixed;
         float: left;
@@ -127,10 +136,37 @@
     .bootstrap-select {
         width: 100% !important;
     }
+
     .row {
-    margin-right: 0;
-    margin-left: 0;
-}
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .bootstrap-select .dropdown-menu li a {
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        height: 30px !important;
+    }
+
+    .bootstrap-select .dropdown-menu li a:hover {
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        height: 30px !important;
+        background-color: lightblue;
+    }
+
+    .bootstrap-select .dropdown-menu {
+        max-width: 100% !important;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
 </style>
 <div id="nonPrintDiv">
     <div class="col-md-12">
@@ -186,7 +222,7 @@
                     <a style="position:absolute;color: #b54f3d;font-size: 13px;cursor: pointer;" data-toggle="modal"
                        data-target="#ChangePasswordModal"
                        data-whatever="@mdo">
-                        <stong >Change Password</stong>
+                        <stong>Change Password</stong>
                     </a>
                 {% endif %}
             </ul>
@@ -237,7 +273,7 @@
                             <li style="background-color: #e6eaff;" onclick="changeTab('expense')"><a
                                     href="#Expense" data-toggle="tab">Expense</a>
                             </li>
-                              <li style="background-color: #e6eaff;" onclick="changeTab('advance')"><a
+                            <li style="background-color: #e6eaff;" onclick="changeTab('advance')"><a
                                     href="#Advance" data-toggle="tab">Advance</a>
                             </li>
 
@@ -559,7 +595,7 @@
                                         </div>
                                     </div>
                                 </div>
-                             <div role="tabpanel" class="tab-pane fade" id="Advance" style="display:none;">
+                                <div role="tabpanel" class="tab-pane fade" id="Advance" style="display:none;">
                                     <div class="row">
 
                                         <div class="row" id="collection2">
@@ -572,7 +608,8 @@
                                             </div>
                                             <div class="col-sm-6 col-xs-6">
                                                 <div class="form-group"><br><input type="number" class="form-control"
-                                                                                   id="partyAmountAdvance" aria-describedby=""
+                                                                                   id="partyAmountAdvance"
+                                                                                   aria-describedby=""
                                                                                    placeholder="Rs." value="0"></div>
                                             </div>
                                         </div>
@@ -612,7 +649,9 @@
                         <span id="unuse">
 
                          </span>
+
                                     </div>
+
                                 </div>
                                 <div style="padding-top: 10px">
                                     <label style="color: #0178fc">Used Bills</label> <br>
@@ -620,6 +659,7 @@
                         <span id="used">
 
                          </span>
+
                                     </div>
                                 </div>
                                 <div style="padding-top: 10px">
@@ -690,7 +730,7 @@
                     </div>
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         <div class="col-sm-6">
-                             <label style="color: #0178fc"> Today's Staff Advance</label>
+                            <label style="color: #0178fc"> Today's Staff Advance</label>
                             <div style="padding-top: 5px;overflow-x: scroll;">
 
                                 <div style="width: 100%;height: 30px;">
@@ -919,11 +959,11 @@
              style="font-size: 18px;width: 100% ;text-align: center;text-transform: uppercase;">{{ user.companyID.name }}</span><br>
 
     <p style="font-size: 17px; font-weight: bold;"> Created By: <span id="p1">N/A</span></p>
-    <p  style="font-size: 17px; font-weight: bold;"> Amount (&#8377): <span id="p2">N/A</span></p>
-    <p  style="font-size: 17px; font-weight: bold;"> Bill No.: <span id="p3">N/A</span></p>
-    <p  style="font-size: 17px; font-weight: bold;"> Mode: <span id="p5">N/A</span></p>
-    <p  style="font-size: 17px; font-weight: bold;"> Datetime: <span id="p4">N/A</span></p>
-    <p  style="font-size: 17px; font-weight: bold;"> Remark: <span id="p6">N/A</span></p>
+    <p style="font-size: 17px; font-weight: bold;"> Amount (&#8377): <span id="p2">N/A</span></p>
+    <p style="font-size: 17px; font-weight: bold;"> Bill No.: <span id="p3">N/A</span></p>
+    <p style="font-size: 17px; font-weight: bold;"> Mode: <span id="p5">N/A</span></p>
+    <p style="font-size: 17px; font-weight: bold;"> Datetime: <span id="p4">N/A</span></p>
+    <p style="font-size: 17px; font-weight: bold;"> Remark: <span id="p6">N/A</span></p>
 
     </p>
 </div>
@@ -933,16 +973,21 @@
 
 <script>
     var id = 'None';
+
     function getInvoiceList(nid) {
         getInvoiceDetails(nid);
         return id = nid
     }
+
     $('#name_status').fadeIn().fadeOut(2000);
+
     $(getInvoiceDetails(id));
 
     function getInvoiceDetails(id) {
         $('#unuse').html('');
         $('#used').html('');
+        let last_id =0
+        let series_id =0
         $.ajax({
             type: 'get',
             url: "{% url 'invoiceApp:get_invoice_series' %}?id=" + id,
@@ -957,7 +1002,10 @@
                     unuse = '<span class="label label-danger invoiceStyle" onclick="inputData(\'' + response.data.UnUsed[i].Serial + '\',' + response.data.UnUsed[i].SeriesID + ',' + response.data.UnUsed[i].MainNumber + ',\'' + response.data.UnUsed[i].MainSeries + '\')"><strong>' + response.data.UnUsed[i].Serial + ' </strong></span>'
 
                     $('#unuse').append(unuse)
+                    last_id = response.data.UnUsed[i].MainNumber
+                    series_id = response.data.UnUsed[i].SeriesID
                 }
+                loadMoreBTN(series_id,last_id)
 
             },
             error: function () {
@@ -966,12 +1014,14 @@
         });
 
     }
+
     function inputData(Serial, SeriesID, MainNumber, MainSeries) {
         $('#billNumber').val(Serial);
         $('#SeriesID').val(SeriesID);
         $('#MainNumber').val(MainNumber);
         $('#MainSeries').val(MainSeries);
     }
+
     function changeTab(t) {
         var bill = '<div class="form-group"><br><div><input readonly type="text" class="form-control" id="billNumber"aria-describedby=""placeholder="Enter Invoice No"></div><input type="hidden" id="SeriesID" name="SeriesID"><input type="hidden" id="MainNumber" name="MainNumber"><input type="hidden" id="MainSeries" name="MainSeries"></div>'
         if (t === 'cash') {
@@ -991,7 +1041,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'credit') {
             $('#Card').css('display', 'none');
@@ -1010,7 +1060,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'card') {
             $('#Card').css('display', '');
@@ -1029,7 +1079,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'collection') {
             $('#Card').css('display', 'none');
@@ -1045,7 +1095,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'cc') {
             $('#Card').css('display', 'none');
@@ -1061,7 +1111,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'return') {
             $('#Card').css('display', 'none');
@@ -1077,7 +1127,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'commission') {
             $('#Card').css('display', 'none');
@@ -1093,7 +1143,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'correction') {
             $('#Card').css('display', 'none');
@@ -1109,7 +1159,7 @@
             $('#Correction').css('display', '');
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'mix') {
             $('#Card').css('display', 'none');
@@ -1128,7 +1178,7 @@
             $('#Correction').css('display', 'none');
             $('#Mix').css('display', '');
             $('#Expense').css('display', 'none');
-             $('#Advance').css('display', 'none');
+            $('#Advance').css('display', 'none');
         }
         if (t === 'expense') {
             $('#Card').css('display', 'none');
@@ -1147,7 +1197,7 @@
             $('#Advance').css('display', 'none');
         }
 
-          if (t === 'advance') {
+        if (t === 'advance') {
             $('#Card').css('display', 'none');
             $('#Commentary').css('display', 'none');
             $('#Videos').css('display', 'none');
@@ -1201,8 +1251,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
 
                     $('#save').attr('disabled', true);
                     $.ajax({
@@ -1228,11 +1277,10 @@
                                 $('#p3').html(response.data['billNo']);
                                 $('#p4').html(response.data['datetime']);
                                 $('#p5').html(response.data['ModeOfPayment']);
-                                                                $('#p6').html(response.data['Remark']);
+                                $('#p6').html(response.data['Remark']);
 
                                 window.print();
-                            }
-                            else {
+                            } else {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
 
@@ -1271,8 +1319,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
 
                     $('#save').attr('disabled', true);
                     $.ajax({
@@ -1298,11 +1345,10 @@
                                 $('#p3').html(response.data['billNo']);
                                 $('#p4').html(response.data['datetime']);
                                 $('#p5').html(response.data['ModeOfPayment']);
-                                                                $('#p6').html(response.data['Remark']);
+                                $('#p6').html(response.data['Remark']);
 
                                 window.print();
-                            }
-                            else {
+                            } else {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
 
@@ -1339,12 +1385,11 @@
                 data.append('cardRemark', cardRemark);
                 data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
-                if (billNumber === "" || cashAmount === "" || cardAmount === ""|| cardRemark === "") {
+                if (billNumber === "" || cashAmount === "" || cardAmount === "" || cardRemark === "") {
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
 
                     $('#save').attr('disabled', true);
                     $.ajax({
@@ -1368,11 +1413,10 @@
                                 $('#p3').html(response.data['billNo']);
                                 $('#p4').html(response.data['datetime']);
                                 $('#p5').html(response.data['ModeOfPayment']);
-                                                                $('#p6').html(response.data['Remark']);
+                                $('#p6').html(response.data['Remark']);
 
                                 window.print();
-                            }
-                            else {
+                            } else {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
 
@@ -1406,8 +1450,7 @@
                 if (billNumber === "" || amountCredit === "" || name === "" || ChallanNumber === "") {
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
-                }
-                else {
+                } else {
                     $('#save').attr('disabled', true);
                     $.ajax({
                         type: 'post',
@@ -1427,8 +1470,7 @@
                                 getRecentThreeInvoices();
                                 $('#billNumber').val('');
                                 $('.collapse').collapse('hide')
-                            }
-                            else {
+                            } else {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
 
@@ -1459,8 +1501,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
                     $('#save').attr('disabled', true);
                     $.ajax({
                         type: 'post',
@@ -1504,8 +1545,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
                     $('#save').attr('disabled', true);
                     $.ajax({
                         type: 'post',
@@ -1548,8 +1588,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
                     $('#save').attr('disabled', true);
                     $.ajax({
                         type: 'post',
@@ -1565,7 +1604,6 @@
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html('New Staff Advance Created.').fadeIn().fadeOut(2000);
                                 $('#SalesForm')[0].reset();
-
 
 
                             }
@@ -1597,8 +1635,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
                     $('#save').attr('disabled', true);
                     $.ajax({
                         type: 'post',
@@ -1642,8 +1679,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
                     $('#save').attr('disabled', true);
                     $.ajax({
                         type: 'post',
@@ -1686,8 +1722,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
                     $('#save').attr('disabled', true);
                     $.ajax({
                         type: 'post',
@@ -1723,9 +1758,7 @@
                     });
                 }
             }
-        }
-
-        else {
+        } else {
             if (billType === 'expense') {
                 var exRemark = $('#exRemark').val();
                 var exAmount = $('#exAmount').val();
@@ -1738,8 +1771,7 @@
                     $('#name_status').addClass('validate_data');
                     $('#name_status').html('* fields are required.').fadeIn().fadeOut(2000);
 
-                }
-                else {
+                } else {
                     $('#save').attr('disabled', true);
                     $.ajax({
                         type: 'post',
@@ -1780,6 +1812,7 @@
 
 
     }
+
     function resetForm() {
 
         $('#SalesForm')[0].reset();
@@ -1793,6 +1826,7 @@
         $("#partyNameAdvance").val('');
         $("#partyNameAdvance").selectpicker("refresh");
     }
+
     $(".tabClass li:first").addClass("active");
 
     function searchSales() {
@@ -1810,8 +1844,7 @@
             $('#name_status').addClass('validate_data');
             $('#name_status').html('Search fields is required.').fadeIn().fadeOut(2000);
 
-        }
-        else {
+        } else {
             $.ajax({
                 type: 'post',
                 url: '{% url 'invoiceApp:search_invoice' %}',
@@ -1830,8 +1863,7 @@
                         $('#s4').html(response.data['Datetime']);
                         $('#s5').html(response.data['CreatedBy']);
                         $('#s6').html(response.data['Remark']);
-                    }
-                    else if (response.message === 'notFound') {
+                    } else if (response.message === 'notFound') {
                         $('#useNow').html('');
                         $('#name_status').addClass('validate_data');
                         $('#name_status').html('No Invoice Detail Found.').fadeIn().fadeOut(2000);
@@ -1840,8 +1872,7 @@
 
                         $('#useNow').append('<span class="label label-danger invoiceStyle" onclick="inputData(\'' + response.dataNew.Serial + '\',' + response.dataNew.SeriesID + ',' + response.dataNew.MainNumber + ',\'' + response.dataNew.MainSeries + '\')"><strong> Use Now - ' + response.dataNew.Serial + ' </strong></span>');
 
-                    }
-                    else {
+                    } else {
                         $('#name_status').addClass('validate_data');
                         $('#name_status').html('Invalid Invoice Number Input').fadeIn().fadeOut(2000);
                         $('#resultDiv').css('display', 'none');
@@ -1856,15 +1887,18 @@
             });
         }
     }
+
     function searchReset() {
         $('#SearchForm')[0].reset();
         $('#resultDiv').css('display', 'none');
         $('#noresultDiv').css('display', 'none');
     }
+
     function checkCustomer(event) {
         var key = event.keyCode;
         return ((key >= 97 && key <= 122) || (key >= 65 && key <= 90) || key == 8 || key == 32);
     }
+
     function skippedInvoiceDetails() {
         $('#skipped').html('');
         $.ajax({
@@ -1903,6 +1937,7 @@
         });
 
     }
+
     function getCashCollectionDetails() {
         $('#todayCashCollection').html('');
         $.ajax({
@@ -1922,7 +1957,8 @@
         });
 
     }
-        function getStaffAdvanceDetails() {
+
+    function getStaffAdvanceDetails() {
         $('#todayAdvance').html('');
         $.ajax({
             type: 'get',
@@ -1941,6 +1977,7 @@
         });
 
     }
+
     function addParty() {
         var pName = $('#pName').val();
         var pAddress = $('#pAddress').val();
@@ -1960,8 +1997,7 @@
             $('#name_status').addClass('validate_data');
             $('#name_status').html('Party name is required.').fadeIn().fadeOut(2000);
 
-        }
-        else {
+        } else {
             $.ajax({
                 type: 'post',
                 url: '{% url 'invoiceApp:add_party_from_sales' %}',
@@ -1986,9 +2022,7 @@
                             $("#partyNameAdvance").selectpicker('refresh');
                         }
 
-                    }
-
-                    else {
+                    } else {
                         $('#name_status').addClass('validate_data');
                         $('#name_status').html('Party already exist').fadeIn().fadeOut(2000);
                         $('#SalesForm')[0].reset();
@@ -2002,6 +2036,7 @@
         }
 
     }
+
     function ChangePassword() {
         var nPass = $('#nPass').val();
         var rPass = $('#rPass').val();
@@ -2011,18 +2046,15 @@
             $('#name_status').addClass('validate_data');
             $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
 
-        }
-        else if (nPass != rPass) {
+        } else if (nPass != rPass) {
             $('#name_status').addClass('validate_data');
             $('#name_status').html('Password not matched. Please try again.').fadeIn().fadeOut(2000);
 
-        }
-        else if (nPass.length < 5) {
+        } else if (nPass.length < 5) {
             $('#name_status').addClass('validate_data');
             $('#name_status').html('Password should be at least 5 character long.').fadeIn().fadeOut(2000);
 
-        }
-        else {
+        } else {
             $.ajax({
                 type: 'post',
                 url: '{% url 'invoiceApp:change_password_for_sales_user' %}',
@@ -2037,9 +2069,7 @@
                         $('#PasswordForm')[0].reset();
                         $('#ChangePasswordModal').modal('hide');
 
-                    }
-
-                    else {
+                    } else {
                         errMsg();
                     }
 
@@ -2050,7 +2080,9 @@
             });
         }
     }
+
     $(getRecentThreeInvoices());
+
     function getRecentThreeInvoices() {
         $('#recent').html('');
         $.ajax({
@@ -2068,6 +2100,7 @@
         });
 
     }
+
     function getReturnDetails() {
         $('#todayReturn').html('');
         $.ajax({
@@ -2086,6 +2119,7 @@
             }
         });
     }
+
     function getCorrectionDetails() {
         $('#todayCorrection').html('');
         $.ajax({
@@ -2104,6 +2138,7 @@
             }
         });
     }
+
     function getCommissionDetails() {
         $('#todayCommission').html('');
         $.ajax({
@@ -2121,6 +2156,7 @@
             }
         });
     }
+
     function getExpenseDetails() {
         $('#todayExpense').html('');
         $.ajax({
@@ -2139,9 +2175,10 @@
         });
 
     }
+
     $(document).on("keydown", "input[aria-controls='bs-select-1']", function (e) {
         if ((e.keyCode < 38 || e.keyCode > 40)) {
-            if ((e.keyCode !== 13 )) {
+            if ((e.keyCode !== 13)) {
                 var inputVal = $(this).val();
                 $('#name').html('');
                 $.ajax({
@@ -2149,7 +2186,7 @@
                     url: "{% url 'invoiceApp:get_buyer_list' %}?q=" + inputVal,
                     success: function (response) {
                         for (i in response.data) {
-                            $('#name').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["Name"] + '">' + response.data[i]["Name"] + '</option>');
+                            $('#name').append('<option  data-subtext="' + response.data[i]["address"] + '" value="' + response.data[i]["name"] + '">' + response.data[i]["name"] + '</option>');
 
                         }
                         $("#name").selectpicker('refresh');
@@ -2165,7 +2202,7 @@
     $(document).on("keydown", "input[aria-controls='bs-select-3']", function (e) {
 
         if ((e.keyCode < 38 || e.keyCode > 40)) {
-            if ((e.keyCode !== 13 )) {
+            if ((e.keyCode !== 13)) {
                 var inputVal = $(this).val();
                 $('#partyName').html('');
                 $.ajax({
@@ -2176,7 +2213,7 @@
                         $('#partyName').append('<option  value="" selected>Search Party</option>');
 
                         for (i in response.data) {
-                            $('#partyName').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                            $('#partyName').append('<option  data-subtext="' + response.data[i]["address"] + '" value="' + response.data[i]["pk"] + '">' + response.data[i]["name"] + '</option>');
                         }
                         $("#partyName").selectpicker('refresh');
 
@@ -2190,7 +2227,7 @@
     });
     $(document).on("keydown", "input[aria-controls='bs-select-2']", function (e) {
         if ((e.keyCode < 38 || e.keyCode > 40)) {
-            if ((e.keyCode !== 13 )) {
+            if ((e.keyCode !== 13)) {
                 var inputVal = $(this).val();
                 $('#partyName1').html('');
                 $.ajax({
@@ -2199,7 +2236,7 @@
                     success: function (response) {
                         $('#partyName1').append('<option  value="" selected>Search Party</option>');
                         for (i in response.data) {
-                            $('#partyName1').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                            $('#partyName1').append('<option  data-subtext="' + response.data[i]["address"] + '" value="' + response.data[i]["pk"] + '">' + response.data[i]["name"] + '</option>');
                         }
                         $("#partyName1").selectpicker('refresh');
                     },
@@ -2211,9 +2248,9 @@
         }
     });
 
-     $(document).on("keydown", "input[aria-controls='bs-select-4']", function (e) {
+    $(document).on("keydown", "input[aria-controls='bs-select-4']", function (e) {
         if ((e.keyCode < 38 || e.keyCode > 40)) {
-            if ((e.keyCode !== 13 )) {
+            if ((e.keyCode !== 13)) {
                 var inputVal = $(this).val();
                 $('#partyNameAdvance').html('');
                 $.ajax({
@@ -2222,7 +2259,7 @@
                     success: function (response) {
                         $('#partyNameAdvance').append('<option  value="" selected>Search Party</option>');
                         for (i in response.data) {
-                            $('#partyNameAdvance').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                            $('#partyNameAdvance').append('<option  data-subtext="' + response.data[i]["address"] + '" value="' + response.data[i]["pk"] + '">' + response.data[i]["name"] + '</option>');
                         }
                         $("#partyNameAdvance").selectpicker('refresh');
                     },
@@ -2250,8 +2287,7 @@
             $('#name_status').addClass('validate_data');
             $('#name_status').html('Please Enter Closing Amount.').fadeIn().fadeOut(2000);
 
-        }
-        else {
+        } else {
             $.ajax({
                 type: 'post',
                 url: '{% url 'invoiceApp:add_closing_balance_api' %}',
@@ -2265,8 +2301,7 @@
                         $('#name_status').html('Closing Balance Added.').fadeIn().fadeOut(2000);
                         $('#ClosingForm')[0].reset();
                         $('#addClosingBalance').modal('hide');
-                    }
-                    else {
+                    } else {
                         $('#name_status').addClass('validate_data');
                         $('#name_status').html('Closing Balance already added').fadeIn().fadeOut(2000);
                         $('#ClosingForm')[0].reset();
@@ -2278,6 +2313,35 @@
                 }
             });
         }
+
+    }
+
+    function loadMoreBTN(id, last_id) {
+        $("#loadMore").remove();
+        $('#unuse').append('<span class="label label-warning invoiceStyle" id="loadMore" onclick="loadMoreInvoiceNumber(\''+id + '\',\''+last_id + '\')">Load More</span>')
+
+    }
+    function loadMoreInvoiceNumber(id, last_id) {
+        let last_id_no =''
+        $.ajax({
+            type: 'get',
+            url: "{% url 'invoiceApp:get_invoice_series_load_more' %}?id=" + id+"&last_id="+last_id,
+            success: function (response) {
+                for (i in response.data.UnUsed) {
+                    unuse = '<span class="label label-danger invoiceStyle" onclick="inputData(\'' + response.data.UnUsed[i].Serial + '\',' + response.data.UnUsed[i].SeriesID + ',' + response.data.UnUsed[i].MainNumber + ',\'' + response.data.UnUsed[i].MainSeries + '\')"><strong>' + response.data.UnUsed[i].Serial + ' </strong></span>'
+
+                    $('#unuse').append(unuse)
+                    last_id_no = response.data.UnUsed[i].MainNumber
+                }
+                loadMoreBTN(id,last_id_no)
+
+
+            },
+            error: function () {
+                errMsg();
+            }
+        });
+
 
     }
 </script>

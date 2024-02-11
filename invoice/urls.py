@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^new_index/$', new_index, name='new_index'),
     url(r'^$', index, name='index'),
     url(r'^get_invoice_series/$', get_invoice_series, name='get_invoice_series'),
+    url(r'^get_invoice_series_load_more/$', get_invoice_series_load_more, name='get_invoice_series_load_more'),
     url(r'^create_invoice/$', create_invoice, name='create_invoice'),
     url(r'^edit_invoice/$', edit_invoice, name='edit_invoice'),
     url(r'^edit_invoice_mix/$', edit_invoice_mix, name='edit_invoice_mix'),

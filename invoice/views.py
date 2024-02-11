@@ -1,9 +1,11 @@
+import calendar
+import functools
+from datetime import datetime, timedelta, date
+
 from django.contrib import messages
-from django.db.models import Q, FloatField, IntegerField
-from django.db.models.functions import Cast
+from django.db.models import Q
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-from django.template.defaulttags import csrf_token
 from django.template.loader import render_to_string
 from django.utils.html import escape
 from django.views.decorators.csrf import csrf_exempt
@@ -12,10 +14,8 @@ from weasyprint import HTML, CSS
 
 from mamtaApp.views import check_group
 from .models import *
-# Create your views here.
 
-from datetime import datetime, timedelta, date
-import calendar
+# Create your views here.
 
 last_3_month_date = datetime.today().date() - timedelta(days=45)
 
@@ -979,11 +979,9 @@ def generate_serial_invoice_number(request):
     return JsonResponse({'Message': 'Done'})
 
 
+@functools.lru_cache(maxsize=256)
 def get_invoice_series(request, *args, **kwargs):
     id = request.GET.get('id')
-    today = date.today()
-    startDate = today.strftime("%d/%m/%Y")
-    dateI = datetime.strptime(startDate, '%d/%m/%Y')
     if 'Both' in request.user.groups.values_list('name', flat=True):
         user = 'Admin'
 
@@ -1033,7 +1031,7 @@ def get_invoice_series(request, *args, **kwargs):
     else:
         un_used_first = salesID.first()
         for i in InvoiceSerial.objects.select_related().filter(numberMain__gt=int(un_used_first.numberMain - 150),
-                                                               numberMain__lt=int(un_used_first.numberMain + 80),
+                                                               numberMain__lt=int(un_used_first.numberMain + 20),
                                                                numberMain__gte=invoiceByUser.startsWith).order_by(
             'numberMain'):
             try:
@@ -1059,6 +1057,44 @@ def get_invoice_series(request, *args, **kwargs):
         'Used': used_invoice_id_list,
         'UnUsed': un_used_invoice_id_list,
         'Upcoming': upcoming_serials_invoice_id_list,
+
+    }
+    return JsonResponse({'data': data})
+
+@functools.lru_cache(maxsize=256)
+def get_invoice_series_load_more(request, *args, **kwargs):
+    id = request.GET.get('id')
+    last_id = request.GET.get('last_id')
+    used_invoice_id_list=[]
+    un_used_invoice_id_list =[]
+    invoiceByUser = InvoiceSeries.objects.select_related().get(pk=int(id), isDeleted__exact=False)
+
+
+    for i in InvoiceSerial.objects.filter(numberMain__gt=int(last_id)).order_by(
+        'numberMain')[:20]:
+        try:
+            sale = Sales.objects.select_related().get(numberMain__exact=i.numberMain,
+                                                      InvoiceSeriesID_id=int(id))
+            used_invoice_id_dic = {
+                'Serial': str(invoiceByUser.series) + str(i.number),
+                'SeriesID': id,
+                'MainSeries': invoiceByUser.series,
+                'MainNumber': i.numberMain
+            }
+            used_invoice_id_list.insert(0, used_invoice_id_dic)
+        except:
+            un_used_invoice_id_dic = {
+                'Serial': str(invoiceByUser.series) + str(i.number),
+                'SeriesID': invoiceByUser.pk,
+                'MainSeries': invoiceByUser.series,
+                'MainNumber': i.numberMain
+            }
+            un_used_invoice_id_list.append(un_used_invoice_id_dic)
+
+    data = {
+        'Used': used_invoice_id_list,
+        'UnUsed': un_used_invoice_id_list,
+        # 'Upcoming': upcoming_serials_invoice_id_list,
 
     }
     return JsonResponse({'data': data})
@@ -2245,6 +2281,7 @@ def search_invoice(request):
                 return JsonResponse({'message': 'fail'})
 
 
+@functools.lru_cache(maxsize=256)
 def skipped_invoice(request):
     if 'Both' in request.user.groups.values_list('name', flat=True):
         invoiceByUser = InvoiceSeries.objects.select_related().filter(isDeleted__exact=False)
@@ -2351,6 +2388,7 @@ def take_cash_collection(request):
             return JsonResponse({'message': 'fail'})
 
 
+@functools.lru_cache(maxsize=256)
 def get_today_collection_by_company(request):
     if 'Both' in request.user.groups.values_list('name', flat=True):
         col = MoneyCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
@@ -2376,6 +2414,7 @@ def get_today_collection_by_company(request):
     return JsonResponse({'message': 'success', 'data': c_list})
 
 
+@functools.lru_cache(maxsize=256)
 def get_today_cash_collection_by_company(request):
     if 'Both' in request.user.groups.values_list('name', flat=True):
         col = CashMoneyCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
@@ -2440,22 +2479,14 @@ def add_party_from_sales(request):
             return JsonResponse({'message': 'fail'})
 
 
+@functools.lru_cache(maxsize=256)
 def get_buyer_list(request):
     q = request.GET.get('q')
-    buyer = Buyer.objects.select_related().filter(name__icontains=q, isDeleted__exact=False).order_by('name')
-    c_list = []
-    for c in buyer:
-        data = {
-            'Name': c.name,
-            'Phone': c.phoneNumber,
-            'ID': c.pk,
-            'Address': c.address,
-
-        }
-
-        c_list.append(data)
-
-    return JsonResponse({'message': 'success', 'data': c_list})
+    buyers = Buyer.objects.filter(name__icontains=q, isDeleted__exact=False).order_by('name').values('name',
+                                                                                                     'phoneNumber',
+                                                                                                     'pk', 'address')
+    buyer_list = list(buyers)
+    return JsonResponse({'message': 'success', 'data': buyer_list})
 
 
 @csrf_exempt
@@ -2480,6 +2511,7 @@ def change_password_for_sales_user(request):
             return JsonResponse({'message': 'fail'})
 
 
+@functools.lru_cache(maxsize=256)
 def get_last_three_invoices(request, *args, **kwargs):
     if 'Both' in request.user.groups.values_list('name', flat=True):
         invoiceByUser = InvoiceSeries.objects.select_related().filter(isCompleted__exact=False, isDeleted__exact=False)
@@ -3355,10 +3387,11 @@ def generate_collection_report_for_cashier(request):
 
 import base64
 
+
 def share_order_to_whatsapp_pdf(request):
     date = datetime.today().date()
     ID = request.GET.get('ID')
-    col = TakeOrder.objects.select_related().get(isDeleted__exact=False,pk = int(ID) )
+    col = TakeOrder.objects.select_related().get(isDeleted__exact=False, pk=int(ID))
     try:
         # with open(col.orderPic, "rb") as img_file:
         my_string = base64.b64encode(col.orderPic.file.read())
@@ -3384,7 +3417,6 @@ def share_order_to_whatsapp_pdf(request):
     return response
 
 
-
 def generate_order_report_admin(request):
     companyID = request.GET.get('companyID')
     gDate = request.GET.get('gDate')
@@ -3393,7 +3425,7 @@ def generate_order_report_admin(request):
 
     company = Company.objects.select_related().get(pk=int(companyID))
     col = TakeOrder.objects.select_related().filter(datetime__icontains=day_string, companyID_id=int(companyID),
-                                                          isDeleted__exact=False).exclude(
+                                                    isDeleted__exact=False).exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
 
     context = {
@@ -3409,7 +3441,6 @@ def generate_order_report_admin(request):
 
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5;  }')])
     return response
-
 
 
 def generate_order_report_manager(request):
@@ -3429,11 +3460,12 @@ def generate_order_report_manager(request):
         if b.stockGroupID is not None:
             s_list.append(b.stockGroupID.name)
     col = TakeOrder.objects.select_related().filter(datetime__icontains=day_string,
-                                                          isDeleted__exact=False, orderTakenBy__in=a_list, stockGroup__in=s_list).exclude(
+                                                    isDeleted__exact=False, orderTakenBy__in=a_list,
+                                                    stockGroup__in=s_list).exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
 
     context = {
-        'name':user.name,
+        'name': user.name,
         'date': gDate,
         'col': col,
 
