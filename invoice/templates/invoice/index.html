@@ -304,7 +304,7 @@
                                         <div class="col-sm-6 col-xs-6">
                                             <div class="form-group"><br>
                                                 <input type="number" class="form-control" id="cash" aria-describedby=""
-                                                       placeholder="Rs.">
+                                                       placeholder="Rs." autofocus>
 
                                             </div>
                                         </div>
@@ -1042,6 +1042,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#cash').focus()
         }
         if (t === 'credit') {
             $('#Card').css('display', 'none');
@@ -1061,6 +1062,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#credit').focus()
         }
         if (t === 'card') {
             $('#Card').css('display', '');
@@ -1080,6 +1082,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#cardd').focus();
         }
         if (t === 'collection') {
             $('#Card').css('display', 'none');
@@ -1096,6 +1099,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#partyAmount1').focus()
         }
         if (t === 'cc') {
             $('#Card').css('display', 'none');
@@ -1112,6 +1116,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#partyAmount').focus()
         }
         if (t === 'return') {
             $('#Card').css('display', 'none');
@@ -1128,6 +1133,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#AmountReturn').focus()
         }
         if (t === 'commission') {
             $('#Card').css('display', 'none');
@@ -1144,6 +1150,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#AmountCommission').focus()
         }
         if (t === 'correction') {
             $('#Card').css('display', 'none');
@@ -1160,6 +1167,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#AmountCorrection').focus()
         }
         if (t === 'mix') {
             $('#Card').css('display', 'none');
@@ -1179,6 +1187,7 @@
             $('#Mix').css('display', '');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', 'none');
+            $('#mixCash').focus()
         }
         if (t === 'expense') {
             $('#Card').css('display', 'none');
@@ -1195,6 +1204,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', '');
             $('#Advance').css('display', 'none');
+            $('#exAmount').focus()
         }
 
         if (t === 'advance') {
@@ -1212,6 +1222,7 @@
             $('#Mix').css('display', 'none');
             $('#Expense').css('display', 'none');
             $('#Advance').css('display', '');
+            $('#partyAmountAdvance').focus()
         }
     }
 
@@ -1280,6 +1291,7 @@
                                 $('#p6').html(response.data['Remark']);
 
                                 window.print();
+                                $('#cash').focus();
                             } else {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
@@ -1348,6 +1360,7 @@
                                 $('#p6').html(response.data['Remark']);
 
                                 window.print();
+                                $('#cardd').focus();
                             } else {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
@@ -1416,6 +1429,7 @@
                                 $('#p6').html(response.data['Remark']);
 
                                 window.print();
+                                $('#mixCash').focus();
                             } else {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
@@ -1469,7 +1483,8 @@
                                 $(getInvoiceDetails(id));
                                 getRecentThreeInvoices();
                                 $('#billNumber').val('');
-                                $('.collapse').collapse('hide')
+                                $('.collapse').collapse('hide');
+                                $('#credit').focus();
                             } else {
                                 $('#name_status').addClass('validate_data');
                                 $('#name_status').html(response.message).fadeIn().fadeOut(2000);
@@ -1524,6 +1539,7 @@
                             $('#SearchForm')[0].reset();
                             getCollectionDetails();
                             $('#save').attr('disabled', false);
+                            $('#partyAmount1').focus();
                         },
                         error: function () {
                             errMsg();
@@ -1568,6 +1584,7 @@
                             $('#SearchForm')[0].reset();
                             getCashCollectionDetails();
                             $('#save').attr('disabled', false);
+                            $('#partyAmount').focus();
                         },
                         error: function () {
                             errMsg();
@@ -1611,6 +1628,7 @@
                             $('#SearchForm')[0].reset();
                             getStaffAdvanceDetails();
                             $('#save').attr('disabled', false);
+                            $('#partyAmountAdvance').focus();
                         },
                         error: function () {
                             errMsg();
@@ -1653,6 +1671,7 @@
                             getReturnDetails();
                             $('#SearchForm')[0].reset();
                             $('#save').attr('disabled', false);
+                            $('#AmountReturn').focus();
                         },
                         error: function () {
                             errMsg();
@@ -1700,6 +1719,7 @@
                             $('#SearchForm')[0].reset();
                             getCommissionDetails();
                             $('#save').attr('disabled', false);
+                            $('#AmountCommission').focus();
                         },
                         error: function () {
                             errMsg();
@@ -1745,6 +1765,7 @@
                                 $('#p5').html(response.data['ModeOfPayment']);
                                 $('#p6').html(response.data['Remark']);
                                 window.print();
+                                $('#AmountCorrection').focus();
 
 
                             }
@@ -1789,6 +1810,7 @@
                             getExpenseDetails();
                             $('#SearchForm')[0].reset();
                             $('#save').attr('disabled', false);
+                            $('#exAmount').focus();
                         },
                         error: function () {
                             errMsg();

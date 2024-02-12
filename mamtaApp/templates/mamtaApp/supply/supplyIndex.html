@@ -652,7 +652,7 @@
                     $('#CustomerCol').append('<option  value="" selected>Search Party</option>');
 
                     for (i in response.data) {
-                        $('#CustomerCol').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                        $('#CustomerCol').append('<option  data-subtext="' + response.data[i]["address"] + '" value="' + response.data[i]["pk"] + '">' + response.data[i]["name"] + '</option>');
 
                     }
                 },
@@ -842,8 +842,8 @@
 
                         for (i in response.data) {
 
-                            $('#supplier').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
-                            $('#supplierInvoice').append('<option  data-subtext="' + response.data[i]["Address"] + '" value="' + response.data[i]["ID"] + '">' + response.data[i]["Name"] + '</option>');
+                            $('#supplier').append('<option  data-subtext="' + response.data[i]["address"] + '" value="' + response.data[i]["pk"] + '">' + response.data[i]["name"] + '</option>');
+                            $('#supplierInvoice').append('<option  data-subtext="' + response.data[i]["address"] + '" value="' + response.data[i]["pk"] + '">' + response.data[i]["name"] + '</option>');
 
 
                         }
