@@ -8,7 +8,7 @@
     <style>
         @page {
             size: A4 landscape;
-            margin: .3cm;
+            margin: .1cm;
         }
 
         section {
@@ -30,7 +30,7 @@
 {% for d in data %}
     <p style="font-size: 10px; margin: 2px;">For {{ d.month }}</p>
     <section>
-        <table class="table table-bordered" style="font-size: 9px;">
+        <table class="table table-bordered" style="font-size: 8px;">
             <thead>
             <tr>
                 <th scope="col">Name</th>
@@ -46,7 +46,7 @@
             <tbody>
             {% for e in d.emp %}
                 <tr>
-                    <td>{{ e.Name|truncatechars:10 }}</td>
+                    <td>{{ e.Name|truncatechars:9 }}</td>
                     {% for aa in e.attendance %}
                         <td>{{ aa }}</td>
                     {% endfor %}
