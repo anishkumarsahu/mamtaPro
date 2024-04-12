@@ -169,7 +169,7 @@
 
                         <div class="header">
                             <h2>
-                                COLLECTION (CHEQUE)
+                                COLLECTION (Upi/Bank Transfer)
                             </h2>
                         </div>
                         <div class="body">
@@ -181,6 +181,7 @@
                                         <th>Sl. No</th>
                                         <th>PartyName</th>
                                         <th>Amount(₹)</th>
+                                        <th>Mode</th>
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
                                         <th>Remark</th>
@@ -196,6 +197,7 @@
                                         <th>Sl. No</th>
                                         <th>PartyName</th>
                                         <th>Amount(₹)</th>
+                                        <th>Mode</th>
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
                                         <th>Remark</th>
@@ -359,7 +361,8 @@
                                         <select class="form-control show-tick" id="PayMethodCol"
                                                 name="PayMethodCol">
                                             <option value="Cash">Cash</option>
-                                            <option value="Cheque">Cheque</option>
+                                            <option value="UPI">UPI</option>
+                                            <option value="Bank Transfer">Bank Transfer</option>
 
 
                                         </select>
@@ -445,15 +448,16 @@
                     {"name": "id", "targets": 0, "orderable": false},
                     {"name": "buyerID.name", "targets": 1, "orderable": true},
                     {"name": "amount", "targets": 2, "orderable": true},
-                    {"name": "collectedBy.name", "targets": 3, "orderable": true},
-                    {"name": "approvedBy", "targets": 4, "orderable": true},
-                    {"name": "remark", "targets": 5, "orderable": true},
-                    {"name": "Location", "targets": 6, "orderable": true},
-                    {"name": "datetime", "targets": 7, "orderable": true},
-                    {"name": "action", "targets": 8, "orderable": false},
-                    {"name": "action1", "targets": 9, "orderable": false},
+                    {"name": "paymentMode", "targets": 3, "orderable": true},
+                    {"name": "collectedBy.name", "targets": 4, "orderable": true},
+                    {"name": "approvedBy", "targets": 5, "orderable": true},
+                    {"name": "remark", "targets": 6, "orderable": true},
+                    {"name": "Location", "targets": 7, "orderable": true},
+                    {"name": "datetime", "targets": 8, "orderable": true},
+                    {"name": "action", "targets": 9, "orderable": false},
+                    {"name": "action1", "targets": 10, "orderable": false},
                 ],
-                aaSorting: [[7, 'desc']],
+                aaSorting: [[8, 'desc']],
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "pageLength": 10,
                 "processing": true,

@@ -2581,15 +2581,22 @@ def generate_collection_report_accounts(request):
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
-    supCheque = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+    supUpi = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                    companyID_id=int(companyID),
                                                                    isDeleted__exact=False,
                                                                    isApproved__exact=True,
-                                                                   paymentMode='Cheque').exclude(
+                                                                   paymentMode='UPI').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
-    sup_total_cheque = 0.0
-    for cheque in supCheque:
-        sup_total_cheque = sup_total_cheque + cheque.amount
+
+    supBank = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+                                                                companyID_id=int(companyID),
+                                                                isDeleted__exact=False,
+                                                                isApproved__exact=True,
+                                                                paymentMode='Bank Transfer').exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+    sup_total_Upi = 0.0
+    for obj in supUpi:
+        sup_total_Upi = sup_total_Upi + obj.amount
 
     supInvoice = SupplierInvoiceCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                            companyID_id=int(companyID),
@@ -2614,11 +2621,18 @@ def generate_collection_report_accounts(request):
                                                                          paymentMode='Cash').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
 
-    supCheque_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+    supUpi_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                            companyID_id=int(companyID),
                                                                            isApproved__exact=False,
                                                                            isDeleted__exact=False,
-                                                                           paymentMode='Cheque').exclude(
+                                                                           paymentMode='UPI').exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+
+    supBank_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+                                                                        companyID_id=int(companyID),
+                                                                        isApproved__exact=False,
+                                                                        isDeleted__exact=False,
+                                                                        paymentMode='Bank Transfer').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     context = {
         'date': gDate,
@@ -2629,13 +2643,15 @@ def generate_collection_report_accounts(request):
         'col_total_cash': 0,
         'supCash': supCash,
         'sup_total_cash': 0,
-        'supCheque': supCheque,
+        'supUpi': supUpi,
+        'supUpi_pending': supUpi_pending,
         'sup_total_cheque': 0,
         'invoice_total': 0,
         'invoices': supInvoice,
         'supInvoice_pending': supInvoice_pending,
         'supCash_pending': supCash_pending,
-        'supCheque_pending': supCheque_pending,
+        'supBank': supBank,
+        'supBank_pending': supBank_pending,
 
     }
 
@@ -2680,15 +2696,25 @@ def generate_collection_report_admin(request):
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
-    supCheque = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+    supUpi = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                    companyID_id=int(companyID),
                                                                    isDeleted__exact=False,
                                                                    isApproved__exact=True,
-                                                                   paymentMode='Cheque').exclude(
+                                                                   paymentMode='UPI').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
-    sup_total_cheque = 0.0
-    for cheque in supCheque:
-        sup_total_cheque = sup_total_cheque + cheque.amount
+    sup_total_upi = 0.0
+    for obj in supUpi:
+        sup_total_upi = sup_total_upi + obj.amount
+
+    supBank = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+                                                                   companyID_id=int(companyID),
+                                                                   isDeleted__exact=False,
+                                                                   isApproved__exact=True,
+                                                                   paymentMode='Bank Transfer').exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+    sup_total_bank = 0.0
+    for obj in supBank:
+        sup_total_bank = sup_total_bank + obj.amount
 
     supInvoice = SupplierInvoiceCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                            companyID_id=int(companyID),
@@ -2713,11 +2739,21 @@ def generate_collection_report_admin(request):
                                                                          paymentMode='Cash').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
 
-    supCheque_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
-                                                                           companyID_id=int(companyID),
-                                                                           isApproved__exact=False,
-                                                                           isDeleted__exact=False,
-                                                                           paymentMode='Cheque').exclude(
+    supUpi_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+                                                                companyID_id=int(companyID),
+                                                                isDeleted__exact=False,
+                                                                isApproved__exact=False,
+                                                                paymentMode='UPI').exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+    sup_total_upi = 0.0
+    for obj in supUpi:
+        sup_total_upi = sup_total_upi + obj.amount
+
+    supBank_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+                                                                 companyID_id=int(companyID),
+                                                                 isDeleted__exact=False,
+                                                                 isApproved__exact=False,
+                                                                 paymentMode='Bank Transfer').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     context = {
         'date': gDate,
@@ -2728,13 +2764,16 @@ def generate_collection_report_admin(request):
         'col_total_cash': col_total_cash,
         'supCash': supCash,
         'sup_total_cash': sup_total_cash,
-        'supCheque': supCheque,
-        'sup_total_cheque': sup_total_cheque,
+        'supUpi': supUpi,
+        'sup_total_upi': sup_total_upi,
+        'supBank': supBank,
+        'sup_total_bank': sup_total_bank,
         'invoice_total': sup_total_inv,
         'invoices': supInvoice,
         'supInvoice_pending': supInvoice_pending,
         'supCash_pending': supCash_pending,
-        'supCheque_pending': supCheque_pending,
+        'supUpi_pending': supUpi_pending,
+        'supBank_pending': supBank_pending,
 
     }
 
@@ -2758,14 +2797,23 @@ def generate_collection_report_supplier(request):
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
-    supCheque = SupplierCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
+    supUpi = SupplierCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
                                                                    collectedBy__userID_id=request.user.pk,
-                                                                   paymentMode='Cheque',
+                                                                   paymentMode='UPI',
                                                                    isDeleted__exact=False, ).exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
-    sup_total_cheque = 0.0
-    for cheque in supCheque:
-        sup_total_cheque = sup_total_cheque + cheque.amount
+    sup_total_upi = 0.0
+    for upi in supUpi:
+        sup_total_upi = sup_total_upi + upi.amount
+
+    supBank = SupplierCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
+                                                                collectedBy__userID_id=request.user.pk,
+                                                                paymentMode='Bank Transfer',
+                                                                isDeleted__exact=False, ).exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+    sup_total_supBank = 0.0
+    for obj in supBank:
+        sup_total_supBank = sup_total_supBank + obj.amount
 
     supInvoice = SupplierInvoiceCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
                                                                            collectedBy__userID_id=request.user.pk,
@@ -2780,8 +2828,10 @@ def generate_collection_report_supplier(request):
         'company': user.name,
         'supCash': supCash,
         'sup_total_cash': sup_total_cash,
-        'supCheque': supCheque,
-        'sup_total_cheque': sup_total_cheque,
+        'supUpi': supUpi,
+        'sup_total_upi': sup_total_upi,
+        'supBank': supBank,
+        'sup_total_supBank': sup_total_supBank,
         'invoice_total': sup_total_inv,
         'invoices': supInvoice
 

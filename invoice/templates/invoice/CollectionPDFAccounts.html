@@ -11,13 +11,6 @@
             {#margin: .3cm;#}
         }
 
-        {#section {#}
-        {#    columns: 1;#}
-        {#}#}
-     {% comment %}   table{
-            width: 100%;
-        }{% endcomment %}
-
         .skip {
             columns: 7;
         }
@@ -108,7 +101,7 @@
         </table>
     </section>
     <hr>
-    <p style="font-size: 10px; margin: 2px;">Supply Collection (CC)(Approved)</p>
+    <p style="font-size: 10px; margin: 2px;">Supply Collection (UPI)(Approved)</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -120,7 +113,31 @@
             </tr>
             </thead>
             <tbody>
-            {% for foo in supCheque %}
+            {% for foo in supUpi %}
+                <tr>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.remark }}</td>
+                  <td>{{ foo.Location|truncatewords:5 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    <hr>
+ <p style="font-size: 10px; margin: 2px;">Supply Collection (Bank Transfer)(Approved)</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+                  <th scope="col">Location</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in supBank %}
                 <tr>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
@@ -184,7 +201,7 @@
         </table>
     </section>
     <hr>
-    <p style="font-size: 10px; margin: 2px;">Supply Collection (CC)(Not Approved)</p>
+    <p style="font-size: 10px; margin: 2px;">Supply Collection (UPI)(Not Approved)</p>
     <section>
         <table class="table table-bordered" style="font-size: 9px;">
             <thead>
@@ -196,7 +213,31 @@
             </tr>
             </thead>
             <tbody>
-            {% for foo in supCheque_pending %}
+            {% for foo in supUpi_pending %}
+                <tr>
+                    <td>{{ foo.amount }}</td>
+                    <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.remark }}</td>
+                  <td>{{ foo.Location|truncatewords:5 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    <hr>
+    <p style="font-size: 10px; margin: 2px;">Supply Collection (Bank Transfer)(Not Approved)</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Amount(₹)</th>
+                <th scope="col">Cus_Name</th>
+                <th scope="col">Remark</th>
+                  <th scope="col">Location</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in supBank_pending %}
                 <tr>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.buyerID.name|truncatechars:20 }}</td>

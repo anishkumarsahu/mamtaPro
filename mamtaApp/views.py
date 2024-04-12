@@ -861,7 +861,7 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
 
 
 class SupplierCollectionAdminListChequeJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'approvedBy', 'remark','Location', 'datetime','action', 'action1']
+    order_columns = ['id', 'buyerID.name', 'amount','paymentMode', 'collectedBy.name', 'approvedBy', 'remark','Location', 'datetime','action', 'action1']
 
     def get_initial_queryset(self):
 
@@ -874,23 +874,23 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
         if staff == 'all':
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
-                                                                      paymentMode__exact='Cheque',
+
                                                                       isDeleted__exact=False).exclude(
-                datetime__lt=last_3_month_date)
+                datetime__lt=last_3_month_date).exclude(paymentMode__exact='Cash')
         else:
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
-                                                                      paymentMode__exact='Cheque',
+
                                                                       isDeleted__exact=False,
                                                                       collectedBy=int(staff)).exclude(
-                datetime__lt=last_3_month_date)
+                datetime__lt=last_3_month_date).exclude(paymentMode__exact='Cash')
 
     def filter_queryset(self, qs):
 
         search = self.request.GET.get('search[value]', None)
         if search:
             qs = qs.filter(
-                Q(Location__icontains=search) |Q(amount__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
+                Q(Location__icontains=search) |Q(amount__icontains=search) |Q(paymentMode__icontains=search) | Q(remark__icontains=search) | Q(datetime__icontains=search) | Q(
                     collectedBy__name__icontains=search)| Q(
                     buyerID__name__icontains=search)).order_by(
                 '-id')
@@ -925,6 +925,7 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
                 escape(i),
                 escape(item.buyerID.name),
                 escape(item.amount),  # escape HTML for security reasons
+                escape(item.paymentMode),  # escape HTML for security reasons
                 escape(item.collectedBy.name),  # escape HTML for security reasons
                 escape(item.approvedBy),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
@@ -939,7 +940,7 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
 
 
 class SupplierCollectionListChequeJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name', 'remark','Location', 'datetime','action']
+    order_columns = ['id', 'buyerID.name', 'amount','paymentMode', 'collectedBy.name', 'remark','Location', 'datetime','action']
 
     def get_initial_queryset(self):
 
@@ -953,18 +954,18 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
         if staff == 'all':
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
-                                                                      paymentMode__exact='Cheque',
+
                                                                       collectedBy__companyID_id=user.companyID_id,
                                                                       isDeleted__exact=False).exclude(
-                datetime__lt=last_3_month_date)
+                datetime__lt=last_3_month_date).exclude(paymentMode__exact='Cash')
         else:
             return SupplierCollection.objects.select_related().filter(datetime__gte=startDate,
                                                                       datetime__lte=endDate + timedelta(days=1),
-                                                                      paymentMode__exact='Cheque',
+
                                                                       isDeleted__exact=False,
                                                                       collectedBy=int(staff),
                                                                       collectedBy__companyID_id=user.companyID_id).exclude(
-                datetime__lt=last_3_month_date)
+                datetime__lt=last_3_month_date).exclude(paymentMode__exact='Cash')
 
     def filter_queryset(self, qs):
 
@@ -993,6 +994,7 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
                 escape(i),
                 escape(item.buyerID.name),
                 escape(item.amount),  # escape HTML for security reasons
+                escape(item.paymentMode),  # escape HTML for security reasons
                 escape(item.collectedBy.name),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
                 escape(item.Location),  # escape HTML for security reasons
