@@ -1,5 +1,6 @@
 import calendar
 from collections import OrderedDict
+from functools import lru_cache
 
 from django.contrib import messages
 from django.contrib.auth.models import Group
@@ -178,14 +179,14 @@ class EmployeeListForAttendanceJson(BaseDatatableView):
                     action = action + '''<button type="button" class="btn btn-success">{}
                                         </button>   '''.format(attend.loginTime.strftime('%I:%M %p'))
 
-                if attend.logoutTime is None and attend.loginTime is not None :
+                if attend.logoutTime is None and attend.loginTime is not None:
                     action = action + '''   <button type="button" class="btn btn-danger" data-toggle="modal"
                                                 data-target="#myModal_out" onclick="logoutModal({})">LOGOUT</button>'''.format(
                         item.pk)
                 elif attend.logoutTime is None and attend.loginTime is None:
                     action = action + '''   <button type="button" class="btn btn-danger disabled" data-toggle="modal"
                                                            data-target="#myModal_out">LOGOUT</button>'''.format(
-                    item.pk)
+                        item.pk)
                 else:
 
                     action = action + '''   <button type="button" class="btn btn-success">{}
@@ -286,8 +287,8 @@ class EmployeeListForAttendanceAdminJson(BaseDatatableView):
             if attend.loginTime is not None and attend.logoutTime is not None:
                 if ((datetime.strptime(item.outTime.strftime('%H:%M'), "%H:%M") - datetime.strptime(
                         item.outTime.strftime('%H:%M'), "%H:%M")) >= (
-                    datetime.strptime(attend.logoutTime.strftime('%H:%M'), "%H:%M") - datetime.strptime(
-                        attend.loginTime.strftime('%H:%M'), "%H:%M"))):
+                        datetime.strptime(attend.logoutTime.strftime('%H:%M'), "%H:%M") - datetime.strptime(
+                    attend.loginTime.strftime('%H:%M'), "%H:%M"))):
                     status = 'Punctual'
                 else:
                     status = 'Early Leaving'
@@ -308,9 +309,10 @@ class EmployeeListForAttendanceAdminJson(BaseDatatableView):
             i = i + 1
         return json_data
 
+
 class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
-    order_columns = ['id', 'photo', 'name', 'loginTime','loginPhoto'
-                      'logoutTime', 'logoutPhoto']
+    order_columns = ['id', 'photo', 'name', 'loginTime', 'loginPhoto'
+                                                         'logoutTime', 'logoutPhoto']
 
     def get_initial_queryset(self):
 
@@ -341,14 +343,12 @@ class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
                 attend.attendanceDate = startDate.date()
                 attend.save()
 
-
             if attend.loginTime is None:
                 loginTime = 'N/A'
 
             else:
                 loginTime = '''<button type="button" class="btn btn-info">{}
                                     </button>   '''.format(attend.loginTime.strftime('%I:%M %p'))
-
 
             if attend.logoutTime is None:
                 logoutTime = 'N/A'
@@ -361,12 +361,14 @@ class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
             if not attend.loginPhoto:
                 loginPhoto = 'N/A'
             else:
-                loginPhoto = '''<img class="imageTable zoom" src="{}" alt="" >'''.format(attend.loginPhoto.thumbnail.url),
+                loginPhoto = '''<img class="imageTable zoom" src="{}" alt="" >'''.format(
+                    attend.loginPhoto.thumbnail.url),
 
             if not attend.logoutPhoto:
                 logoutPhoto = 'N/A'
             else:
-                logoutPhoto = '''<img class="imageTable zoom" src="{}" alt="" >'''.format(attend.logoutPhoto.thumbnail.url),
+                logoutPhoto = '''<img class="imageTable zoom" src="{}" alt="" >'''.format(
+                    attend.logoutPhoto.thumbnail.url),
 
             json_data.append([
                 escape(i),
@@ -380,7 +382,6 @@ class EmployeeListForAttendanceAdminBasicJson(BaseDatatableView):
             ])
             i = i + 1
         return json_data
-
 
 
 @check_group('System')
@@ -627,7 +628,8 @@ def login_post_api(request):
             format, imgstr = photo.split(';base64,')
             ext = format.split('/')[-1]
 
-            data = ContentFile(base64.b64decode(imgstr), name='{}/temp.'.format(datetime.today().date()) + ext)  # You can save this as file instance
+            data = ContentFile(base64.b64decode(imgstr), name='{}/temp.'.format(
+                datetime.today().date()) + ext)  # You can save this as file instance
             attend.loginPhoto = data
             attend.save()
 
@@ -654,7 +656,8 @@ def logout_post_api(request):
             format, imgstr = photo.split(';base64,')
             ext = format.split('/')[-1]
 
-            data = ContentFile(base64.b64decode(imgstr), name='{}/temp.'.format(datetime.today().date()) + ext)  # You can save this as file instance
+            data = ContentFile(base64.b64decode(imgstr), name='{}/temp.'.format(
+                datetime.today().date()) + ext)  # You can save this as file instance
             attend.logoutPhoto = data
             attend.logoutSystemID_id = request.user.pk
             attend.save()
@@ -664,213 +667,123 @@ def logout_post_api(request):
         except:
             return JsonResponse({'response': 'error'}, safe=False)
 
-day_name= ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday']
-import  calendar
+
+day_name = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+import calendar
+
 def genereate_attendence_report(request):
+    # Parse request parameters
     sDate = request.GET.get('startDate')
     eDate = request.GET.get('endDate')
     staff = request.GET.get('staff')
+
     startDate = datetime.strptime(sDate, '%d/%m/%Y')
     endDate = datetime.strptime(eDate, '%d/%m/%Y')
-    delta = endDate - startDate
     today = datetime.today().date()
-    dates = [str(startDate.date()), str(endDate.date())]
-    start, end = [datetime.strptime(_, "%Y-%m-%d") for _ in dates]
 
-    if start == end:
-        start = start+ timedelta(days=-1)
-    x= OrderedDict(((start + timedelta(_)).strftime(r"%Y-%m"), None) for _ in range((end - start).days)).keys()
+    # Ensure correct date order
+    if startDate > endDate:
+        startDate, endDate = endDate, startDate
+
+    # Get the range of months
+    months = OrderedDict(((startDate + timedelta(_)).strftime(r"%Y-%m"), None)
+                         for _ in range((endDate - startDate).days + 1)).keys()
+
+    # Fetch employees based on the staff parameter
     if staff == 'all':
-        data = []
-
-        for d in list(x):
-
-            qs = Employee.objects.select_related().filter(isDeleted__exact=False)
-            emp_list = []
-            for e in qs:
-
-                p_count =0
-                a_count =0
-                na_count = 0
-                hd_count = 0
-                att = []
-                for i in range(1, calendar.monthrange(start.year, start.month)[1]+1):
-
-                    if i < 10:
-                        i = "0{}".format(i)
-                        day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
-
-                        try:
-                            attend = EmployeeAttendance.objects.select_related().get(employeeID__id=e.pk,
-                                                                                     attendanceDate__icontains=d + "-{}".format(
-                                                                                         i))
-
-                            if attend.loginTime is None and attend.logoutTime is None:
-                                if day_name[day] == 'Sunday':
-                                    att.append('H')
-                                    na_count = na_count + 1
-                                else:
-                                    att.append('A')
-                                    a_count = a_count + 1
-                            elif attend.loginTime is not None and attend.logoutTime is None:
-                                att.append('HD')
-                                hd_count = hd_count + 1
-                            else:
-                                if attend.logoutTime.strftime("%H:%M:%S") < "16:00:00":
-                                    att.append('HD')
-                                    hd_count = hd_count + 1
-                                else:
-                                    att.append('P')
-                                    p_count = p_count + 1
-                        except:
-                            att.append('H')
-                            na_count = na_count +1
-                    else:
-                        day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
-
-                        try:
-                            attend = EmployeeAttendance.objects.select_related().get(employeeID__id=e.pk,
-                                                                                     attendanceDate__icontains=d + "-{}".format(
-                                                                                         i))
-
-                            if attend.loginTime is None and attend.logoutTime is None:
-                                if day_name[day] == 'Sunday':
-                                    att.append('H')
-                                    na_count = na_count + 1
-                                else:
-                                    att.append('A')
-                                    a_count = a_count + 1
-
-                            elif attend.loginTime is not None and attend.logoutTime is None:
-
-                                att.append('HD')
-                                hd_count = hd_count + 1
-
-                            else:
-                                if attend.logoutTime.strftime("%H:%M:%S") < "16:00:00":
-                                    att.append('HD')
-                                    hd_count = hd_count + 1
-                                else:
-                                    att.append('P')
-                                    p_count = p_count + 1
-                        except:
-                            att.append('H')
-                            na_count = na_count + 1
-
-
-                emp_dic = {
-                    'Name': e.name,
-                    'attendance': att,
-                    'A': a_count,
-                    'P': p_count,
-                    'NA': na_count,
-                    'HD': hd_count
-
-                }
-                emp_list.append(emp_dic)
-            data_dic = {
-                'month':d,
-                'emp':emp_list
-
-            }
-            data.append(data_dic)
-
-
-        context = {
-            'data': data,
-            'report': 1,
-            'today': today,
-            'days': range(0,calendar.monthrange(start.year, start.month)[1])
-
-        }
-
-        response = HttpResponse(content_type="application/pdf")
-        response['Content-Disposition'] = "report.pdf"
-        html = render_to_string("attendance/attendancePDFreport.html", context)
-
-        HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A4 landscape; margin: .3cm ; }')])
-        return response
-
+        employees = Employee.objects.filter(isDeleted=False).select_related()
     else:
-        data = []
+        employees = Employee.objects.filter(isDeleted=False, pk=int(staff)).select_related()
 
-        for d in list(x):
+    # Pre-fetch attendance records for all required days and employees
+    attendance_records = EmployeeAttendance.objects.filter(
+        attendanceDate__range=(startDate, endDate),
+        employeeID__in=[e.pk for e in employees]
+    ).select_related('employeeID')
 
-            qs = Employee.objects.select_related().filter(isDeleted__exact=False, pk=int(staff))
-            emp_list = []
-            for e in qs:
+    # Organize attendance records in a dictionary for quick access
+    attendance_dict = {(record.employeeID_id, record.attendanceDate.strftime('%Y-%m-%d')): record
+                       for record in attendance_records}
 
-                p_count = 0
-                a_count = 0
-                na_count = 0
-                hd_count = 0
-                att = []
-                for i in  range(1, calendar.monthrange(start.year, start.month)[1]+1):
-                    if i < 10:
-                        i = "0{}".format(i)
-                        day = datetime.strptime(d + "-{}".format(i), '%Y-%m-%d').weekday()
+    # Prepare the report data
+    data = []
 
-                    try:
+    for month in months:
+        emp_list = []
 
-                        attend = EmployeeAttendance.objects.select_related().get(employeeID__id=e.pk,
-                                                                                 attendanceDate__icontains=d + "-{}".format(
-                                                                                     i))
+        # Determine the number of days in the month
+        month_start_date = datetime.strptime(month, '%Y-%m')
+        days_in_month = calendar.monthrange(month_start_date.year, month_start_date.month)[1]
 
-                        if attend.loginTime is None and attend.logoutTime is None:
+        # Iterate over each employee
+        for employee in employees:
+            att = []
+            p_count = 0
+            a_count = 0
+            na_count = 0
+            hd_count = 0
 
-                            if day_name[day] == 'Sunday':
-                                att.append('H')
-                                na_count = na_count + 1
-                            else:
-                                att.append('A')
-                                a_count = a_count + 1
-                        elif attend.loginTime is not None and attend.logoutTime is None:
+            # Iterate over each day in the month
+            for day in range(1, days_in_month + 1):
+                date_str = "{}-{:02d}".format(month, day)
+                date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+                weekday = date_obj.weekday()
 
-                            att.append('HD')
-                            hd_count = hd_count + 1
+                # Check attendance record for the specific employee and date
+                attend = attendance_dict.get((employee.pk, date_str))
 
+                if attend:
+                    if attend.loginTime is None and attend.logoutTime is None:
+                        if day_name[weekday] == 'Sunday':
+                            att.append('H')
+                            na_count += 1
                         else:
-                            if attend.logoutTime.strftime("%H:%M:%S") < "16:00:00":
-                                att.append('HD')
-                                hd_count = hd_count + 1
-                            else:
-                                att.append('P')
-                                p_count = p_count + 1
-                    except:
-                        att.append('H')
-                        na_count = na_count + 1
+                            att.append('A')
+                            a_count += 1
+                    elif attend.logoutTime is None or attend.logoutTime.strftime("%H:%M:%S") < "16:00:00":
+                        att.append('HD')
+                        hd_count += 1
+                    else:
+                        att.append('P')
+                        p_count += 1
+                else:
+                    # Default to holiday if no attendance record is found
+                    att.append('H')
+                    na_count += 1
 
-                emp_dic = {
-                    'Name': e.name,
-                    'attendance': att,
-                    'A': a_count,
-                    'P': p_count,
-                    'NA': na_count,
-                    'HD': hd_count
-
-                }
-                emp_list.append(emp_dic)
-            data_dic = {
-                'month': d,
-                'emp': emp_list
-
+            # Create employee attendance summary
+            emp_dic = {
+                'Name': employee.name,
+                'attendance': att,
+                'A': a_count,
+                'P': p_count,
+                'NA': na_count,
+                'HD': hd_count
             }
-            data.append(data_dic)
+            emp_list.append(emp_dic)
 
-        context = {
-            'data': data,
-            'report': 1,
-            'today': today,
-            'days':range(0,calendar.monthrange(start.year, start.month)[1])
-
+        # Create month summary
+        data_dic = {
+            'month': month,
+            'emp': emp_list
         }
+        data.append(data_dic)
 
-        response = HttpResponse(content_type="application/pdf")
-        response['Content-Disposition'] = "report.pdf"
-        html = render_to_string("attendance/attendancePDFreport.html", context)
+    # Render the PDF report
+    context = {
+        'data': data,
+        'report': 1,
+        'today': today,
+        'days': range(1, days_in_month + 1)
+    }
 
-        HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A4 landscape; margin: .3cm ; }')])
-        return response
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "attachment; filename=report.pdf"
+    html = render_to_string("attendance/attendancePDFreport.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A4 landscape; margin: .3cm ; }')])
+
+    return response
 
 
 def demoReport(request):

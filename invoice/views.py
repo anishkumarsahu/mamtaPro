@@ -1523,21 +1523,21 @@ def generate_net_report(request):
     invoiceByUser = InvoiceSeries.objects.select_related().filter(companyID_id=user.companyID_id,
                                                                   isCompleted__exact=False,
                                                                   isDeleted__exact=False)
-    for invoice in invoiceByUser:
-        try:
-            last_sale = Sales.objects.select_related().filter(InvoiceSeriesID_id=invoice.pk).order_by(
-                '-numberMain').first()
-
-            for i in InvoiceSerial.objects.select_related().filter(numberMain__gte=int(invoice.startsWith),
-                                                                   numberMain__lt=int(last_sale.numberMain)
-                                                                   ).order_by('-numberMain')[0:200]:
-                try:
-                    sale = Sales.objects.select_related().get(numberMain__exact=i.numberMain,
-                                                              InvoiceSeriesID_id=invoice.pk)
-                except:
-                    skipped_list.append(str(invoice.series) + str(i.number))
-        except:
-            pass
+    # for invoice in invoiceByUser:
+    #     try:
+    #         last_sale = Sales.objects.select_related().filter(InvoiceSeriesID_id=invoice.pk).order_by(
+    #             '-numberMain').first()
+    #
+    #         for i in InvoiceSerial.objects.select_related().filter(numberMain__gte=int(invoice.startsWith),
+    #                                                                numberMain__lt=int(last_sale.numberMain)
+    #                                                                ).order_by('-numberMain')[0:200]:
+    #             try:
+    #                 sale = Sales.objects.select_related().get(numberMain__exact=i.numberMain,
+    #                                                           InvoiceSeriesID_id=invoice.pk)
+    #             except:
+    #                 skipped_list.append(str(invoice.series) + str(i.number))
+    #     except:
+    #         pass
     returns = ReturnCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
                                                                isDeleted__exact=False,
                                                                companyID_id=user.companyID_id).order_by(
