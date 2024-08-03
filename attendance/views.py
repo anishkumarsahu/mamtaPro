@@ -1,9 +1,12 @@
 import calendar
-from collections import OrderedDict
+import time
+from collections import OrderedDict, defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 
 from django.contrib import messages
 from django.contrib.auth.models import Group
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -669,7 +672,98 @@ def logout_post_api(request):
 
 
 day_name = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-import calendar
+
+
+# def process_employee_attendance(employee, month, days_in_month, attendance_dict):
+#     att = []
+#     p_count = a_count = na_count = hd_count = 0
+#
+#     # Iterate over each day in the month
+#     for day in range(1, days_in_month + 1):
+#         date_str = "{}-{:02d}".format(month, day)
+#         date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+#         weekday = date_obj.weekday()
+#
+#         # Check attendance record for the specific employee and date
+#         attend = attendance_dict.get((employee.pk, date_str))
+#
+#         if attend:
+#             if attend.loginTime is None and attend.logoutTime is None:
+#                 if weekday == 6:  # Sunday
+#                     att.append('H')
+#                     na_count += 1
+#                 else:
+#                     att.append('A')
+#                     a_count += 1
+#             elif attend.logoutTime is None or attend.logoutTime.strftime("%H:%M:%S") < "16:00:00":
+#                 att.append('HD')
+#                 hd_count += 1
+#             else:
+#                 att.append('P')
+#                 p_count += 1
+#         else:
+#             # Default to holiday if no attendance record is found
+#             att.append('H')
+#             na_count += 1
+#
+#     return {
+#         'Name': employee.name,
+#         'attendance': att,
+#         'A': a_count,
+#         'P': p_count,
+#         'NA': na_count,
+#         'HD': hd_count
+#     }
+
+
+def process_employee_attendance(employee, month, days_in_month, attendance_dict):
+    att = []
+    p_count = a_count = na_count = hd_count = 0
+
+    # Iterate over each day in the month
+    for day in range(1, days_in_month + 1):
+        date_str = "{}-{:02d}".format(month, day)
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        weekday = date_obj.weekday()
+
+        # Check attendance record for the specific employee and date
+        attend = attendance_dict.get((employee.pk, date_str))
+
+        if attend:
+            if attend.loginTime is None and attend.logoutTime is None:
+                if weekday == 6:  # Sunday
+                    att.append('H')
+                    na_count += 1
+                else:
+                    att.append('A')
+                    a_count += 1
+            elif attend.logoutTime is None or attend.logoutTime.strftime("%H:%M:%S") < "16:00:00":
+                att.append('HD')
+                hd_count += 1
+            else:
+                att.append('P')
+                p_count += 1
+        else:
+            # Default to holiday if no attendance record is found
+            att.append('H')
+            na_count += 1
+
+    return {
+        'Name': employee.name,
+        'attendance': att,
+        'A': a_count,
+        'P': p_count,
+        'NA': na_count,
+        'HD': hd_count
+    }
+
+def process_employee_attendance_batch(employees, month, days_in_month, attendance_dict):
+    results = []
+    with ThreadPoolExecutor() as executor:
+        future_to_employee = {executor.submit(process_employee_attendance, emp, month, days_in_month, attendance_dict): emp for emp in employees}
+        for future in as_completed(future_to_employee):
+            results.append(future.result())
+    return results
 
 def genereate_attendence_report(request):
     # Parse request parameters
@@ -686,100 +780,53 @@ def genereate_attendence_report(request):
         startDate, endDate = endDate, startDate
 
     # Get the range of months
-    months = OrderedDict(((startDate + timedelta(_)).strftime(r"%Y-%m"), None)
+    months = OrderedDict(((startDate + timedelta(days=_)).strftime(r"%Y-%m"), None)
                          for _ in range((endDate - startDate).days + 1)).keys()
 
     # Fetch employees based on the staff parameter
-    if staff == 'all':
-        employees = Employee.objects.filter(isDeleted=False).select_related()
-    else:
-        employees = Employee.objects.filter(isDeleted=False, pk=int(staff)).select_related()
+    employees = Employee.objects.filter(isDeleted=False).order_by('name') if staff == 'all' else \
+        Employee.objects.filter(isDeleted=False, pk=int(staff)).order_by('name')
 
-    # Pre-fetch attendance records for all required days and employees
-    attendance_records = EmployeeAttendance.objects.filter(
-        attendanceDate__range=(startDate, endDate),
-        employeeID__in=[e.pk for e in employees]
-    ).select_related('employeeID')
-
-    # Organize attendance records in a dictionary for quick access
-    attendance_dict = {(record.employeeID_id, record.attendanceDate.strftime('%Y-%m-%d')): record
-                       for record in attendance_records}
+    # Paginate employees to process in chunks
+    paginator = Paginator(employees, 30)  # Process 30 employees per batch
 
     # Prepare the report data
     data = []
 
     for month in months:
-        emp_list = []
-
-        # Determine the number of days in the month
         month_start_date = datetime.strptime(month, '%Y-%m')
         days_in_month = calendar.monthrange(month_start_date.year, month_start_date.month)[1]
 
-        # Iterate over each employee
-        for employee in employees:
-            att = []
-            p_count = 0
-            a_count = 0
-            na_count = 0
-            hd_count = 0
+        for page_number in paginator.page_range:
+            page = paginator.page(page_number)
+            employee_ids = list(page.object_list.values_list('pk', flat=True))
 
-            # Iterate over each day in the month
-            for day in range(1, days_in_month + 1):
-                date_str = "{}-{:02d}".format(month, day)
-                date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-                weekday = date_obj.weekday()
+            # Fetch all attendance records for the current page of employees
+            attendance_records = EmployeeAttendance.objects.filter(
+                attendanceDate__range=(startDate, endDate),
+                employeeID__in=employee_ids
+            ).select_related('employeeID')
 
-                # Check attendance record for the specific employee and date
-                attend = attendance_dict.get((employee.pk, date_str))
+            attendance_dict = defaultdict(lambda: None, {
+                (record.employeeID_id, record.attendanceDate.strftime('%Y-%m-%d')): record
+                for record in attendance_records
+            })
 
-                if attend:
-                    if attend.loginTime is None and attend.logoutTime is None:
-                        if day_name[weekday] == 'Sunday':
-                            att.append('H')
-                            na_count += 1
-                        else:
-                            att.append('A')
-                            a_count += 1
-                    elif attend.logoutTime is None or attend.logoutTime.strftime("%H:%M:%S") < "16:00:00":
-                        att.append('HD')
-                        hd_count += 1
-                    else:
-                        att.append('P')
-                        p_count += 1
-                else:
-                    # Default to holiday if no attendance record is found
-                    att.append('H')
-                    na_count += 1
-
-            # Create employee attendance summary
-            emp_dic = {
-                'Name': employee.name,
-                'attendance': att,
-                'A': a_count,
-                'P': p_count,
-                'NA': na_count,
-                'HD': hd_count
-            }
-            emp_list.append(emp_dic)
-
-        # Create month summary
-        data_dic = {
-            'month': month,
-            'emp': emp_list
-        }
-        data.append(data_dic)
+            # Process employees in parallel
+            data.extend(process_employee_attendance_batch(page.object_list, month, days_in_month, attendance_dict))
 
     # Render the PDF report
     context = {
+        'Month': startDate.strftime('%B-%Y'),
         'data': data,
         'report': 1,
         'today': today,
-        'days': range(1, days_in_month + 1)
+        'days': range(1, days_in_month + 1)  # Ensure days_in_month is defined correctly
     }
 
+    html = render_to_string('attendance/attendancePDFreport.html', context)
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = "attachment; filename=report.pdf"
-    html = render_to_string("attendance/attendancePDFreport.html", context)
 
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A4 landscape; margin: .3cm ; }')])
 

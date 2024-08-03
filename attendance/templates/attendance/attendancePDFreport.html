@@ -54,8 +54,8 @@ tr:hover {
     </div>
 
 </div>
-{% for d in data %}
-    <p style="font-size: 10px; margin: 2px;">For {{ d.month }}</p>
+
+    <p style="font-size: 10px; margin: 2px;">For {{ Month }}</p>
     <section>
         <table class="table table-bordered" style="font-size: 8px;">
             <thead>
@@ -70,10 +70,11 @@ tr:hover {
                 <th scope="col">H's</th>
             </tr>
             </thead>
+
             <tbody>
-            {% for e in d.emp %}
+            {% for e in data %}
                 <tr>
-                    <td>{{ e.Name|truncatechars:9 }}</td>
+                    <td>{{ e.Name|truncatechars:12 }}</td>
                     {% for aa in e.attendance %}
                         <td>{{ aa }}</td>
                     {% endfor %}
@@ -85,8 +86,9 @@ tr:hover {
             {% endfor %}
 
             </tbody>
+
         </table>
     </section>
-{% endfor %}
+
 </body>
 </html>
