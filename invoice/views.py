@@ -2118,7 +2118,7 @@ def generate_monthly_report_admin(request):
                                                                        companyID_id=int(companyID),
                                                                        isDeleted__exact=False,
                                                                        isApproved__exact=True,
-                                                                       paymentMode='Cheque').exclude(
+                                                                       paymentMode='UPI').exclude(
             datetime__lt=last_3_month_date)
 
         supplier_cheque_total = 0.0
@@ -2133,10 +2133,11 @@ def generate_monthly_report_admin(request):
 
         s_list_cheque.append(sup_dic_cheque)
 
-        si_col = SupplierInvoiceCollection.objects.select_related().filter(datetime__icontains=day_string,
+        si_col = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                            companyID_id=int(companyID),
                                                                            isApproved__exact=True,
                                                                            isDeleted__exact=False,
+                                                                    paymentMode='Bank Transfer'
                                                                            ).exclude(
             datetime__lt=last_3_month_date).order_by('datetime')
 

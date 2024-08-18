@@ -1,17 +1,16 @@
 // Define the version of the cache, allowing for easy updates
-const CACHE_VERSION = 'v1.1.28';
+const CACHE_VERSION = 'v1.1.37';
 const CACHE_NAME = `${CACHE_VERSION}::fundamentals`;
 const MAX_CACHE_ITEMS = 100; // Limit the number of items in the cache
-const MAX_RETRIES =8; // Increased number of retries for large files
+const MAX_RETRIES = 8; // Increased number of retries for large files
 
 // Define the list of URLs to cache
 const URLS_TO_CACHE = [
     // Your list of URLs to cache
 ];
 
-// List of file extensions and MIME types to cache
+// List of file extensions to cache
 const CACHEABLE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'svg', 'css', 'js'];
-const CACHEABLE_CONTENT_TYPES = ['image/', 'text/css', 'application/javascript', 'application/json'];
 
 // List of URL patterns to skip retry logic
 const NO_RETRY_URL_PATTERNS = [
@@ -203,8 +202,7 @@ function isCacheable(response, url) {
 
     return (
         (scheme === 'http:' || scheme === 'https:') &&
-        (CACHEABLE_EXTENSIONS.includes(extension) ||
-        CACHEABLE_CONTENT_TYPES.some((type) => contentType.startsWith(type)))
+        (CACHEABLE_EXTENSIONS.includes(extension))
     );
 }
 
