@@ -53,7 +53,7 @@ admin.site.register(CashMoneyCollection,CashMoneyCollectionAdmin)
 
 
 class SupplyCollectionAdmin(admin.ModelAdmin):
-    list_display = ['buyerID','collectedBy','amount','remark','Location','datetime']
+    list_display = ['buyerID','collectedBy','amount','remark','Location','datetime','approvedOn']
 
 admin.site.register(SupplierCollection,SupplyCollectionAdmin)
 

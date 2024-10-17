@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>123DACN</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <style>
         @page {
             size: A5;
@@ -19,12 +18,20 @@
             columns: 7;
         }
 
-        table.table-bordered > thead > tr > th {
-            border: 1px solid grey !important;
+       table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
         }
 
-        table.table-bordered > tbody > tr > td {
-            border: 1px solid grey !important;
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 5px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
         }
     </style>
 </head>
@@ -64,6 +71,7 @@
             <tr>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Cus_Name</th>
+                <th scope="col">EntryOn</th>
                 <th scope="col">Remark</th>
             </tr>
             </thead>
@@ -72,6 +80,7 @@
                 <tr>
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
+                    <td>{{ foo.datetime|date:"Y-m-d H:i" }}</td>
                     <td></td>
 
                 </tr>

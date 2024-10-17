@@ -785,7 +785,7 @@ class SupplierCollectionListCashJson(BaseDatatableView):
 
 
 class SupplierCollectionAdminListCashJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name','approvedBy', 'remark','Location', 'datetime','action','action1']
+    order_columns = ['id', 'buyerID.name', 'amount', 'collectedBy.name','approvedBy','approvedOn', 'remark','Location', 'datetime','action','action1']
 
     def get_initial_queryset(self):
 
@@ -840,15 +840,20 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
                 button = '''
                  <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
                            data-target="#defaultModalApprove" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
+                approvedOn="N/A"
             else:
                 button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
-
+                if item.approvedOn is None or item.approvedOn =="":
+                    approvedOn = item.lastUpdatedOn.strftime('%d-%m-%Y %I:%M %p') if item.lastUpdatedOn else item.datetime.strftime('%d-%m-%Y %I:%M %p')
+                else:
+                    approvedOn = item.approvedOn.strftime('%d-%m-%Y %I:%M %p')
             json_data.append([
                 escape(i),
                 escape(item.buyerID.name),
                 escape(item.amount),  # escape HTML for security reasons
                 escape(item.collectedBy.name),  # escape HTML for security reasons
                 escape(item.approvedBy),  # escape HTML for security reasons
+                escape(approvedOn),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
                 escape(item.Location),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
@@ -861,7 +866,7 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
 
 
 class SupplierCollectionAdminListChequeJson(BaseDatatableView):
-    order_columns = ['id', 'buyerID.name', 'amount','paymentMode', 'collectedBy.name', 'approvedBy', 'remark','Location', 'datetime','action', 'action1']
+    order_columns = ['id', 'buyerID.name', 'amount','paymentMode', 'collectedBy.name', 'approvedBy', 'approvedOn', 'remark','Location', 'datetime','action', 'action1']
 
     def get_initial_queryset(self):
 
@@ -918,8 +923,13 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
                 button = '''
                 <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
                            data-target="#defaultModalApprove" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
+                approvedOn = 'N/A'
             else:
                 button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
+                if item.approvedOn is None or item.approvedOn =="":
+                    approvedOn = item.lastUpdatedOn.strftime('%d-%m-%Y %I:%M %p') if item.lastUpdatedOn else item.datetime.strftime('%d-%m-%Y %I:%M %p')
+                else:
+                    approvedOn = item.approvedOn.strftime('%d-%m-%Y %I:%M %p')
 
             json_data.append([
                 escape(i),
@@ -928,6 +938,7 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
                 escape(item.paymentMode),  # escape HTML for security reasons
                 escape(item.collectedBy.name),  # escape HTML for security reasons
                 escape(item.approvedBy),  # escape HTML for security reasons
+                escape(approvedOn),  # escape HTML for security reasons
                 escape(item.remark),  # escape HTML for security reasons
                 escape(item.Location),  # escape HTML for security reasons
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
@@ -2054,6 +2065,7 @@ def approve_collection_supplier_api(request):
         try:
             collection = SupplierCollection.objects.select_related().get(pk=int(collectionID))
             collection.isApproved = True
+            collection.approvedOn = datetime.today().now()
             user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
             collection.approvedBy = user.name
             collection.save()

@@ -44,6 +44,7 @@
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Party Name</th>
                 <th scope="col">Payment Mode</th>
+                <th scope="col">EntryOn</th>
                 <th scope="col">Remark</th>
             </tr>
             </thead>
@@ -53,6 +54,7 @@
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
                     <td>{{ foo.paymentMode }}</td>
+                    <td>{{ foo.datetime|date:"Y-m-d H:i" }}</td>
                     <td><{{ foo.remark }}/td>
 
                 </tr>
@@ -63,6 +65,7 @@
                     <td>{{ foo.amount }}</td>
                     <td>{{ foo.buyerID.name|truncatechars:20 }}</td>
                     <td>Invoice</td>
+                    <td>{{ foo.datetime|date:"Y-m-d H:i" }}</td>
                     <td><{{ foo.remark }}/td>
 
                 </tr>

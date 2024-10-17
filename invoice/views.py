@@ -1061,17 +1061,17 @@ def get_invoice_series(request, *args, **kwargs):
     }
     return JsonResponse({'data': data})
 
+
 @functools.lru_cache(maxsize=256)
 def get_invoice_series_load_more(request, *args, **kwargs):
     id = request.GET.get('id')
     last_id = request.GET.get('last_id')
-    used_invoice_id_list=[]
-    un_used_invoice_id_list =[]
+    used_invoice_id_list = []
+    un_used_invoice_id_list = []
     invoiceByUser = InvoiceSeries.objects.select_related().get(pk=int(id), isDeleted__exact=False)
 
-
     for i in InvoiceSerial.objects.filter(numberMain__gt=int(last_id)).order_by(
-        'numberMain')[:20]:
+            'numberMain')[:20]:
         try:
             sale = Sales.objects.select_related().get(numberMain__exact=i.numberMain,
                                                       InvoiceSeriesID_id=int(id))
@@ -1737,7 +1737,8 @@ def generate_net_report_admin(request):
     for cash in colCash:
         col_total_cash = col_total_cash + cash.amount
 
-    supCash = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+    supCash = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
                                                                  companyID_id=int(companyID),
                                                                  isApproved__exact=True, paymentMode='Cash',
                                                                  isDeleted__exact=False, ).exclude(
@@ -2095,7 +2096,8 @@ def generate_monthly_report_admin(request):
 
         col_list_cash.append(col_dic_cash)
 
-        supCash = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+        supCash = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
                                                                      companyID_id=int(companyID),
                                                                      isDeleted__exact=False,
                                                                      isApproved__exact=True,
@@ -2114,7 +2116,8 @@ def generate_monthly_report_admin(request):
 
         s_list_cash.append(sup_dic_cash)
 
-        supCheque = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+        supCheque = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
                                                                        companyID_id=int(companyID),
                                                                        isDeleted__exact=False,
                                                                        isApproved__exact=True,
@@ -2133,12 +2136,13 @@ def generate_monthly_report_admin(request):
 
         s_list_cheque.append(sup_dic_cheque)
 
-        si_col = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
-                                                                           companyID_id=int(companyID),
-                                                                           isApproved__exact=True,
-                                                                           isDeleted__exact=False,
+        si_col = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
+                                                                    companyID_id=int(companyID),
+                                                                    isApproved__exact=True,
+                                                                    isDeleted__exact=False,
                                                                     paymentMode='Bank Transfer'
-                                                                           ).exclude(
+                                                                    ).exclude(
             datetime__lt=last_3_month_date).order_by('datetime')
 
         si_total = 0.0
@@ -2573,7 +2577,8 @@ def generate_collection_report_accounts(request):
     for cash in colCash:
         col_total_cash = col_total_cash + cash.amount
 
-    supCash = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+    supCash = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
                                                                  companyID_id=int(companyID), isDeleted__exact=False,
                                                                  isApproved__exact=True, paymentMode='Cash').exclude(
         datetime__lt=last_3_month_date).order_by(
@@ -2582,18 +2587,20 @@ def generate_collection_report_accounts(request):
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
-    supUpi = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
-                                                                   companyID_id=int(companyID),
-                                                                   isDeleted__exact=False,
-                                                                   isApproved__exact=True,
-                                                                   paymentMode='UPI').exclude(
-        datetime__lt=last_3_month_date).order_by('datetime')
-
-    supBank = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+    supUpi = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
                                                                 companyID_id=int(companyID),
                                                                 isDeleted__exact=False,
                                                                 isApproved__exact=True,
-                                                                paymentMode='Bank Transfer').exclude(
+                                                                paymentMode='UPI').exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+
+    supBank = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
+                                                                 companyID_id=int(companyID),
+                                                                 isDeleted__exact=False,
+                                                                 isApproved__exact=True,
+                                                                 paymentMode='Bank Transfer').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     sup_total_Upi = 0.0
     for obj in supUpi:
@@ -2623,17 +2630,17 @@ def generate_collection_report_accounts(request):
         datetime__lt=last_3_month_date).order_by('datetime')
 
     supUpi_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
-                                                                           companyID_id=int(companyID),
-                                                                           isApproved__exact=False,
-                                                                           isDeleted__exact=False,
-                                                                           paymentMode='UPI').exclude(
-        datetime__lt=last_3_month_date).order_by('datetime')
-
-    supBank_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                         companyID_id=int(companyID),
                                                                         isApproved__exact=False,
                                                                         isDeleted__exact=False,
-                                                                        paymentMode='Bank Transfer').exclude(
+                                                                        paymentMode='UPI').exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+
+    supBank_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+                                                                         companyID_id=int(companyID),
+                                                                         isApproved__exact=False,
+                                                                         isDeleted__exact=False,
+                                                                         paymentMode='Bank Transfer').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     context = {
         'date': gDate,
@@ -2688,16 +2695,21 @@ def generate_collection_report_admin(request):
     for cash in colCash:
         col_total_cash = col_total_cash + cash.amount
 
-    supCash = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
-                                                                 companyID_id=int(companyID), isDeleted__exact=False,
-                                                                 isApproved__exact=True, paymentMode='Cash').exclude(
-        datetime__lt=last_3_month_date).order_by(
-        'datetime')
+    supCash = SupplierCollection.objects.select_related().filter(Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
+    companyID_id=int(companyID),
+    isDeleted__exact=False,
+    isApproved__exact=True,
+    paymentMode='Cash'
+).exclude(
+    datetime__lt=last_3_month_date
+).order_by('datetime')
     sup_total_cash = 0.0
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
-    supUpi = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+    supUpi = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
                                                                    companyID_id=int(companyID),
                                                                    isDeleted__exact=False,
                                                                    isApproved__exact=True,
@@ -2707,7 +2719,8 @@ def generate_collection_report_admin(request):
     for obj in supUpi:
         sup_total_upi = sup_total_upi + obj.amount
 
-    supBank = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+    supBank = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
                                                                    companyID_id=int(companyID),
                                                                    isDeleted__exact=False,
                                                                    isApproved__exact=True,
@@ -2741,20 +2754,20 @@ def generate_collection_report_admin(request):
         datetime__lt=last_3_month_date).order_by('datetime')
 
     supUpi_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
-                                                                companyID_id=int(companyID),
-                                                                isDeleted__exact=False,
-                                                                isApproved__exact=False,
-                                                                paymentMode='UPI').exclude(
+                                                                        companyID_id=int(companyID),
+                                                                        isDeleted__exact=False,
+                                                                        isApproved__exact=False,
+                                                                        paymentMode='UPI').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     sup_total_upi = 0.0
     for obj in supUpi:
         sup_total_upi = sup_total_upi + obj.amount
 
     supBank_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
-                                                                 companyID_id=int(companyID),
-                                                                 isDeleted__exact=False,
-                                                                 isApproved__exact=False,
-                                                                 paymentMode='Bank Transfer').exclude(
+                                                                         companyID_id=int(companyID),
+                                                                         isDeleted__exact=False,
+                                                                         isApproved__exact=False,
+                                                                         paymentMode='Bank Transfer').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     context = {
         'date': gDate,
@@ -2788,8 +2801,10 @@ def generate_collection_report_admin(request):
 
 def generate_collection_report_supplier(request):
     user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
+    day_string = datetime.today().date()
 
-    supCash = SupplierCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
+    supCash = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
                                                                  collectedBy__userID_id=request.user.pk,
                                                                  paymentMode='Cash', isDeleted__exact=False, ).exclude(
         datetime__lt=last_3_month_date).order_by(
@@ -2798,19 +2813,21 @@ def generate_collection_report_supplier(request):
     for cash in supCash:
         sup_total_cash = sup_total_cash + cash.amount
 
-    supUpi = SupplierCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
-                                                                   collectedBy__userID_id=request.user.pk,
-                                                                   paymentMode='UPI',
-                                                                   isDeleted__exact=False, ).exclude(
+    supUpi = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
+                                                                collectedBy__userID_id=request.user.pk,
+                                                                paymentMode='UPI',
+                                                                isDeleted__exact=False, ).exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     sup_total_upi = 0.0
     for upi in supUpi:
         sup_total_upi = sup_total_upi + upi.amount
 
-    supBank = SupplierCollection.objects.select_related().filter(datetime__icontains=datetime.today().date(),
-                                                                collectedBy__userID_id=request.user.pk,
-                                                                paymentMode='Bank Transfer',
-                                                                isDeleted__exact=False, ).exclude(
+    supBank = SupplierCollection.objects.select_related().filter( Q(approvedOn__isnull=False, approvedOn__icontains=day_string) |
+    Q(approvedOn__isnull=True, datetime__icontains=day_string),
+                                                                 collectedBy__userID_id=request.user.pk,
+                                                                 paymentMode='Bank Transfer',
+                                                                 isDeleted__exact=False, ).exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     sup_total_supBank = 0.0
     for obj in supBank:

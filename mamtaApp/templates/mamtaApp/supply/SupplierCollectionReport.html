@@ -131,6 +131,7 @@
                                         <th>Amount(₹)</th>
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
+                                        <th>ApprovedOn</th>
                                         <th>Remark</th>
                                         <th>Location</th>
                                         <th>Collected On</th>
@@ -145,6 +146,7 @@
                                         <th>Amount(₹)</th>
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
+                                        <th>ApprovedOn</th>
                                         <th>Remark</th>
                                         <th>Location</th>
                                         <th>Collected On</th>
@@ -184,6 +186,7 @@
                                         <th>Mode</th>
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
+                                        <th>ApprovedOn</th>
                                         <th>Remark</th>
                                         <th>Location</th>
                                         <th>Collected On</th>
@@ -200,6 +203,7 @@
                                         <th>Mode</th>
                                         <th>Collected By</th>
                                         <th>ApprovedBy</th>
+                                        <th>ApprovedOn</th>
                                         <th>Remark</th>
                                         <th>Location</th>
                                         <th>Collected On</th>
@@ -425,13 +429,14 @@
                     {"name": "amount", "targets": 2, "orderable": true},
                     {"name": "collectedBy.name", "targets": 3, "orderable": true},
                     {"name": "approvedBy", "targets": 4, "orderable": true},
-                    {"name": "remark", "targets": 5, "orderable": true},
-                    {"name": "Location", "targets": 6, "orderable": true},
-                    {"name": "datetime", "targets": 7, "orderable": true},
-                    {"name": "action", "targets": 8, "orderable": false},
-                    {"name": "action1", "targets": 9, "orderable": false},
+                    {"name": "approvedOn", "targets": 5, "orderable": true},
+                    {"name": "remark", "targets": 6, "orderable": true},
+                    {"name": "Location", "targets": 7, "orderable": true},
+                    {"name": "datetime", "targets": 8, "orderable": true},
+                    {"name": "action", "targets": 9, "orderable": false},
+                    {"name": "action1", "targets": 10, "orderable": false},
                 ],
-                aaSorting: [[7, 'desc']],
+                aaSorting: [[8, 'desc']],
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "pageLength": 10,
                 "processing": true,
@@ -451,13 +456,14 @@
                     {"name": "paymentMode", "targets": 3, "orderable": true},
                     {"name": "collectedBy.name", "targets": 4, "orderable": true},
                     {"name": "approvedBy", "targets": 5, "orderable": true},
-                    {"name": "remark", "targets": 6, "orderable": true},
-                    {"name": "Location", "targets": 7, "orderable": true},
-                    {"name": "datetime", "targets": 8, "orderable": true},
-                    {"name": "action", "targets": 9, "orderable": false},
-                    {"name": "action1", "targets": 10, "orderable": false},
+                    {"name": "approvedOn", "targets": 6, "orderable": true},
+                    {"name": "remark", "targets": 7, "orderable": true},
+                    {"name": "Location", "targets": 8, "orderable": true},
+                    {"name": "datetime", "targets": 9, "orderable": true},
+                    {"name": "action", "targets": 10, "orderable": false},
+                    {"name": "action1", "targets": 11, "orderable": false},
                 ],
-                aaSorting: [[8, 'desc']],
+                aaSorting: [[9, 'desc']],
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "pageLength": 10,
                 "processing": true,

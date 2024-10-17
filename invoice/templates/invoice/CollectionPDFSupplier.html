@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>123DACN</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <style>@page {
         size: A5;
         margin: .3cm;
@@ -18,14 +17,21 @@
         columns: 7;
     }
 
-    table.table-bordered > thead > tr > th {
-        border: 1px solid grey !important;
-    }
+   table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-    table.table-bordered > tbody > tr > td {
-        border: 1px solid grey !important;
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 5px;
+        }
 
-    }
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
     </style>
 </head>
 <body>
@@ -41,6 +47,7 @@
             <tr>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Cus_Name</th>
+                <th scope="col">EntryOn</th>
                 <th scope="col">Remark</th>
             </tr>
             </thead>
@@ -52,6 +59,9 @@
                     </td>
                     <td><span
                             style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.buyerID.name|truncatechars:20 }}</span>
+                    </td>
+                    <td><span
+                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.datetime|date:"Y-m-d H:i" }}</span>
                     </td>
                     <td>
                         <span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.remark }}</span>
@@ -68,6 +78,7 @@
             <tr>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Cus_Name</th>
+                <th scope="col">EntryOn</th>
                 <th scope="col">Remark</th>
             </tr>
             </thead>
@@ -79,6 +90,9 @@
                     </td>
                     <td><span
                             style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.buyerID.name|truncatechars:20 }}</span>
+                    </td>
+                    <td><span
+                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.datetime|date:"Y-m-d H:i" }}</span>
                     </td>
                     <td>
                         <span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.remark }}</span>
@@ -95,6 +109,7 @@
             <tr>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Cus_Name</th>
+                <th scope="col">EntryOn</th>
                 <th scope="col">Remark</th>
             </tr>
             </thead>
@@ -106,6 +121,9 @@
                     </td>
                     <td><span
                             style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.buyerID.name|truncatechars:20 }}</span>
+                    </td>
+                    <td><span
+                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.datetime|date:"Y-m-d H:i" }}</span>
                     </td>
                     <td>
                         <span style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}"> {{ foo.remark }}</span>
@@ -123,6 +141,7 @@
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
                 <th scope="col">Cus_Name</th>
+                <th scope="col">EntryOn</th>
                 <th scope="col">Remark</th>
             </tr>
             </thead>
@@ -130,13 +149,19 @@
             {% for foo in invoices %}
                 <tr>
                     <td> <span
-                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.invoiceNumber }}</span></td>
+                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.invoiceNumber }}</span>
+                    </td>
                     <td> <span
-                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.amount }}</span></td>
+                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.amount }}</span>
+                    </td>
                     <td><span
-                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.buyerID.name|truncatechars:20 }}</span></td>
+                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.buyerID.name|truncatechars:20 }}</span>
+                    </td> <td><span
+                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.datetime|date:"Y-m-d H:i" }}</span>
+                    </td>
                     <td><span
-                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.remark }}</span></td>
+                            style="{% if foo.isApproved == True %}color: green!important; {% else %} color: red!important; {% endif %}">{{ foo.remark }}</span>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
