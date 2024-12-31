@@ -162,6 +162,7 @@
             <tr>
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
+                 <th scope="col">E-Time</th>
             </tr>
             </thead>
             <tbody>
@@ -169,6 +170,7 @@
                 <tr>
                     <td>{{ foo.actualBillNumber }}</td>
                     <td>-{{ foo.amount }}</td>
+                 <td>{{ foo.datetime|time:"h:i a" }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -182,6 +184,7 @@
             <tr>
                 <th scope="col">InvoiceNo.</th>
                 <th scope="col">Amount(₹)</th>
+                 <th scope="col">E-Time</th>
             </tr>
             </thead>
             <tbody>
@@ -189,6 +192,7 @@
                 <tr>
                     <td>{{ foo.actualBillNumber }}</td>
                     <td>{{ foo.amount }}</td>
+                 <td>{{ foo.datetime|time:"h:i a" }}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -223,6 +227,7 @@
             <tr>
                 <th scope="col">Remark</th>
                 <th scope="col">Amount(₹)</th>
+                 <th scope="col">E-Time</th>
             </tr>
             </thead>
             <tbody>
@@ -230,6 +235,7 @@
                 <tr>
                     <td>{{ foo.remark }}</td>
                     <td>{{ foo.amount }}</td>
+                 <td>{{ foo.datetime|time:"h:i a" }}</td>
                 </tr>
             {% endfor %}
 

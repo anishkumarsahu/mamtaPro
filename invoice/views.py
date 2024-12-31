@@ -14,7 +14,7 @@ from weasyprint import HTML, CSS
 
 from mamtaApp.views import check_group
 from .models import *
-
+from django.core.cache import cache
 # Create your views here.
 
 last_3_month_date = datetime.today().date() - timedelta(days=45)
@@ -2465,6 +2465,7 @@ def add_party_from_sales(request):
                 buy.address = pAddress
                 buy.closingBalance = 0.0
                 buy.save()
+                cache.delete('buyer_list_search')
 
                 c_list = []
 
@@ -2484,13 +2485,45 @@ def add_party_from_sales(request):
             return JsonResponse({'message': 'fail'})
 
 
-@functools.lru_cache(maxsize=256)
+# def get_buyer_list(request):
+#     q = request.GET.get('q', '').strip()
+#     cache_key = 'buyer_list_'+q
+#     data = cache.get(cache_key)
+#
+#     if not data:
+#         buyers = Buyer.objects.filter(
+#             name__icontains=q, isDeleted=False
+#         ).order_by('name').values('name', 'phoneNumber', 'pk', 'address')
+#         data = list(buyers)
+#         cache.set(cache_key, data, timeout=60 * 10)  # Cache for 10 minutes
+#     return JsonResponse({'message': 'success', 'data': data})
+
+
+
 def get_buyer_list(request):
-    q = request.GET.get('q')
-    buyers = Buyer.objects.filter(name__icontains=q, isDeleted__exact=False).order_by('name').values('name',
-                                                                                                     'phoneNumber',
-                                                                                                     'pk', 'address')
+    q = request.GET.get('q', '')
+    cache_key = str('buyer_list_search')  # Unique cache key based on the search query
+    try:
+        cached_data = cache.get(str(cache_key))
+    except:
+        cached_data = None
+
+    if cached_data:
+        filtered_data = [
+            buyer for buyer in cached_data
+            if buyer.get('name') and q.lower() in buyer['name'].lower()
+        ]
+        # If data is found in the cache, return it
+        return JsonResponse({'message': 'success', 'data': filtered_data})
+
+    # If not in cache, fetch from the database
+    buyers = Buyer.objects.filter( isDeleted=False
+    ).order_by('name').values('name', 'phoneNumber', 'pk', 'address')
+
     buyer_list = list(buyers)
+
+    # Store the fetched data in Redis
+    cache.set(cache_key, buyer_list, timeout=None)  # Cache for 1 day
     return JsonResponse({'message': 'success', 'data': buyer_list})
 
 

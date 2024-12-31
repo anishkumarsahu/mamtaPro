@@ -4,6 +4,7 @@ from functools import wraps
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
+from django.core.cache import cache
 from django.db.models import Q, Sum
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1622,6 +1623,7 @@ def add_buyer_api(request):
             buyer.closingBalance = float(closingBalance)
 
             buyer.save()
+            cache.delete('buyer_list_search')
             messages.success(request, 'New buyer added successfully.')
 
             return redirect('/buyers/')
@@ -1647,6 +1649,7 @@ def edit_buyer_api(request):
             buyer.address = address
             buyer.closingBalance = closingBalance
             buyer.save()
+            cache.delete('buyer_list_search')
             messages.success(request, 'Buyer details edited successfully.')
 
             return redirect('/buyers/')
@@ -1664,6 +1667,7 @@ def delete_buyer_api(request):
             buyer = Buyer.objects.select_related().get(pk=int(buyerID))
             buyer.isDeleted = True
             buyer.save()
+            cache.delete('buyer_list_search')
             messages.success(request, 'Buyer detail deleted successfully.')
 
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

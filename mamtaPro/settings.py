@@ -243,3 +243,14 @@ PWA_APP_ICONS = [
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'mamtaApp', '../static/sw/sw.js')
 SESSION_COOKIE_AGE = 30*60
 SESSION_SAVE_EVERY_REQUEST = True
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',  # Redis instance location
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'TIMEOUT': None,  # Cache timeout in seconds
+    }
+}
