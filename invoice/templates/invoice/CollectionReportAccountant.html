@@ -133,6 +133,7 @@
                                         <th>Company</th>
                                         <th>CollectedBy</th>
                                         <th>CollectedOn</th>
+                                        <th>Action</th>
                                     </tr>
                                     </thead>
                                     <tfoot>
@@ -144,6 +145,7 @@
                                         <th>Company</th>
                                         <th>CollectedBy</th>
                                         <th>CollectedOn</th>
+                                        <th>Action</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
@@ -179,6 +181,7 @@
                                         <th>Company</th>
                                         <th>CollectedBy</th>
                                         <th>CollectedOn</th>
+                                        <th>Action</th>
                                     </tr>
                                     </thead>
                                     <tfoot>
@@ -190,6 +193,7 @@
                                         <th>Company</th>
                                         <th>CollectedBy</th>
                                         <th>CollectedOn</th>
+                                        <th>Action</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
@@ -292,6 +296,68 @@
 
         </div>
     </section>
+
+       <div class="modal fade" id="defaultModalInvoiceEdit" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form  method="post" id="EditSalesForm"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Edit Invoice</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="invoiceID" id="invoiceID">
+
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">receipt</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="text" class="form-control date" id="invoiceE" readonly
+                                               name="invoiceE" placeholder="Invoice Number *">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">attach_money</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <input type="number" class="form-control date" readonly
+                                               name="amountE" id="amountE"
+                                               placeholder="Amount *">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">merge_type</i>
+                                        </span>
+                                    <div class="form-line">
+                                        <select class="form-control show-tick" id="salesE" name="salesE">
+                                            <option value="Cash">Cash</option>
+                                            <option value="Card">Card</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="editSales()">Save</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="ChangePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content" style="background-color: lightgrey;">
@@ -365,6 +431,7 @@
                     {"name": "InvoiceSeriesID", "targets": 4, "orderable": true},
                     {"name": "createdBy", "targets": 5, "orderable": true},
                     {"name": "datetime", "targets": 6, "orderable": true},
+                    {"name": "action", "targets": 7, "orderable": false},
                 ],
                 aaSorting: [[6, 'desc']],
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
@@ -386,6 +453,7 @@
                     {"name": "InvoiceSeriesID", "targets": 4, "orderable": true},
                     {"name": "createdBy", "targets": 5, "orderable": true},
                     {"name": "datetime", "targets": 6, "orderable": true},
+                    {"name": "action", "targets": 7, "orderable": false},
                 ],
                 aaSorting: [[6, 'desc']],
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
@@ -518,6 +586,63 @@
                     }
                 });
             }
+
+        }
+
+
+           function getDetail(id, bill, sales, amount, customer) {
+            $('#invoiceID').val(id);
+            $('#invoiceE').val(bill);
+            $('#amountE').val(amount);
+            $('#salesE').val(sales);
+            {#$('#customerE').val(customer);#}
+
+
+
+        }
+             function editSales() {
+            var invoiceID = $('#invoiceID').val();
+            var salesE = $('#salesE').val();
+
+            data = new FormData();
+            data.append('invoiceID', invoiceID);
+            data.append('salesE', salesE);
+
+            $.ajax({
+                type: 'post',
+                url: '{% url 'invoiceApp:edit_invoice_by_accountant' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+
+
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Updated invoice detail.').fadeIn().fadeOut(2000);
+                        $('#defaultModalInvoiceEdit').modal('hide');
+                        ctab.api().ajax.reload();
+                        cardTab.api().ajax.reload();
+                    }
+                    else if(response.message ==='updateError'){
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Unable to update for previous dates.').fadeIn().fadeOut(2000);
+                    }
+
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+
+                    }
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+
 
         }
     </script>

@@ -150,6 +150,14 @@ class InvoiceCreatedByCashListJson(BaseDatatableView):
 
             if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
                 action = '''<span>N/A</span>'''.format(item.pk)
+            elif 'Accountant' in self.request.user.groups.values_list('name', flat=True):
+                action = '''<span> <a onclick="getDetail('{}','{}','{}','{}','{}')" data-toggle="modal"
+                               data-target="#defaultModalInvoiceEdit"><button style="background-color: #3F51B5;color: white;" type="button"
+                               class="btn  waves-effect " data-toggle="modal"
+                               data-target="#largeModalEdit">
+                           <i class="material-icons">border_color</i></button> </a></span>'''.format(item.pk, item.billNumber,
+                                                                                          item.salesType, item.amount,
+                                                                                          item.customerName,)
             else:
                 action = '''<span> <a onclick="getDetail('{}','{}','{}','{}','{}')" data-toggle="modal"
                                data-target="#defaultModalInvoiceEdit"><button style="background-color: #3F51B5;color: white;" type="button"
@@ -229,6 +237,15 @@ class InvoiceCreatedByCardListJson(BaseDatatableView):
 
             if 'Moderator' in self.request.user.groups.values_list('name', flat=True):
                 action = '''<span>N/A</span>'''.format(item.pk)
+
+            elif 'Accountant' in self.request.user.groups.values_list('name', flat=True):
+                action = '''<span> <a onclick="getDetail('{}','{}','{}','{}','{}')" data-toggle="modal"
+                               data-target="#defaultModalInvoiceEdit"><button style="background-color: #3F51B5;color: white;" type="button"
+                               class="btn  waves-effect " data-toggle="modal"
+                               data-target="#largeModalEdit">
+                           <i class="material-icons">border_color</i></button> </a></span>'''.format(item.pk, item.billNumber,
+                                                                                          item.salesType, item.amount,
+                                                                                          item.customerName,)
             else:
                 action = '''<span> <a onclick="getDetail('{}','{}','{}','{}','{}')" data-toggle="modal"
                                data-target="#defaultModalInvoiceEdit"><button style="background-color: #3F51B5;color: white;" type="button"
@@ -2782,6 +2799,7 @@ def generate_collection_report_admin(request):
     supCash_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                          companyID_id=int(companyID),
                                                                          isApproved__exact=False,
+                                                                         isCancelled=False,
                                                                          isDeleted__exact=False,
                                                                          paymentMode='Cash').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
@@ -2790,6 +2808,7 @@ def generate_collection_report_admin(request):
                                                                         companyID_id=int(companyID),
                                                                         isDeleted__exact=False,
                                                                         isApproved__exact=False,
+                                                                        isCancelled=False,
                                                                         paymentMode='UPI').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     sup_total_upi = 0.0
@@ -2800,7 +2819,15 @@ def generate_collection_report_admin(request):
                                                                          companyID_id=int(companyID),
                                                                          isDeleted__exact=False,
                                                                          isApproved__exact=False,
+                                                                         isCancelled=False,
                                                                          paymentMode='Bank Transfer').exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+
+    supCash_cancel = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+                                                                         companyID_id=int(companyID),
+                                                                         isApproved__exact=False,
+                                                                         isCancelled=True,
+                                                                         isDeleted__exact=False).exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     context = {
         'date': gDate,
@@ -2821,6 +2848,7 @@ def generate_collection_report_admin(request):
         'supCash_pending': supCash_pending,
         'supUpi_pending': supUpi_pending,
         'supBank_pending': supBank_pending,
+        'supCash_cancel': supCash_cancel,
 
     }
 
@@ -3578,3 +3606,29 @@ def generate_order_report_manager(request):
 
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5;  }')])
     return response
+
+@csrf_exempt
+def edit_invoice_by_accountant(request):
+    if request.method == 'POST':
+        invoiceID = request.POST.get('invoiceID')
+        SalesType = request.POST.get('salesE')
+        try:
+            sale = Sales.objects.get(pk=int(invoiceID))
+
+            if sale.datetime.date()== datetime.today().date():
+                sale.salesType = SalesType
+                if SalesType == 'Cash':
+                    sale.isCash = True
+                if SalesType == 'Card':
+                    sale.isCash = False
+                user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
+                sale.createdBy_id = user.pk
+                sale.save()
+                return JsonResponse({'message': 'success'})
+            else:
+                return JsonResponse({'message': 'updateError'})
+        except:
+            return JsonResponse({'message': 'error'})
+    else:
+        return JsonResponse({'message': 'error'})
+

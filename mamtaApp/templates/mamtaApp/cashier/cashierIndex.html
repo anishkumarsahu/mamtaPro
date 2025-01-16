@@ -334,6 +334,30 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="defaultModalCancel" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Cancel Collection?</h4>
+                </div>
+                <form id="ApproveFormInvoice">
+                    <input type="hidden" id="collectionIDcancel">
+
+                    <div class="modal-body">
+
+
+                    </div>
+
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link waves-effect" onclick="ChangeStatusToCancel()">Save</button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="image" style="position: fixed; top: 2rem;right: 5em;z-index: 100;cursor: pointer" data-toggle="modal"
          data-target="#ProfileModal">
         <img style="border-radius: 50%" src="{{ user.photo.url }}" width="40" height="40" alt="User">
@@ -459,6 +483,14 @@
 
         }
 
+          function cancelCollection(id) {
+            $('#collectionIDcancel').val(id)
+
+        } function cancelCollectionInvoice(id) {
+            $('#collectionIDInvoicecancel').val(id)
+
+        }
+
 
         function ChangeStatus() {
             var collectionID = $('#collectionID').val();
@@ -482,6 +514,7 @@
                         $('#defaultModal').modal('hide');
                         ctab.api().ajax.reload();
                         dtab.api().ajax.reload();
+                        $('#defaultModal').modal('hide');
 
                     }
 
@@ -524,6 +557,52 @@
                         $('#name_status').html('Collection Approved').fadeIn().fadeOut(2000);
                         $('#defaultModalInvoice').modal('hide');
                         itab.api().ajax.reload();
+
+                    }
+
+                    else {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('error.').fadeIn().fadeOut(2000);
+
+                    }
+
+                },
+                error: function () {
+                    $('#name_status').addClass('validate_data');
+                    $('#name_status').html('error.').fadeIn().fadeOut(2000);
+                }
+            });
+
+
+        }
+
+
+
+          function ChangeStatusToCancel() {
+            var collectionID = $('#collectionIDcancel').val();
+
+            data = new FormData();
+            data.append('collectionID', collectionID);
+
+            $.ajax({
+                type: 'post',
+                url: '{% url 'mamtaApp:cancel_collection_supplier_api' %}',
+                data: data,
+                contentType: false,
+                cache: false,
+                processData: false,
+
+
+                success: function (response) {
+                    if (response.message === 'success') {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Collection Canceled').fadeIn().fadeOut(2000);
+                        $('#defaultModalCancel').modal('hide');
+                        ctab.api().ajax.reload();
+                        dtab.api().ajax.reload();
+                        // close modal
+
+
 
                     }
 

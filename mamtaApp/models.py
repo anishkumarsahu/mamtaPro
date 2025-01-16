@@ -121,6 +121,7 @@ class SupplierCollection(models.Model):
     datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
     isApproved = models.BooleanField(default=False)
+    isCancelled = models.BooleanField(default=False)
     approvedOn = models.DateTimeField(blank=True, null=True, default=None)
     approvedBy = models.CharField(max_length=100, blank=True, null=True, default='N/A')
     Location = models.CharField(max_length=200, blank=True, null=True, default='N/A')

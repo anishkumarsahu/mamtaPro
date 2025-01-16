@@ -88,6 +88,7 @@ urlpatterns = [
     url(r'^approve_collection_supplier_invoice_api/$', approve_collection_supplier_invoice_api, name='approve_collection_supplier_invoice_api'),
     url(r'^delete_collection_supplier_api/$', delete_collection_supplier_api, name='delete_collection_supplier_api'),
     url(r'^delete_collection_supplier_invoice_api/$', delete_collection_supplier_invoice_api, name='delete_collection_supplier_invoice_api'),
+    url(r'^cancel_collection_supplier_api/$', cancel_collection_supplier_api, name='cancel_collection_supplier_api'),
 
     # username exist?
     url(r'^user_name_exist/$', user_name_exist, name='user_name_exist'),

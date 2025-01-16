@@ -762,12 +762,18 @@ class SupplierCollectionListCashJson(BaseDatatableView):
         json_data = []
         i = 1
         for item in qs:
-            if item.isApproved == False:
-                button = '''
+            if item.isApproved == False and item.isCancelled == False:
+                    button = '''
                  <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
-                           data-target="#defaultModal" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
-            else:
+                           data-target="#defaultModal" onclick="approveCollection({})">PENDING</button>
+                           <button type="button" class="btn btn-warning waves-effect" data-toggle="modal"
+                           data-target="#defaultModalCancel" onclick="cancelCollection({})">CANCEL</button>
+                           '''.format(item.pk, item.pk)
+            if item.isApproved and item.isCancelled == False:
                 button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
+
+            if item.isCancelled:
+                button = '''<button type="button" class="btn btn-warning waves-effect">Canceled</button>'''
 
             json_data.append([
                 escape(i),
@@ -838,10 +844,16 @@ class SupplierCollectionAdminListCashJson(BaseDatatableView):
                 item.pk, item.buyerID.name,item.buyerID.pk, item.amount, item.paymentMode, item.remark, item.pk)
 
             if item.isApproved == False:
-                button = '''
-                 <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
-                           data-target="#defaultModalApprove" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
-                approvedOn="N/A"
+                if item.isCancelled:
+                    button = '''<button type="button" class="btn btn-warning waves-effect" data-toggle="modal"
+                                               data-target="#defaultModalApprove" onclick="approveCollection({})">CANCELED</button>'''.format(
+                        item.pk)
+                else:
+                    button = '''
+                <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
+                           data-target="#defaultModalApprove" onclick="approveCollection({})">PENDING</button>'''.format(
+                        item.pk)
+                approvedOn = 'N/A'
             else:
                 button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
                 if item.approvedOn is None or item.approvedOn =="":
@@ -921,7 +933,12 @@ class SupplierCollectionAdminListChequeJson(BaseDatatableView):
                 item.pk, item.buyerID.name, item.buyerID.pk, item.amount, item.paymentMode, item.remark, item.pk)
 
             if item.isApproved == False:
-                button = '''
+                if item.isCancelled:
+                    button = '''<button type="button" class="btn btn-warning waves-effect" data-toggle="modal"
+                                               data-target="#defaultModalApprove" onclick="approveCollection({})">CANCELED</button>'''.format(
+                        item.pk)
+                else:
+                    button = '''
                 <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
                            data-target="#defaultModalApprove" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
                 approvedOn = 'N/A'
@@ -995,12 +1012,18 @@ class SupplierCollectionListChequeJson(BaseDatatableView):
         json_data = []
         i = 1
         for item in qs:
-            if item.isApproved == False:
+            if item.isApproved == False and item.isCancelled == False:
                 button = '''
-                <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
-                           data-target="#defaultModal" onclick="approveCollection({})">PENDING</button>'''.format(item.pk)
-            else:
+                   <button type="button" class="btn btn-primary waves-effect" data-toggle="modal"
+                             data-target="#defaultModal" onclick="approveCollection({})">PENDING</button>
+                             <button type="button" class="btn btn-warning waves-effect" data-toggle="modal"
+                             data-target="#defaultModalCancel" onclick="cancelCollection({})">CANCEL</button>
+                             '''.format(item.pk, item.pk)
+            if item.isApproved and item.isCancelled == False:
                 button = '''<button type="button" class="btn btn-success waves-effect">APPROVED</button>'''
+
+            if item.isCancelled:
+                button = '''<button type="button" class="btn btn-warning waves-effect">Canceled</button>'''
 
             json_data.append([
                 escape(i),
@@ -2093,6 +2116,28 @@ def approve_collection_supplier_invoice_api(request):
         try:
             collection = SupplierInvoiceCollection.objects.select_related().get(pk=int(collectionID))
             collection.isApproved = True
+            user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
+            collection.approvedBy = user.name
+            collection.save()
+            buy = Buyer.objects.select_related().get(pk=int(collection.buyerID.pk))
+            buy.closingBalance = buy.closingBalance - float(collection.amount)
+            buy.save()
+            return JsonResponse({'message': 'success'})
+
+        except:
+            return JsonResponse({'message': 'fail'})
+
+
+@csrf_exempt
+def cancel_collection_supplier_api(request):
+    if request.method == 'POST':
+
+        collectionID = request.POST.get('collectionID')
+
+
+        try:
+            collection = SupplierCollection.objects.select_related().get(pk=int(collectionID))
+            collection.isCancelled = True
             user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
             collection.approvedBy = user.name
             collection.save()

@@ -111,4 +111,8 @@ urlpatterns = [
     url(r'^generate_order_report_admin/$', generate_order_report_admin, name='generate_order_report_admin'),
     url(r'^generate_order_report_manager/$', generate_order_report_manager, name='generate_order_report_manager'),
 
+    url(r'^edit_invoice_by_accountant/$', edit_invoice_by_accountant, name='edit_invoice_by_accountant'),
+
+
+
 ]
