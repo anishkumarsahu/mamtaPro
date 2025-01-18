@@ -157,7 +157,7 @@ class InvoiceCreatedByCashListJson(BaseDatatableView):
                                data-target="#largeModalEdit">
                            <i class="material-icons">border_color</i></button> </a></span>'''.format(item.pk, item.billNumber,
                                                                                           item.salesType, item.amount,
-                                                                                          item.customerName,)
+                                                                                          item.remark,)
             else:
                 action = '''<span> <a onclick="getDetail('{}','{}','{}','{}','{}')" data-toggle="modal"
                                data-target="#defaultModalInvoiceEdit"><button style="background-color: #3F51B5;color: white;" type="button"
@@ -245,7 +245,7 @@ class InvoiceCreatedByCardListJson(BaseDatatableView):
                                data-target="#largeModalEdit">
                            <i class="material-icons">border_color</i></button> </a></span>'''.format(item.pk, item.billNumber,
                                                                                           item.salesType, item.amount,
-                                                                                          item.customerName,)
+                                                                                          item.remark,)
             else:
                 action = '''<span> <a onclick="getDetail('{}','{}','{}','{}','{}')" data-toggle="modal"
                                data-target="#defaultModalInvoiceEdit"><button style="background-color: #3F51B5;color: white;" type="button"
@@ -3612,6 +3612,7 @@ def edit_invoice_by_accountant(request):
     if request.method == 'POST':
         invoiceID = request.POST.get('invoiceID')
         SalesType = request.POST.get('salesE')
+        remarkE = request.POST.get('remarkE')
         try:
             sale = Sales.objects.get(pk=int(invoiceID))
 
@@ -3621,6 +3622,7 @@ def edit_invoice_by_accountant(request):
                     sale.isCash = True
                 if SalesType == 'Card':
                     sale.isCash = False
+                    sale.remark = remarkE
                 user = StaffUser.objects.select_related().get(userID_id=request.user.pk)
                 sale.createdBy_id = user.pk
                 sale.save()

@@ -339,10 +339,26 @@
                                         <i class="material-icons">merge_type</i>
                                         </span>
                                     <div class="form-line">
-                                        <select class="form-control show-tick" id="salesE" name="salesE">
+                                        <select class="form-control show-tick" id="salesE" name="salesE" onchange="changeType()">
                                             <option value="Cash">Cash</option>
                                             <option value="Card">Card</option>
                                         </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                         <div class="row clearfix" id="remark_div" style="display: none">
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">chat</i>
+                                        </span>
+                                    <div class="form-line">
+                                         <input type="text" class="form-control date"
+                                               name="remarkE" id="remarkE"
+                                               placeholder="Remark">
                                     </div>
                                 </div>
                             </div>
@@ -590,12 +606,14 @@
         }
 
 
-           function getDetail(id, bill, sales, amount, customer) {
+           function getDetail(id, bill, sales, amount, remark) {
             $('#invoiceID').val(id);
             $('#invoiceE').val(bill);
             $('#amountE').val(amount);
             $('#salesE').val(sales);
-            {#$('#customerE').val(customer);#}
+            $('#remarkE').val(remark);
+
+            changeType();
 
 
 
@@ -603,10 +621,20 @@
              function editSales() {
             var invoiceID = $('#invoiceID').val();
             var salesE = $('#salesE').val();
+            var remarkE = $('#remarkE').val();
+
+            if(salesE === 'Card' && remarkE.trim(' ') ===''){
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Remark is required.').fadeIn().fadeOut(2000);
+                        return false
+            }
 
             data = new FormData();
             data.append('invoiceID', invoiceID);
             data.append('salesE', salesE);
+            data.append('remarkE', remarkE);
+
+
 
             $.ajax({
                 type: 'post',
@@ -643,6 +671,18 @@
                 }
             });
 
+
+        }
+
+        function changeType() {
+           var  c_type = $('#salesE').val();
+           if(c_type === 'Card'){
+               $("#remark_div").css('display','block')
+
+           }
+           else{
+                $("#remark_div").css('display','none')
+           }
 
         }
     </script>
