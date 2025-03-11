@@ -2676,6 +2676,7 @@ def generate_collection_report_accounts(request):
                                                                          companyID_id=int(companyID),
                                                                          isApproved__exact=False,
                                                                          isDeleted__exact=False,
+                                                                         isCancelled=False,
                                                                          paymentMode='Cash').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
 
@@ -2683,14 +2684,23 @@ def generate_collection_report_accounts(request):
                                                                         companyID_id=int(companyID),
                                                                         isApproved__exact=False,
                                                                         isDeleted__exact=False,
+                                                                        isCancelled=False,
                                                                         paymentMode='UPI').exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
 
     supBank_pending = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
                                                                          companyID_id=int(companyID),
                                                                          isApproved__exact=False,
+                                                                         isCancelled=False,
                                                                          isDeleted__exact=False,
                                                                          paymentMode='Bank Transfer').exclude(
+        datetime__lt=last_3_month_date).order_by('datetime')
+
+    supCash_cancel = SupplierCollection.objects.select_related().filter(datetime__icontains=day_string,
+                                                                         companyID_id=int(companyID),
+                                                                         isApproved__exact=False,
+                                                                         isCancelled=True,
+                                                                         isDeleted__exact=False).exclude(
         datetime__lt=last_3_month_date).order_by('datetime')
     context = {
         'date': gDate,
@@ -2710,6 +2720,7 @@ def generate_collection_report_accounts(request):
         'supCash_pending': supCash_pending,
         'supBank': supBank,
         'supBank_pending': supBank_pending,
+        'supCash_cancel': supCash_cancel,
 
     }
 
