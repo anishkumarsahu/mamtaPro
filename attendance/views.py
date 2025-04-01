@@ -77,7 +77,7 @@ class LoginSystemListJson(BaseDatatableView):
 
 
 class EmployeeListJson(BaseDatatableView):
-    order_columns = ['id', 'photo', 'name', 'phoneNumber', 'address', 'password', 'inTime', 'outTime', 'datetime',
+    order_columns = ['id', 'photo', 'name', 'phoneNumber', 'address', 'password', 'inTime', 'outTime', 'maxInTime', 'datetime',
                      'action', ]
 
     def get_initial_queryset(self):
@@ -122,6 +122,7 @@ class EmployeeListJson(BaseDatatableView):
                 escape(item.password),
                 escape(item.inTime.strftime('%I:%M %p')),
                 escape(item.outTime.strftime('%I:%M %p')),
+                escape(item.maxInTime.strftime('%I:%M %p')),
                 escape(item.datetime.strftime('%d-%m-%Y %I:%M %p')),
                 action
                 ,
@@ -169,7 +170,7 @@ class EmployeeListForAttendanceJson(BaseDatatableView):
                 if attend.loginTime is None:
                     d = datetime.strptime('10:15', '%H:%M')
                     dnow = datetime.now()
-                    if dnow.time() > d.time():
+                    if dnow.time() >item.maxInTime:
 
                         action = action + '''<button type="button" class="btn btn-primary disabled"  >LOGIN
                                             </button>  '''.format(item.pk)
@@ -187,8 +188,7 @@ class EmployeeListForAttendanceJson(BaseDatatableView):
                                                 data-target="#myModal_out" onclick="logoutModal({})">LOGOUT</button>'''.format(
                         item.pk)
                 elif attend.logoutTime is None and attend.loginTime is None:
-                    action = action + '''   <button type="button" class="btn btn-danger disabled" data-toggle="modal"
-                                                           data-target="#myModal_out">LOGOUT</button>'''.format(
+                    action = action + '''   <button type="button" class="btn btn-danger disabled">LOGOUT</button>'''.format(
                         item.pk)
                 else:
 
@@ -520,6 +520,7 @@ def add_employee_api(request):
             password = request.POST.get('password')
             inTime = request.POST.get('inTime')
             outTime = request.POST.get('outTime')
+            maxInTime = request.POST.get('maxInTime')
             photo = request.FILES['photo']
 
             emp = Employee()
@@ -529,9 +530,11 @@ def add_employee_api(request):
             emp.password = password
             in_time = datetime.strptime(inTime, "%I:%M %p")
             out_time = datetime.strptime(outTime, "%I:%M %p")
+            maxInTime = datetime.strptime(maxInTime, "%I:%M %p")
 
             emp.inTime = datetime.strftime(in_time, "%H:%M")
             emp.outTime = datetime.strftime(out_time, "%H:%M")
+            emp.maxInTime = datetime.strftime(maxInTime, "%H:%M")
             emp.photo = photo
 
             emp.save()
@@ -555,6 +558,7 @@ def edit_employee_api(request):
             password = request.POST.get('password')
             inTime = request.POST.get('inTime')
             outTime = request.POST.get('outTime')
+            maxInTime = request.POST.get('maxInTime')
 
             emp = Employee.objects.select_related().get(pk=int(empID))
             emp.name = name
@@ -564,9 +568,11 @@ def edit_employee_api(request):
 
             in_time = datetime.strptime(inTime, "%I:%M %p")
             out_time = datetime.strptime(outTime, "%I:%M %p")
+            maxInTime = datetime.strptime(maxInTime, "%I:%M %p")
 
             emp.inTime = datetime.strftime(in_time, "%H:%M")
             emp.outTime = datetime.strftime(out_time, "%H:%M")
+            emp.maxInTime = datetime.strftime(maxInTime, "%H:%M")
 
             emp.save()
             messages.success(request, 'Employee detail edited successfully.')

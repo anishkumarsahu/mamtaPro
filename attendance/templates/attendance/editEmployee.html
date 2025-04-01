@@ -148,6 +148,7 @@
                                             <i class="material-icons">person</i>
                                         </span>
                                                             <div class="form-line">
+                                                                 <label for="name" style="float: left">Name</label>
                                                                 <input type="text" class="form-control date" id="name"
                                                                        name="name" placeholder="Name *"
                                                                        value="{{ instance.name }}">
@@ -160,6 +161,7 @@
                                             <i class="material-icons">local_phone</i>
                                         </span>
                                                             <div class="form-line">
+                                                                 <label for="phone" style="float: left">Phone Number</label>
                                                                 <input type="number" class="form-control date"
                                                                        name="phone" id="phone"
                                                                        placeholder="Phone Number *"
@@ -178,6 +180,7 @@
                                         <i class="material-icons">public</i>
                                         </span>
                                                             <div class="form-line">
+                                                                 <label for="address" style="float: left">Address</label>
                                                                 <input type="text" class="form-control"
                                                                        placeholder="Address *" name="address"
                                                                        id="address" value="{{ instance.address }}">
@@ -190,6 +193,7 @@
                                         <i class="material-icons">remove_red_eye</i>
                                         </span>
                                                             <div class="form-line">
+                                                                 <label for="password" style="float: left">Password</label>
                                                                 <input type="text" class="form-control"
                                                                        placeholder="Password *" name="password"
                                                                        id="password" value="{{ instance.password }}">
@@ -209,6 +213,7 @@
                                         <i class="material-icons">watch_later</i>
                                         </span>
                                                             <div class="form-line">
+                                                                 <label for="inTime" style="float: left">In Time</label>
                                                                 <input type="text" class=" form-control"
 
                                                                        placeholder="In-Time *" name="inTime"
@@ -223,6 +228,7 @@
                                         <i class="material-icons">watch_later</i>
                                         </span>
                                                             <div class="form-line">
+                                                                 <label for="outTime" style="float: left">Out Time</label>
                                                                 <input type="text" class="form-control"
                                                                        placeholder="Out-Time *" name="outTime"
                                                                        id="outTime"
@@ -230,6 +236,22 @@
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                     <div class="col-md-12">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">watch_later</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <label for="maxInTime" style="float: left">Limit In Time</label>
+                                                                <input type="text" class="form-control"
+                                                                       placeholder="Limit In Time *" name="maxInTime"
+                                                                       id="maxInTime"
+                                                                       value="{{ instance.maxInTime |time:"g:i A"|lower }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
 
 
                                                 </div>
@@ -262,6 +284,10 @@
 
 
         $('#outTime').timepicker({
+            uiLibrary: 'bootstrap',
+            format: 'hh:MM tt'
+        })
+        $('#maxInTime').timepicker({
             uiLibrary: 'bootstrap',
             format: 'hh:MM tt'
         })
@@ -330,10 +356,11 @@
             var password = $('#password').val();
             var inTime = $('#inTime').val();
             var outTime = $('#outTime').val();
+            var maxInTime = $('#maxInTime').val();
 
 
             if (name === "" || phone === ""
-                || address === "" || password === "" || inTime === "" || outTime === ""
+                || address === "" || password === "" || inTime === "" || outTime === ""|| maxInTime === ""
             ) {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('* fields are required.');

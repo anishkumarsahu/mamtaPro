@@ -607,6 +607,13 @@
 
 
         }
+        $('#myModal').on('hidden.bs.modal', function () {
+    Webcam.reset();
+});
+
+$('#myModal_out').on('hidden.bs.modal', function () {
+    Webcam.reset();
+});
 
 
     </script>

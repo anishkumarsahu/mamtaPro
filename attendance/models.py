@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from stdimage import StdImageField
-
+from datetime import time
 
 # Create your models here.
 
@@ -27,6 +27,9 @@ class Employee(models.Model):
                           variations={'thumbnail': {'width': 70, 'height': 70}})
     inTime = models.TimeField(null=True)
     outTime = models.TimeField(null=True)
+    # only hh:mm format
+    maxInTime = models.TimeField(default=time(10, 15))
+    maxOutTime = models.TimeField(default=time(20, 0))
     isActive = models.BooleanField(default=True)
     password = models.CharField(max_length=100, blank=True, null=True)
     isDeleted = models.BooleanField(default=False)
