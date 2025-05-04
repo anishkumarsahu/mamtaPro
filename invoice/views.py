@@ -3533,19 +3533,41 @@ def share_order_to_whatsapp_pdf(request):
     ID = request.GET.get('ID')
     col = TakeOrder.objects.select_related().get(isDeleted__exact=False, pk=int(ID))
     try:
-        # with open(col.orderPic, "rb") as img_file:
-        my_string = base64.b64encode(col.orderPic.file.read())
+        from PIL import Image
+        from io import BytesIO
+        image_file = col.orderPic.file
+        image = Image.open(image_file)
 
+        # Convert to RGB if it's not
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+
+        scale_ratio = 0.5  # 50% of original size
+
+        width, height = image.size
+        new_size = (int(width * scale_ratio), int(height * scale_ratio))
+
+        image = image.resize(new_size, Image.LANCZOS)
+
+        # # Resize or compress if needed (optional but useful for speed)
+        # image.thumbnail((600, 600), Image.LANCZOS)
+
+        buffer = BytesIO()
+        image.save(buffer, format='JPEG', quality=90, optimize=True)
+        buffer.seek(0)
+
+        # Encode to base64 and decode to string
+        my_string = base64.b64encode(buffer.read()).decode('utf-8')
     except:
-        my_string = "b'NAN"
-    img = str(my_string).split("b'")
+        my_string = "NAN"
+    # img = str(my_string).split("b'")
     context = {
 
         'date': date,
         'col': col,
         'url1': "https://123dacn.in",
         'url2': "http://localhost:8000",
-        'img': img[1]
+        'img': my_string
 
     }
 

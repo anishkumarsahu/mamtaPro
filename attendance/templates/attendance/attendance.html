@@ -135,7 +135,28 @@
     </style>
 
 
-    <section class="content">
+        <section class="content" id="mobilesection" style="display: None">
+        <div class="container-fluid">
+    <div class="row clearfix">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-lg-offset-3 col-md-offset-3">
+                    <div class="info-box bg-red hover-expand-effect" style="min-height: 130px">
+                        <div class="icon">
+                            <i class="material-icons">warning</i>
+                        </div>
+                        <div class="content">
+                            <div class="text large" style="font-size: 2.4rem">INTRUDER DETECTED !!</div>
+                            <p style="font-size: 1.5rem">Please use your office system to login.</p>
+{#                            <div class="number count-to" data-from="0" data-to="Please use your office system to login" data-speed="15"#}
+{#                                 data-fresh-interval="20"></div>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+</section>
+
+    <section class="content" id="pcsection" style="display: None">
         <div class="container-fluid">
 
 
@@ -318,6 +339,13 @@
             </div>
         </div>
     </div>
+
+
+            <ul style="    position: fixed;top: 20px;right: 20px;padding-bottom: 20px;z-index: 100; text-align: center">
+        <a href="{% url 'mamtaApp:logout' %}"
+           style="width:100%;padding-right: 10px;background-color: #3aabfb!important; color: white!important;"
+           type="button" class="btn ">Logout</a>
+    </ul>
 
 {% endblock %}
 {% block js %}
@@ -618,7 +646,35 @@ $('#myModal_out').on('hidden.bs.modal', function () {
 
     </script>
 
+<script>
+    function isMobileDevice() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
 
+        // Check User-Agent
+        const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua.toLowerCase());
 
+        // Check for touch support
+        const hasTouchSupport = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
+        // Check screen size (common fallback)
+        const isSmallScreen = window.innerWidth <= 768;
+
+        // Final decision
+        const isMobile = (isMobileUA || hasTouchSupport || isSmallScreen);
+
+        return isMobile;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const isMobile = isMobileDevice();
+
+      if (isMobile) {
+    $("#mobilesection").css("display", "block");
+    $("#pcsection").css("display", "none");
+} else {
+    $("#pcsection").css("display", "block");
+    $("#mobilesection").css("display", "none");
+}
+    });
+</script>
 {% endblock %}

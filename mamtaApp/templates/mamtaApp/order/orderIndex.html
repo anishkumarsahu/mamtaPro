@@ -79,15 +79,46 @@
         .select2-drop-active {
             margin-top: -25px !important;
         }
+        #my_camera video, #my_camera {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 4 / 3;
+    display: block;
+    object-fit: cover;
+}
     </style>
 
     <section class="content">
-        <div class="alert alert-warning alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                    aria-hidden="true">&times;</span></button>
-            Please make sure to allow location service. Enable GPS on your mobile to make collections.
-            Thank you.
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+
+                <div class="header">
+                    <h2>
+                       TODAY'S ATTENDANCE - {{ date }}
+                    </h2>
+                </div>
+                <div class="body" style="min-height: 80px;text-align: center">
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 ">
+                      <button {% if attend.loginTime %} disabled  {% endif %}  style="color: white;width: 50%;border-radius: 4px" type="button" id="login" class="fluid btn btn-link waves-effect btn-success" data-target="#attendanceModal"  data-toggle="modal" onclick="changeStatus('Login')">Login</button>
+                      <p style="color: #0f9d58;font-weight: bold">In Timing: <span id="in">{% if attend.loginTime %}{{ attend.loginTime }}{% else %}N/A{% endif %}</span></p>
+                  </div>
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 ">
+                       <button {% if not attend.loginTime %} disabled {% endif %} {% if attend.logoutTime %} disabled  {% endif %}   style="color: white;width: 50%;border-radius: 4px" type="button" id="logout" class="fluid btn btn-link waves-effect btn-danger"  data-target="#attendanceModal"  data-toggle="modal" onclick="changeStatus('Logout')">Logout</button>
+                     <p style="color: #fb483a;font-weight: bold">Out Timing: <span id="out">{% if attend.logoutTime %}{{ attend.logoutTime }}{% else %}N/A{% endif %}</span></p>
+
+                  </div>
+
+                </div>
+            </div>
         </div>
+
+
+{#        <div class="alert alert-warning alert-dismissible" role="alert">#}
+{#            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span#}
+{#                    aria-hidden="true">&times;</span></button>#}
+{#            Please make sure to allow location service. Enable GPS on your mobile to make collections.#}
+{#            Thank you.#}
+{#        </div>#}
         <div class="container-fluid">
 
             <div class="row clearfix">
@@ -341,6 +372,60 @@
         </div>
     </div>
 
+        <div class="modal fade" id="attendanceModal" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" id="attendanceModalForm" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="defaultModalLabel">Confirm Attendance - <span id="status"></span></h4>
+                    </div>
+                    <div class="modal-body">
+                          <div id="my_camera"
+                             style="text-align: center!important; width: 100%; height: 100%"></div>
+                        <div id="login_pre_take_buttons">
+                                <!-- This button is shown before the user takes a snapshot -->
+                                <button type=button class="btn btn-success"
+                                        value="Take Snapshot"
+                                        onClick="login_preview_snapshot()"
+                                        style="padding: 10px;width: 100%">Take Snapshot
+                                </button>
+                            </div>
+                            <div id="login_post_take_buttons" style="display:none">
+                                <!-- These buttons are shown after a snapshot is taken -->
+                                <button type=button class="btn btn-primary"
+                                        value="&lt; Take Another"
+                                        onClick="login_cancel_preview()"
+                                        style="padding: 10px;width: 100%">Take Another
+                                </button>
+                            </div>
+                         <img src="NaN" alt="" id="loginImg" style="display: none">
+
+                        <textarea placeholder="Any Remark"
+                                          style="width: 100%; background-color: #cccccc; padding: 22px 15px"
+                                          id="loginRemark"></textarea>
+                        <input type="hidden" id="empID" value="{{ attend.employeeID_id }}">
+                        <input type="hidden" id="loginType" value="">
+                          <div id="results" style="display: none">
+                                                    <!-- Your captured image will appear here... -->
+                                                </div>
+
+                        <div class="alert alert-warning" role="alert">
+                            Please make sure to allow location service. Enable GPS on your mobile to make collections.
+                            Thank you.
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="save3" class="btn btn-link waves-effect" onclick="LoginPost()">Save
+                        </button>
+                        <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <input type="hidden" id="lat" >
     <input type="hidden" id="lng">
     <input type="hidden" id="loc" value="N/A">
@@ -349,8 +434,17 @@
 {% endblock %}
 {% block js %}
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
-    <script>
-        $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+        <script type="text/javascript" src="{% static 'attendance/webcam.min.js' %}"></script>
+
+    <script>function changeStatus(status) {
+        $('#status').html(status);
+        $('#loginType').val(status);
+        getLocation();
+        loginModal()
+
+    }
+
+    $.fn.datepicker.defaults.format = "dd/mm/yyyy";
         $('.datepicker').datepicker({});
     </script>
     <script>
@@ -644,8 +738,10 @@ function islocationEnabled() {
     console.log(result);
   if (result.state === 'granted') {
    $('#save2').prop('disabled', false);
+   $('#save3').prop('disabled', false);
   } else {
    $('#save2').prop('disabled', true);
+   $('#save3').prop('disabled', true);
   }
   // Don't do anything if the permission was denied.
 });
@@ -663,25 +759,145 @@ function getReverseLocation(){
                     success: function (response) {
                         console.log( response.items[0].address.label)
                          $('#loc').val(response.items[0].address.label);
-
-
-
-
                     },
                     error: function () {
                         $('#name_status').addClass('validate_data');
                         $('#name_status').html('Unable to locate location.').fadeIn().fadeOut(2000);
                     }
-
-
                 });
-
-
 }
-function sharePDF(id) {
-$("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+        function sharePDF(id) {
+        $("#reportUrl").attr("href", "{% url 'invoiceApp:generate_net_report_admin' %}?companyID=" + comp + '&gDate=' + gDate);
+        }
+
+        function LoginPost() {
+            var loginEmpID = $('#empID').val();
+            var loginRemark = $('#loginRemark').val();
+            var loginType = $('#loginType').val();
+            var loc = $('#loc').val();
+            var photo = $('#loginImg').attr('src');
 
 
+            if ( photo === 'NaN') {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Snap is required. ');
+                $('#name_status').fadeIn().fadeOut(2000);
+                return
+
+            }
+
+            if (loginType === '') {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Make sure you are performing Login or Logout action');
+                $('#name_status').fadeIn().fadeOut(2000);
+                 return
+
+            }
+            else {
+                var form_data = new FormData();
+                form_data.append('loginEmpID', loginEmpID);
+                form_data.append('loginType', loginType);
+                form_data.append('loginRemark', loginRemark);
+                form_data.append('loc', loc);
+                form_data.append('photo', photo);
+
+                $.ajax({
+                    type: 'post',
+                    url: '{% url "attendanceApp:order_employee_attendance_post_api" %}',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+
+                    success: function (response) {
+                        if (response.response === 'ok') {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html(response.LoginType +' done successfully.');
+                            $('#name_status').fadeIn().fadeOut(2000);
+                            $('#attendanceModalForm')[0].reset();
+                            $('#attendanceModal').modal('hide');
+                            location.reload()
+                        }
+                        else {
+                            $('#name_status').addClass('validate_data');
+                            $('#name_status').html("Error. Please try again.");
+                            $('#name_status').fadeIn().fadeOut(2000);
+                            $('#save3').prop('disabled', false);
+                        }
+                        return response;
+                    },
+                    error: function () {
+                        $('#name_status').addClass('validate_data');
+                        $('#name_status').html('Error. Please try again. ');
+                        $('#name_status').fadeIn().fadeOut(2000);
+                         $('#save3').prop('disabled', false);
+                    }
+                });
+            }
+        }
+    function loginModal() {
+    login_cancel_preview();
+
+    // Get container width dynamically
+    const container = document.getElementById('my_camera');
+    const containerWidth = container.offsetWidth ||  380; // fallback to 380 if not found
+    const aspectRatio = 4 / 3; // Standard webcam ratio
+    const containerHeight = containerWidth / aspectRatio;
+
+    Webcam.set({
+        width: containerWidth,
+        height: containerHeight,
+
+        dest_width: containerWidth,
+        dest_height: containerHeight,
+
+        crop_width: containerWidth,
+        crop_height: containerHeight,
+
+        image_format: 'jpeg',
+        jpeg_quality: 100,
+
+        flip_horiz: false
+    });
+
+    Webcam.attach('#my_camera');
 }
+
+        function login_preview_snapshot() {
+            Webcam.snap(function (data_uri) {
+                // display results in page
+                $('#loginImg').attr("src", data_uri);
+
+                // shut down camera, stop capturing
+
+            });
+            // freeze camera so user can preview current frame
+            Webcam.freeze();
+
+            // swap button sets
+            document.getElementById('login_pre_take_buttons').style.display = 'none';
+            document.getElementById('login_post_take_buttons').style.display = '';
+            $('video').css('display', 'none')
+
+
+        }
+
+        function login_cancel_preview() {
+            // cancel preview freeze and return to live camera view
+            Webcam.unfreeze();
+            $('#loginImg').attr("src", 'NaN');
+
+
+            // swap buttons back to first set
+            document.getElementById('login_pre_take_buttons').style.display = '';
+            document.getElementById('login_post_take_buttons').style.display = 'none';
+            $('video').css('display', '')
+
+        }
+                $('#attendanceModal').on('hidden.bs.modal', function () {
+    Webcam.reset();
+});
+
+
 </script>
 {% endblock %}

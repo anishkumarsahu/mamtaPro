@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^EmployeeListForAttendanceJson/$', EmployeeListForAttendanceJson.as_view(), name='EmployeeListForAttendanceJson'),
     url(r'^EmployeeListForAttendanceAdminJson/$', EmployeeListForAttendanceAdminJson.as_view(), name='EmployeeListForAttendanceAdminJson'),
     url(r'^EmployeeListForAttendanceAdminBasicJson/$', EmployeeListForAttendanceAdminBasicJson.as_view(), name='EmployeeListForAttendanceAdminBasicJson'),
+    url(r'^OrderEmployeeListForAttendanceAdminBasicJson/$', OrderEmployeeListForAttendanceAdminBasicJson.as_view(), name='OrderEmployeeListForAttendanceAdminBasicJson'),
 
     url(r'^attendance/$', attendance, name='attendance'),
     url(r'^attendanceReport/$', attendanceReport, name='attendanceReport'),
@@ -33,5 +34,7 @@ urlpatterns = [
     url(r'^logout_post_api/$', logout_post_api, name='logout_post_api'),
     url(r'^genereate_attendence_report/$', genereate_attendence_report, name='genereate_attendence_report'),
     url(r'^demoReport/$', demoReport, name='demoReport'),
+    url(r'^order_employee_attendance_post_api/$', order_employee_attendance_post_api, name='order_employee_attendance_post_api'),
+    url(r'^generate_attendance_for_order_emp_report/$', generate_attendance_for_order_emp_report, name='generate_attendance_for_order_emp_report'),
 
 ]
