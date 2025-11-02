@@ -20,6 +20,7 @@
         }
 
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
@@ -237,7 +238,7 @@
                                                         </div>
                                                     </div>
 
-                                                     <div class="col-md-12">
+                                                     <div class="col-md-6">
                                                         <div class="input-group">
                                         <span class="input-group-addon">
                                         <i class="material-icons">watch_later</i>
@@ -251,7 +252,20 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
+<div class="col-md-6">
+                                                        <div class="input-group">
+                                        <span class="input-group-addon">
+                                        <i class="material-icons">watch_later</i>
+                                        </span>
+                                                            <div class="form-line">
+                                                                <label for="maxOutTime" style="float: left">Limit Out Time</label>
+                                                                <input type="text" class="form-control"
+                                                                       placeholder="Limit In Time *" name="maxOutTime"
+                                                                       id="maxOutTime"
+                                                                       value="{{ instance.maxOutTime |time:"g:i A"|lower }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
 
                                                 </div>
@@ -292,6 +306,13 @@
 
         });
        flatpickr("#maxInTime", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "h:i K",
+            time_24hr: false,
+            minuteIncrement: 1,
+
+        });       flatpickr("#maxOutTime", {
             enableTime: true,
             noCalendar: true,
             dateFormat: "h:i K",
@@ -383,10 +404,11 @@
             var inTime = $('#inTime').val();
             var outTime = $('#outTime').val();
             var maxInTime = $('#maxInTime').val();
+            var maxOutTime = $('#maxOutTime').val();
 
 
             if (name === "" || phone === ""
-                || address === "" || password === "" || inTime === "" || outTime === ""|| maxInTime === ""
+                || address === "" || password === "" || inTime === "" || outTime === ""|| maxInTime === ""|| maxOutTime === ""
             ) {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('* fields are required.');

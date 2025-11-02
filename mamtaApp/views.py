@@ -1188,11 +1188,11 @@ class SupplierCollectionInvoiceListAdmin(BaseDatatableView):
 
 @check_group('Both')
 def home(request):
-    try:
-        b = json.loads(Balance().decode('utf-8'))
-        bal = b['balance']['sms']
-    except:
-        bal = 0
+    # try:
+    #     b = json.loads(Balance().decode('utf-8'))
+    #     bal = b['balance']['sms']
+    # except:
+    bal = 0
     request.session['nav'] = '1'
     staff = StaffUser.objects.select_related().filter(isDeleted__exact=False).count()
     buyer = Buyer.objects.select_related().filter(isDeleted__exact=False).count()
