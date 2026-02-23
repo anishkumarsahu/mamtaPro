@@ -94,16 +94,36 @@
 
                 <div class="header">
                     <h2>
+                       PREVIOUS ATTENDANCE - {{ prev_day }}
+                    </h2>
+                </div>
+                <div class="body" style="min-height: 80px;text-align: center">
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 ">
+                      <button {% if prev_attendance.loginTime %} disabled  {% endif %}  style="color: white;width: 50%;border-radius: 4px" type="button" id="login" class="fluid btn btn-link waves-effect btn-success" data-target="#attendanceModal"  data-toggle="modal" onclick="changeStatus('Login', '{{prev_day}}')">Login</button>
+                      <p style="color: #0f9d58;font-weight: bold">In Timing: <span id="in">{% if prev_attendance.loginTime %}{{ prev_attendance.loginTime }}{% else %}N/A{% endif %}</span></p>
+                  </div>
+                  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 ">
+                       <button {% if not prev_attendance.loginTime %} disabled {% endif %} {% if prev_attendance.logoutTime %} disabled  {% endif %}   style="color: white;width: 50%;border-radius: 4px" type="button" id="logout" class="fluid btn btn-link waves-effect btn-danger"  data-target="#attendanceModal"  data-toggle="modal" onclick="changeStatus('Logout', '{{prev_day}}')">Logout</button>
+                     <p style="color: #fb483a;font-weight: bold">Out Timing: <span id="out">{% if prev_attendance.logoutTime %}{{ prev_attendance.logoutTime }}{% else %}N/A{% endif %}</span></p>
+
+                  </div>
+
+                </div>
+            </div>
+            <div class="card">
+
+                <div class="header">
+                    <h2>
                        TODAY'S ATTENDANCE - {{ date }}
                     </h2>
                 </div>
                 <div class="body" style="min-height: 80px;text-align: center">
                   <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 ">
-                      <button {% if attend.loginTime %} disabled  {% endif %}  style="color: white;width: 50%;border-radius: 4px" type="button" id="login" class="fluid btn btn-link waves-effect btn-success" data-target="#attendanceModal"  data-toggle="modal" onclick="changeStatus('Login')">Login</button>
+                      <button {% if attend.loginTime %} disabled  {% endif %}  style="color: white;width: 50%;border-radius: 4px" type="button" id="login" class="fluid btn btn-link waves-effect btn-success" data-target="#attendanceModal"  data-toggle="modal" onclick="changeStatus('Login', '{{date}}')">Login</button>
                       <p style="color: #0f9d58;font-weight: bold">In Timing: <span id="in">{% if attend.loginTime %}{{ attend.loginTime }}{% else %}N/A{% endif %}</span></p>
                   </div>
                   <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 ">
-                       <button {% if not attend.loginTime %} disabled {% endif %} {% if attend.logoutTime %} disabled  {% endif %}   style="color: white;width: 50%;border-radius: 4px" type="button" id="logout" class="fluid btn btn-link waves-effect btn-danger"  data-target="#attendanceModal"  data-toggle="modal" onclick="changeStatus('Logout')">Logout</button>
+                       <button {% if not attend.loginTime %} disabled {% endif %} {% if attend.logoutTime %} disabled  {% endif %}   style="color: white;width: 50%;border-radius: 4px" type="button" id="logout" class="fluid btn btn-link waves-effect btn-danger"  data-target="#attendanceModal"  data-toggle="modal" onclick="changeStatus('Logout', '{{date}}')">Logout</button>
                      <p style="color: #fb483a;font-weight: bold">Out Timing: <span id="out">{% if attend.logoutTime %}{{ attend.logoutTime }}{% else %}N/A{% endif %}</span></p>
 
                   </div>
@@ -154,6 +174,7 @@
                                         <th>PartyName</th>
                                         <th>OrderFrom</th>
                                         <th>StockGroup</th>
+                                        <th>Town</th>
                                         <th>Detail</th>
                                         <th>Remark</th>
                                         <th>Datetime</th>
@@ -167,6 +188,7 @@
                                         <th>PartyName</th>
                                         <th>OrderFrom</th>
                                         <th>StockGroup</th>
+                                        <th>Town</th>
                                         <th>Detail</th>
                                         <th>Remark</th>
                                         <th>Datetime</th>
@@ -185,7 +207,7 @@
 
         </div>
 
-        <button style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getLocation()"
+        <button id="addOrderButton" style="    right: 2rem; bottom: 3rem;position: fixed;" type="button" data-toggle="modal" onclick="getLocation()"
                 data-target="#CollectionModal"
                 class="btn btn-success btn-circle-lg waves-effect waves-circle waves-float">
             <i class="material-icons">add</i>
@@ -283,7 +305,9 @@
                                                 name="orderFrom">
                                             <option value="" selected disabled>Order Taken From</option>
                                             <option value="Field Visit">Field Visit</option>
-                                            <option value="Telephonic">Telephonic</option>
+                                            <option value="Telephonic Order By Customer">Telephonic Order By Customer</option>
+                                            <option value="Telephonic Order By Myself">Telephonic Order By Myself</option>
+
                                         </select>
 
 
@@ -301,6 +325,27 @@
                                                 name="stockGroup">
                                             <option value="" selected disabled>Stock Group</option>
                                             {% for foo in stockGroup %}
+                                            <option value="{{ foo.name}}">{{ foo.name}}</option>
+                                            {% endfor %}
+
+
+                                        </select>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">add_shopping_cart</i>
+                                        </span>
+                                    <label for="town">Town (Required)</label>
+                                    <div class="form-line">
+                                        <select class="form-control show-tick" id="town"
+                                                name="town">
+                                            <option value="" selected disabled>Town Name</option>
+                                            {% for foo in towns %}
                                             <option value="{{ foo.name}}">{{ foo.name}}</option>
                                             {% endfor %}
 
@@ -405,6 +450,7 @@
                                           id="loginRemark"></textarea>
                         <input type="hidden" id="empID" value="{{ attend.employeeID_id }}">
                         <input type="hidden" id="loginType" value="">
+                        <input type="hidden" id="attendanceDate" value="">
                           <div id="results" style="display: none">
                                                     <!-- Your captured image will appear here... -->
                                                 </div>
@@ -436,9 +482,11 @@
     <script src="{% static 'date/bootstrap-datepicker.js' %}"></script>
         <script type="text/javascript" src="{% static 'attendance/webcam.min.js' %}"></script>
 
-    <script>function changeStatus(status) {
+    <script>function changeStatus(status, a_date) {
         $('#status').html(status);
         $('#loginType').val(status);
+        $('#attendanceDate').val(a_date);
+
         getLocation();
         loginModal()
 
@@ -464,12 +512,13 @@
                     {"name": "partyName", "targets": 1, "orderable": true},
                     {"name": "orderTakenFrom", "targets": 2, "orderable": true},
                     {"name": "stockGroup", "targets": 3, "orderable": true},
-                    {"name": "details", "targets": 4, "orderable": true},
-                    {"name": "remark", "targets": 5, "orderable": true},
-                    {"name": "datetime", "targets": 6, "orderable": true},
-                    {"name": "button", "targets": 7, "orderable": false},
+                    {"name": "town", "targets": 4, "orderable": true},
+                    {"name": "details", "targets": 5, "orderable": true},
+                    {"name": "remark", "targets": 6, "orderable": true},
+                    {"name": "datetime", "targets": 7, "orderable": true},
+                    {"name": "button", "targets": 8, "orderable": false},
                 ],
-                aaSorting: [[6, 'desc']],
+                aaSorting: [[7, 'desc']],
                 "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
                 "pageLength": 8,
                 "processing": true,
@@ -562,8 +611,9 @@
             var remark = $('#remark').val();
             var loc = $('#loc').val();
             var img = document.getElementById("imageDoc").files[0];
+            var town = $('#town').val();
 
-            if (stockGroup === null ||orderFrom === null || partyName.trim('') === "" || detail.trim('') === "") {
+            if (stockGroup === null ||town === null ||orderFrom === null || partyName.trim('') === "" || detail.trim('') === "" || town.trim('') === "") {
                 $('#name_status').addClass('validate_data');
                 $('#name_status').html('Fields are required.').fadeIn().fadeOut(2000);
 
@@ -579,6 +629,7 @@
                 data.append('loc', loc);
                 data.append('remark', remark);
                 data.append('stockGroup', stockGroup);
+                data.append('town', town);
 
 
                 $.ajax({
@@ -675,63 +726,84 @@ function showError(error) {
 }{% endcomment %}
 
 let locationPrompted = false;
-function getLocation() {
-    if (navigator.geolocation) {
-        const options = {
-    maximumAge: 0,
-    timeout: 10000,
-    enableHighAccuracy: true
-  };
-        if (!locationPrompted || localStorage.getItem('locationAllowedOrder')) {
-      navigator.geolocation.getCurrentPosition(
-        // On success callback
-        function(position) {
-            islocationEnabled();
-            x.innerHTML = "Latitude: " + position.coords.latitude +
-          "<br>Longitude: " + position.coords.longitude;
-           $('#lat').val(position.coords.latitude);
-           $('#lng').val(position.coords.longitude);
-           console.log(position)
-            getReverseLocation();
-          localStorage.setItem('locationAllowedOrder', true);
-        },
-              function(error) {
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              alert("You declined to share your location. Please enable location services to continue.");
-              locationPrompted = true;
-              islocationEnabled();
-              break;
-            case error.POSITION_UNAVAILABLE:
-              alert("Location information is unavailable. Please try again later.");
-              islocationEnabled();
-              break;
-            case error.TIMEOUT:
-                islocationEnabled();
-              alert("The request to get your location timed out. Please try again.");
-              break;
-            default:
-              alert("An unknown error occurred. Please try again.");
-              islocationEnabled();
-              break;
-          }
-        },
-        options
-      );
-    } else {
-      // If the user has previously declined location access, display an error message
-      alert("Please enable location services in your browser settings to continue.");
-      islocationEnabled();
-    }
+async function getLocation() {
+    try {
+        // Check attendance first
+        const attendanceValid = await check_attendance();
+        if (!attendanceValid) {
+            return false;
+        }
 
-    {#navigator.geolocation.getCurrentPosition(showPosition,showError,options);#}
-  } else {
-    x.innerHTML = "Geolocation is not supported by this browser.";
-    islocationEnabled();
-  }
+        // Check geolocation support
+        if (!navigator.geolocation) {
+            showError("Geolocation is not supported by this browser.");
+            islocationEnabled();
+            return false;
+        }
+
+        const options = {
+            maximumAge: 0,
+            timeout: 10000,
+            enableHighAccuracy: true
+        };
+
+        // Check if location was previously allowed or not prompted yet
+        if (!locationPrompted || localStorage.getItem('locationAllowedOrder')) {
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, options);
+            });
+
+            // Handle success
+            islocationEnabled();
+            const { latitude, longitude } = position.coords;
+            
+            // Update UI and form fields
+            if (typeof x !== 'undefined') {
+                x.innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+            }
+            $('#lat').val(latitude);
+            $('#lng').val(longitude);
+            
+            console.log('Location obtained:', position);
+            localStorage.setItem('locationAllowedOrder', true);
+            
+            // Get reverse geocoding
+            getReverseLocation();
+            return true;
+
+        } else {
+            // User previously declined location
+            showError("Please enable location services in your browser settings to continue.");
+            islocationEnabled();
+            return false;
+        }
+
+    } catch (error) {
+        console.error('Geolocation error:', error);
+        islocationEnabled();
+        
+        const errorMessages = {
+            [error.PERMISSION_DENIED]: "You declined to share your location. Please enable location services to continue.",
+            [error.POSITION_UNAVAILABLE]: "Location information is unavailable. Please try again later.",
+            [error.TIMEOUT]: "The request to get your location timed out. Please try again."
+        };
+        
+        const message = errorMessages[error.code] || "An unknown error occurred. Please try again.";
+        showError(message);
+        
+        if (error.code === error.PERMISSION_DENIED) {
+            locationPrompted = true;
+        }
+        
+        return false;
+    }
+    
+    function showError(message) {
+        alert(message);
+    }
 }
 
-onload(getLocation() );
+{% comment %} onload(getLocation() ); {% endcomment %}
 
 function islocationEnabled() {
     navigator.permissions.query({name:'geolocation'}).then(function(result) {
@@ -775,7 +847,9 @@ function getReverseLocation(){
             var loginRemark = $('#loginRemark').val();
             var loginType = $('#loginType').val();
             var loc = $('#loc').val();
+            var attendanceDate = $('#attendanceDate').val();
             var photo = $('#loginImg').attr('src');
+            debugger;
 
 
             if ( photo === 'NaN') {
@@ -799,6 +873,7 @@ function getReverseLocation(){
                 form_data.append('loginType', loginType);
                 form_data.append('loginRemark', loginRemark);
                 form_data.append('loc', loc);
+                form_data.append('attendanceDate', attendanceDate);
                 form_data.append('photo', photo);
 
                 $.ajax({
@@ -897,6 +972,58 @@ function getReverseLocation(){
                 $('#attendanceModal').on('hidden.bs.modal', function () {
     Webcam.reset();
 });
+
+async function check_attendance() {
+    const $empID = $('#empID');
+    const $nameStatus = $('#name_status');
+    const $collectionForm = $('#CollectionForm');
+    const $collectionModal = $('#CollectionModal');
+    
+    const loginEmpID = $empID.val().trim();
+    
+    // Input validation
+    if (!loginEmpID) {
+        showError('Please enter employee ID');
+        return false;
+    }
+    
+    try {
+        const response = await $.ajax({
+            url: '{% url "attendanceApp:get_user_attendance_by_date" %}',
+            method: 'GET',
+            data: { employee_id: loginEmpID },
+            timeout: 10000
+        });
+        
+        if (response.success) {
+            return true;
+        } else {
+            showError(response.response || 'No attendance found for today');
+            resetForm();
+            return false;
+        }
+    } catch (error) {
+        console.error('Attendance check error:', error);
+        const errorMsg = error.status === 0 ? 'Network error. Please check your connection.' : 'Make sure you have added attendance for today';
+        showError(errorMsg);
+        resetForm();
+        return false;
+    }
+    
+    function showError(message) {
+        $nameStatus
+            .addClass('validate_data')
+            .html(message)
+            .fadeIn()
+            .delay(2000)
+            .fadeOut();
+    }
+    
+    function resetForm() {
+        $collectionForm[0].reset();
+        $collectionModal.modal('hide');
+    }
+}
 
 
 </script>

@@ -1025,8 +1025,13 @@ def order_employee_attendance_post_api(request):
             loginRemark = request.POST.get('loginRemark')
             loginType = request.POST.get('loginType')
             photo = request.POST.get('photo')
+            attendanceDates =request.POST.get("attendanceDate")
+            # Combine date from string with current time
+            date_part = datetime.strptime(attendanceDates, '%d/%m/%Y').date()
+            current_time = datetime.now().time()
+            formatted_date = datetime.combine(date_part, current_time)
             attend = EmployeeAttendance.objects.select_related().get(employeeID_id=int(loginEmpID),
-                                                                     attendanceDate=datetime.today().date())
+                                                                     attendanceDate=date_part, isDeleted=False)
 
 
 
@@ -1035,15 +1040,15 @@ def order_employee_attendance_post_api(request):
             ext = format.split('/')[-1]
 
             data = ContentFile(base64.b64decode(imgstr), name='{}/temp.'.format(
-                datetime.today().date()) + ext)  # You can save this as file instance
+                date_part) + ext)  # You can save this as file instance
 
             if loginType == 'Login':
-                attend.loginTime = datetime.now().time()
+                attend.loginTime = formatted_date
                 attend.inLocation = loc
                 attend.loginRemark = loginRemark
                 attend.loginPhoto = data
             if loginType == 'Logout':
-                attend.logoutTime = datetime.now().time()
+                attend.logoutTime = formatted_date
                 attend.outLocation = loc
                 attend.logoutRemark = loginRemark
                 attend.logoutPhoto = data
@@ -1051,6 +1056,60 @@ def order_employee_attendance_post_api(request):
 
             return JsonResponse({'response': 'ok', 'LoginType':loginType}, safe=False)
 
-        except:
+        except Exception as e:
             return JsonResponse({'response': 'error'}, safe=False)
 
+
+def get_user_attendance_by_date(request, date=None):
+    """
+    Get attendance record for a specific employee for a specific date.
+    Requires employee_id parameter and optional date parameter.
+    Returns JSON response with attendance data.
+    """
+
+    employee_id = request.GET.get('employee_id')
+    if not employee_id:
+        return JsonResponse({'error': 'employee_id parameter is required', 'success': False}, status=400)
+    
+    if date is None:
+        target_date = datetime.today().date()
+    else:
+        try:
+            target_date = datetime.strptime(date, '%Y-%m-%d').date()
+        except ValueError:
+            return JsonResponse({'error': 'Invalid date format. Use YYYY-MM-DD', 'success': False}, status=400)
+
+    try:
+        attendance = EmployeeAttendance.objects.get(
+                employeeID_id=int(employee_id),
+                attendanceDate=target_date,
+                loginTime__isnull=False
+
+        )
+        try:
+            prev_day = datetime.today().date() - timedelta(days=1)
+
+            holiday = True
+        
+            while holiday:
+                is_holiday = EmployeeAttendance.objects.filter(attendanceDate=prev_day, loginTime__isnull=False, isDeleted=False)
+                if is_holiday.count() > 0 :
+                    holiday = False
+                else:    
+                    prev_day = prev_day - timedelta(days=1)  
+            prev_attendance = EmployeeAttendance.objects.get(
+                employeeID_id=int(employee_id),
+                attendanceDate=prev_day,
+                loginTime__isnull=False
+            )
+
+
+            return JsonResponse({'response': 'ok', 'success': True}, safe=False)
+        except Exception as e:
+            return JsonResponse({'response': 'Previous day attendance not found. Please add.', 'success': False}, safe=False)
+
+
+    except Exception:
+        # No attendance record found for this employee on this date
+        return JsonResponse({'response': 'Todays attendance is needed. Please add.', 'success': False}, safe=False)
+    

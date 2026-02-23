@@ -130,4 +130,8 @@ urlpatterns = [
     url(r'^api/ManagerStockGroupAssignedListJson/$', ManagerStockGroupAssignedListJson.as_view(), name='ManagerStockGroupAssignedListJson'),
     url(r'^api/MyManagerAssignedStockGroupListJson/$', MyManagerAssignedStockGroupListJson.as_view(), name='MyManagerAssignedStockGroupListJson'),
 
+    url(r'^add_town_api/$', add_town_api, name='add_town_api'),
+    url(r'^api/TownListJson/$', TownListJson.as_view(), name='TownListJson'),
+    url(r'^api/edit_town_api/$', edit_town_api, name='edit_town_api'),
+    # url(r'^api/TownListJson/$', TownListJson.as_view(), name='TownListJson'),
 ]

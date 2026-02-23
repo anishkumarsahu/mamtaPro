@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 5px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <span style="font-size: 10px;">Date: {{ date }} {{ slot_range }}</span>
+        <span style="font-size: 9px;float: right"> Order Report-(123dacn.in)</span>
+    </div>
+
+    <p style="font-size: 10px; margin: 2px;">Orders</p>
+    <section>
+        <table class="table table-bordered" style="font-size: 9px;">
+            <thead>
+            <tr>
+                <th scope="col">Sl No.</th>
+                <th scope="col">Employee Name</th>
+                <th scope="col">Order Count</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for foo in summary %}
+                <tr>
+                    <td>{{ forloop.counter  }}</td>
+                    <td>{{ foo.name }}</td>
+                    <td>{{ foo.total }}</td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+</div>
+</body>
+</html>

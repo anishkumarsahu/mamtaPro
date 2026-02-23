@@ -81,3 +81,10 @@ class TakeOrderAdmin(admin.ModelAdmin):
     list_display = ['orderTakenFrom','details','orderTakenBy','location','datetime']
 
 admin.site.register(TakeOrder,TakeOrderAdmin)
+
+
+class TownAdmin(admin.ModelAdmin):
+    list_display = ['name','isDeleted','datetime']
+
+admin.site.register(Town,TownAdmin)
+

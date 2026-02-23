@@ -3,7 +3,7 @@ import functools
 from datetime import datetime, timedelta, date
 
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, Max, Count
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -15,6 +15,7 @@ from weasyprint import HTML, CSS
 from mamtaApp.views import check_group
 from .models import *
 from django.core.cache import cache
+
 # Create your views here.
 
 last_3_month_date = datetime.today().date() - timedelta(days=45)
@@ -1882,50 +1883,67 @@ def generate_net_report_accountant(request):
     companyID = request.GET.get('companyID')
     gDate = request.GET.get('gDate')
     date1 = datetime.strptime(gDate, '%d/%m/%Y')
-    # date2 = datetime.strptime(endDate, '%d/%m/%Y')
     day_string = date1.strftime('%Y-%m-%d')
     date = datetime.today().date()
     sales_cash = Sales.objects.select_related().filter(datetime__icontains=day_string, isDeleted__exact=False,
                                                        salesType__icontains='cash',
-                                                       InvoiceSeriesID__companyID_id=int(companyID)).exclude(
+                                                       InvoiceSeriesID__companyID_id=int(companyID), isDeleted=False).exclude(
         datetime__lt=last_3_month_date).order_by(
         'InvoiceSeriesID').order_by('numberMain')
     sales_card = Sales.objects.select_related().filter(datetime__icontains=day_string, isDeleted__exact=False,
                                                        salesType__icontains='card',
-                                                       InvoiceSeriesID__companyID_id=int(companyID)).exclude(
+                                                       InvoiceSeriesID__companyID_id=int(companyID), isDeleted=False).exclude(
         datetime__lt=last_3_month_date).order_by(
         'InvoiceSeriesID').order_by('numberMain')
     sales_credit = Sales.objects.select_related().filter(datetime__icontains=day_string, isDeleted__exact=False,
                                                          salesType__icontains='credit',
-                                                         InvoiceSeriesID__companyID_id=int(companyID)).exclude(
+                                                         InvoiceSeriesID__companyID_id=int(companyID), isDeleted=False).exclude(
         datetime__lt=last_3_month_date).order_by(
         'InvoiceSeriesID').order_by('numberMain')
     sales_mix = Sales.objects.select_related().filter(datetime__icontains=day_string, isDeleted__exact=False,
                                                       salesType__icontains='Mix',
-                                                      InvoiceSeriesID__companyID_id=int(companyID)).exclude(
+                                                      InvoiceSeriesID__companyID_id=int(companyID), isDeleted=False).exclude(
         datetime__lt=last_3_month_date).order_by(
         'InvoiceSeriesID').order_by('numberMain')
 
     company = Company.objects.select_related().get(pk=int(companyID))
     invoiceByUser = InvoiceSeries.objects.select_related().filter(companyID_id=company.pk, isCompleted__exact=False,
-                                                                  isDeleted__exact=False)
+                                                                  isDeleted__exact=False, isDeleted=False)
 
     skipped_list = []
     for invoice in invoiceByUser:
-        try:
-            last_sale = Sales.objects.select_related().filter(InvoiceSeriesID_id=invoice.pk).order_by(
-                '-numberMain').first()
+        # 1. Get last sale number for this invoice series
+        last_sale = (
+            Sales.objects
+            .filter(InvoiceSeriesID_id=invoice.pk)
+            .aggregate(last_number=Max("numberMain"))
+        )["last_number"]
 
-            for i in InvoiceSerial.objects.select_related().filter(numberMain__gte=int(invoice.startsWith),
-                                                                   numberMain__lt=int(last_sale.numberMain)
-                                                                   ).order_by('-numberMain')[0:200]:
-                try:
-                    sale = Sales.objects.select_related().get(numberMain__exact=i.numberMain,
-                                                              InvoiceSeriesID_id=invoice.pk)
-                except:
-                    skipped_list.append(str(invoice.series) + str(i.number))
-        except:
-            pass
+        if not last_sale:
+            # No sales for this series, skip
+            continue
+
+        # 2. Get all sale numbers for this series in one shot
+        sales_numbers = set(
+            Sales.objects
+            .filter(InvoiceSeriesID_id=invoice.pk)
+            .values_list("numberMain", flat=True)
+        )
+
+        # 3. Find all invoice serials up to the last sale that don't have a sale
+        missing_serials = (
+            InvoiceSerial.objects
+            .filter(
+                numberMain__gte=int(invoice.startsWith),
+                numberMain__lt=int(last_sale),
+            )
+            .exclude(numberMain__in=sales_numbers)
+            .order_by("-numberMain")[:200]
+        )
+
+        # 4. Build skipped_list without per-row queries or try/except
+        for serial in missing_serials:
+            skipped_list.append(str(invoice.series) + str(serial.number))
     returns = ReturnCollection.objects.select_related().filter(datetime__icontains=day_string, isDeleted__exact=False,
                                                                companyID_id=int(companyID)).exclude(
         datetime__lt=last_3_month_date).order_by('actualBillNumber')
@@ -3667,3 +3685,185 @@ def edit_invoice_by_accountant(request):
     else:
         return JsonResponse({'message': 'error'})
 
+
+def generate_order_time_slot_admin(request):
+    gDate = request.GET.get('slotDate')
+    date1 = datetime.strptime(gDate, '%d/%m/%Y')
+    day_string = date1.strftime('%Y-%m-%d')
+    slot = request.GET.get('slot')
+
+    slot_mapper = {
+        '0': '00:00 - 09:00',
+        '1': '09:00 - 11:00',
+        '2': '11:00 - 13:00',
+        '3': '13:00 - 15:00',
+        '4': '15:00 - 17:00',
+        '5': '17:00 - 19:00',
+        '6': '19:00 - 23:59'
+    }
+
+    # slot filter
+    slot_range = slot_mapper.get(slot)
+    start_time_str, end_time_str = slot_range.split(" - ")
+
+    start_dt = datetime.strptime(day_string + " " + start_time_str, "%Y-%m-%d %H:%M")
+    end_dt = datetime.strptime(day_string + " " + end_time_str, "%Y-%m-%d %H:%M")
+
+    # Convert to 12hr
+    start_time_12 = datetime.strptime(start_time_str, "%H:%M").strftime("%I:%M %p")
+    end_time_12 = datetime.strptime(end_time_str, "%H:%M").strftime("%I:%M %p")
+
+    # 1. All staff (Order Team)
+    staff = (
+        StaffUser.objects
+        .filter(isDeleted=False, staffTypeID__name__icontains="Order Team")
+        .order_by('name')
+    )
+
+    # 2. Orders grouped by staff
+    grouped = (
+        TakeOrder.objects
+        .filter(datetime__range=(start_dt, end_dt), isDeleted=False)
+        .exclude(datetime__lt=last_3_month_date)
+        .values('orderTakenBy_id')
+        .annotate(total=Count('id'))
+    )
+    
+    # Convert grouped result into dict {staff_id: total}
+    order_map = {g['orderTakenBy_id']: g['total'] for g in grouped}
+
+    # 3. Build final list including zero-count staff
+    final_list = []
+    for s in staff:
+        final_list.append({
+            "name": s.name,
+            "id": s.id,
+            "total": order_map.get(s.id, 0)  # default 0 if no record
+        })
+
+    context = {
+        'date': gDate,
+        'slot_range': str(start_time_12) + " to " + str(end_time_12),
+        'summary': final_list     # <-- pass this to template
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "report.pdf"
+
+    html = render_to_string("invoice/OrderTimeSlotPDFAdmin.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; }')])
+    return response
+
+
+def generate_order_time_slot_admin_excel(request):
+    import openpyxl
+    from openpyxl.utils import get_column_letter
+    from openpyxl.styles import Font, Alignment
+
+    startDate = request.GET.get('startDate')     # DD/MM/YYYY
+    endDate = request.GET.get('endDate')         # DD/MM/YYYY
+
+    # Convert dates
+    f_startDate = datetime.strptime(startDate, '%d/%m/%Y')
+    f_endDate = datetime.strptime(endDate, '%d/%m/%Y')
+
+    staff = StaffUser.objects.filter(
+        isDeleted=False,
+        staffTypeID__name__icontains="Order Team"
+    ).order_by('name')
+
+    # -------------------------------------------------------
+    # 100% CORRECT SLOT DEFINITIONS (CLOSED–OPEN INTERVALS)
+    # ✔ start_time: inclusive (>=)
+    # ✔ end_time: exclusive (<)
+    # -------------------------------------------------------
+    time_slots = [
+        ("00:00", "09:00", "0 a.m - 9 a.m"),
+        ("09:00", "11:00", "9 a.m - 11 a.m"),
+        ("11:00", "13:00", "11.00 a.m - 1 p.m"),
+        ("13:00", "15:00", "1.00 p.m - 3 p.m"),
+        ("15:00", "17:00", "3.00 p.m - 5 p.m"),
+        ("17:00", "19:00", "5.00 p.m - 7 p.m"),
+        ("19:00", "23:59", "7 p.m - 12 a.m"),
+    ]
+    # -------------------------------------------------------
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Time Slot Summary"
+
+    # Heading
+    ws.merge_cells("A1:I1")
+    ws["A1"] = "Report from " + str(startDate) + " to " + str(endDate)
+    ws["A1"].font = Font(size=14, bold=True)
+    ws["A1"].alignment = Alignment(horizontal="center")
+
+    # Header row
+    ws.append([
+        "Employee Name",
+        "0 a.m - 9 a.m",
+        "9 a.m - 11 a.m",
+        "11.00 a.m - 1 p.m",
+        "1.00 p.m - 3 p.m",
+        "3.00 p.m - 5 p.m",
+        "5.00 p.m - 7 p.m",
+        "7 p.m - 12 a.m",
+        "Total Orders",
+    ])
+
+    # MAIN EMPLOYEE LOOP
+    for s in staff:
+
+        row = [s.name]
+        total_sum = 0
+
+        # SLOT LOOP
+        for start_t, end_t, label in time_slots:
+
+            slot_total = 0
+            cur_date = f_startDate
+
+            # DATE LOOP — COUNT EXACTLY PER DAY
+            while cur_date <= f_endDate:
+
+                day_str = cur_date.strftime("%Y-%m-%d")
+
+                # Build correct datetime range
+                sdt = datetime.strptime(str(day_str) + " " + str(start_t), "%Y-%m-%d %H:%M")
+                edt = datetime.strptime(str(day_str) + " " + str(end_t), "%Y-%m-%d %H:%M")
+
+                # CLOSED–OPEN INTERVAL FIX ✔
+                day_count = TakeOrder.objects.filter(
+                    datetime__gte=sdt,
+                    datetime__lt=edt,
+                    isDeleted=False,
+                    orderTakenBy_id=s.id
+                ).exclude(datetime__lt=last_3_month_date).count()
+
+                slot_total += day_count
+                cur_date += timedelta(days=1)
+
+            total_sum += slot_total
+            row.append(slot_total)
+
+        # ADD final total column
+        row.append(total_sum)
+        ws.append(row)
+
+    # Auto column width
+    for col in ws.columns:
+        max_len = 0
+        col_letter = get_column_letter(col[0].column)
+        for cell in col:
+            if cell.value:
+                max_len = max(max_len, len(str(cell.value)))
+        ws.column_dimensions[col_letter].width = max_len + 4
+
+    # Return Excel
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = "attachment; filename=time_slot_summary.xlsx"
+    wb.save(response)
+    return response

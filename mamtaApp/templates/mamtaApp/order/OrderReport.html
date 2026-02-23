@@ -65,7 +65,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row clearfix">
-                <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
+                <div class="col-md-2 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
                     <div class="form-group ">
                         <label for="cc-number" class="control-label mb-1">Start Date</label>
                         <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="startDate"
@@ -74,7 +74,7 @@
                         <span></span>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 col-xs-6" style="padding-left: 2px!important;">
+                <div class="col-md-2 col-sm-6 col-xs-6" style="padding-left: 2px!important;">
                     <div class="form-group  ">
                         <label for="cc-number" class="control-label mb-1">End Date</label>
                         <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="endDate"
@@ -83,7 +83,7 @@
                         <span></span>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-12 col-xs-12">
+                <div class="col-md-3 col-sm-6 col-xs-6">
                     <label for="">Staff</label>
                     <select class="form-control show-tick" id="staff">
                         <option value="all">All</option>
@@ -95,7 +95,7 @@
                     </select>
 
                 </div>
-                <div class="col-md-2 col-sm-12 col-xs-12 buttondown "
+                <div class="col-md-2 col-sm-6 col-xs-6 buttondown "
                      style="margin-top: 26px;text-align: center!important;">
 
                     <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
@@ -103,7 +103,51 @@
                     </button>
                 </div>
 
+                 <div class="col-md-3 col-sm-12 col-xs-12 buttondown "
+                     style="margin-top: 26px;text-align: center!important;">
+
+                        <a href="#" id="reportUrlDownloadExcel" style="background-color: #3fb578ff;color: white;" type="button" class="btn  waves-effect "
+                            onclick="downloadReportsExcel()">Download Report Excel
+            </a>
+                </div>
+
             </div>
+             {% comment %} <div class="row clearfix">
+<div class="col-md-4 col-sm-4 col-xs-4" style="padding-right: 2px!important;">
+                    <div class="form-group ">
+                        <label for="cc-number" class="control-label mb-1">Date</label>
+                        <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="slotDate"
+                               id="slotDate" type="text"
+                               class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
+                        <span></span>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-4">
+                    <label for="slot">Time Slot</label>
+                    <select class="form-control show-tick" id="slot">
+                        <option value="None">Select time slot</option>
+                            <option value="0">12 mid-night to 9 a.m</option>
+                            <option value="1">9 a.m to 11 a.m</option>
+                            <option value="2">11 a.m to 1 p.m</option>
+                            <option value="3">1 p.m to 3 p.m</option>
+                            <option value="4">3 p.m to 5 p.m</option>
+                            <option value="5">5 p.m to 7 p.m</option>
+                            <option value="6">7 p.m to 12 mid-night</option>
+                    </select>
+
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-4 buttondown "
+                     style="margin-top: 26px;text-align: center!important;">
+
+                    <a href="#" id="reportUrlDownload" style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
+                            onclick="downloadReports()">Download Report
+            </a>
+                        <a href="#" id="reportUrlDownloadExcel" style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
+                            onclick="downloadReportsExcel()">Download Report Excel
+            </a>
+                </div>
+
+             </div> {% endcomment %}
 
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -131,6 +175,7 @@
                                         <th>PartyName</th>
                                         <th>OrderFrom</th>
                                         <th>StockGroup</th>
+                                        <th>Town</th>
                                         <th>Detail</th>
                                         <th>Location</th>
                                         <th>CreatedBy</th>
@@ -146,6 +191,7 @@
                                         <th>PartyName</th>
                                         <th>OrderFrom</th>
                                         <th>StockGroup</th>
+                                        <th>Town</th>
                                         <th>Detail</th>
                                         <th>Location</th>
                                         <th>CreatedBy</th>
@@ -195,14 +241,15 @@
                     {"name": "partyName", "targets": 1, "orderable": true},
                     {"name": "orderTakenFrom", "targets": 2, "orderable": true},
                     {"name": "stockGroup", "targets": 3, "orderable": true},
-                    {"name": "details", "targets": 4, "orderable": true},
-                    {"name": "location", "targets": 5, "orderable": true},
-                    {"name": "orderTakenBy", "targets": 6, "orderable": true},
-                    {"name": "datetime", "targets": 7, "orderable": true},
-                    {"name": "remark", "targets": 8, "orderable": true},
-                    {"name": "button", "targets": 9, "orderable": false},
+                    {"name": "town", "targets": 4, "orderable": true},
+                    {"name": "details", "targets": 5, "orderable": true},
+                    {"name": "location", "targets": 6, "orderable": true},
+                    {"name": "orderTakenBy", "targets": 7, "orderable": true},
+                    {"name": "datetime", "targets": 8, "orderable": true},
+                    {"name": "remark", "targets": 9, "orderable": true},
+                    {"name": "button", "targets": 10, "orderable": false},
                 ],
-                aaSorting: [[7, 'desc']],
+                aaSorting: [[8, 'desc']],
                 "lengthMenu": [[8, 25, 50, 100, -1], [8, 25, 50, 100, "All"]],
                 "pageLength": 8,
                 "processing": true,
@@ -221,6 +268,33 @@
 
 
             etab.api().ajax.url('{% url "mamtaApp:OrderListAdminJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
+        }
+
+
+        {% comment %} $(downloadReports());
+
+        function downloadReports(){
+            var slotDate = $('#slotDate').val();
+            var slot = $('#slot').val();
+            if (slotDate ==""){
+                alert("Please select a date");
+                return;
+            }
+            if (slot ==""){
+                alert("Please select a slot time");
+                return;
+            }
+
+            $("#reportUrlDownload").attr("href", "{% url 'invoiceApp:generate_order_time_slot_admin' %}?slotDate=" + slotDate + "&slot=" + slot);
+
+        } {% endcomment %}
+
+        function downloadReportsExcel(){
+              var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+                    $("#reportUrlDownloadExcel").attr("href", "{% url 'invoiceApp:generate_order_time_slot_admin_excel' %}?startDate=" + startDate + "&endDate=" + endDate);
+
+
         }
 
         function sharePDF(id) {

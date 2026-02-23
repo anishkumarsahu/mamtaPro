@@ -87,7 +87,61 @@
                 </div>
             </div>
         </div>
+
+           <div class="container-fluid">
+            <div class="block-header">
+
+                <div style="float: right">
+                    {% if not request.user|has_group:"Moderator" %}
+
+                        <button style="background-color: #3F51B5;color: white;margin-bottom: 10px" type="button"
+                                class="btn  waves-effect " data-toggle="modal" data-target="#defaultModalTown">Add Town Name
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidePadding">
+                    <div class="card">
+
+                        <div class="header">
+                            <h2>
+                                TOWN NAME LIST
+                            </h2>
+
+                        </div>
+                        <div class="body">
+                            <div class="table-responsive">
+                                <table id="townTable" class="table table-bordered table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>TownName</th>
+                                        <th>Datetime</th>
+                                        <th>Action</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tfoot>
+                                    <tr>
+                                        <th>Sl. No</th>
+                                        <th>TownName</th>
+                                        <th>Datetime</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </tfoot>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
+
+    
 
     <div class="modal fade" id="defaultModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
@@ -129,6 +183,52 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-link waves-effect" onclick="AddCompany()">Submit</button>
+                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <div class="modal fade" id="defaultModalTown" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Add Town</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'mamtaApp:add_town_api' %}" id="AddTownForm"
+                          method="post"> {% csrf_token %}
+                        <div class="row clearfix">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="card">
+
+                                    <div class="body">
+
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">receipt</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                        <input type="text" class="form-control date"
+                                                               placeholder="Town Name" name="TownName" id="TownName">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link waves-effect" onclick="AddTown()">Submit</button>
                     <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -176,6 +276,49 @@
             </div>
         </div>
     </div>
+
+     <div class="modal fade" id="defaultModalEditTown" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="defaultModalLabel">Edit Town</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'mamtaApp:edit_town_api' %}" id="EditCompanyFormTown"
+                          method="post"> {% csrf_token %}
+                        <div class="row clearfix">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="card">
+                                    <input type="hidden" id="ECIDT" name="ECIDT">
+                                    <div class="body">
+
+                                        <div class="row clearfix">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="material-icons">receipt</i>
+                                        </span>
+                                                    <div class="form-line">
+                                                        <input type="text" class="form-control date"
+                                                               placeholder="Town Name" name="townEdit" id="townEdit">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-link waves-effect" onclick="updateTown()">Submit</button>
+                    <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 {% block js %}
     <script>
@@ -197,6 +340,25 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": "{% url 'mamtaApp:StockGroupListJson' %}"
+            });
+
+             $('#townTable').dataTable({
+                dom: 'Blfrtip',
+                buttons: ['excel', 'print'
+                ],
+                "columnDefs": [
+                    {"name": "id", "targets": 0, "orderable": false},
+                    {"name": "name", "targets": 1, "orderable": true},
+                    {"name": "datetime", "targets": 2, "orderable": true},
+                    {"name": "action", "targets": 3, "orderable": false},
+
+                ],
+                aaSorting: [[2, 'desc']],
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{% url 'mamtaApp:TownListJson' %}"
             });
         });
 
@@ -240,5 +402,62 @@
 
             }
         }
+
+                function AddTown() {
+            var TownName = $('#TownName').val();
+
+
+            if (TownName === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Town name required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                $('#AddTownForm').submit();
+
+            }
+        }
+
+             function updateTown() {
+            var ECname = $('#ECname').val();
+
+
+            if (ECname === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Group name required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                $('#EditCompanyFormTown').submit();
+
+            }
+        }
+          function editTown(id, name) {
+            $('#ECIDT').val(id);
+            $('#townEdit').val(name);
+
+
+        }
+          function updateTown() {
+            var TownName = $('#townEdit').val();
+
+
+            if (TownName === "") {
+                $('#name_status').addClass('validate_data');
+                $('#name_status').html('Town name required.');
+                $('#name_status').fadeIn().fadeOut(2000);
+
+            }
+            else {
+
+                $('#EditCompanyFormTown').submit();
+
+            }
+        }
+
     </script>
 {% endblock %}

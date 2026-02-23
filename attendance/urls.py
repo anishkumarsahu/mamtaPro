@@ -37,4 +37,6 @@ urlpatterns = [
     url(r'^order_employee_attendance_post_api/$', order_employee_attendance_post_api, name='order_employee_attendance_post_api'),
     url(r'^generate_attendance_for_order_emp_report/$', generate_attendance_for_order_emp_report, name='generate_attendance_for_order_emp_report'),
 
+    url(r'^get_user_attendance_by_date/$', get_user_attendance_by_date, name='get_user_attendance_by_date'),
+
 ]

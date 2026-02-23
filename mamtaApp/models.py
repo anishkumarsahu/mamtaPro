@@ -176,6 +176,7 @@ class TakeOrder(models.Model):
     orderTakenFrom = models.CharField(max_length=200, blank=True, null=True)
     stockGroup = models.CharField(max_length=300, blank=True, null=True)
     orderPic = models.ImageField(upload_to='OrderPics', blank=True, null=True)
+    town = models.CharField(max_length=200, blank=True, null=True, default='N/A')
     details = models.TextField(blank=True, null=True)
     remark = models.TextField(blank=True, null=True)
     latitude = models.CharField(max_length=200, default='0.0')
@@ -211,3 +212,9 @@ class ManagerAssignedStockGroup(models.Model):
     datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
     lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
 
+
+class Town(models.Model):
+    name = models.CharField(max_length=500, blank=True, null=True)
+    isDeleted = models.BooleanField(default=False)
+    datetime = models.DateTimeField(auto_now_add=True, auto_now=False)
+    lastUpdatedOn = models.DateTimeField(auto_now_add=False, auto_now=True)
