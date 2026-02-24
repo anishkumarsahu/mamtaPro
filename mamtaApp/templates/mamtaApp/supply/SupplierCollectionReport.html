@@ -65,26 +65,26 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row clearfix">
-                <div class="col-md-3 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
+                <div class="col-md-2 col-sm-6 col-xs-6" style="padding-right: 2px!important;">
                     <div class="form-group ">
-                        <label for="cc-number" class="control-label mb-1">Start Date</label>
+                        <label for="startDate" class="control-label mb-1">Start Date</label>
                         <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="startDate"
                                id="startDate" type="text"
                                class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
                         <span></span>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 col-xs-6" style="padding-left: 2px!important;">
+                <div class="col-md-2 col-sm-6 col-xs-6" style="padding-left: 2px!important;">
                     <div class="form-group  ">
-                        <label for="cc-number" class="control-label mb-1">End Date</label>
+                        <label for="endDate" class="control-label mb-1">End Date</label>
                         <input data-date-end-date="0d" data-provide="datepicker" data-role="datepicker" name="endDate"
                                id="endDate" type="text"
                                class="form-control " placeholder=" DD/MM/YYYY" value="{{ date }}">
                         <span></span>
                     </div>
                 </div>
-                <div class="col-md-4 col-sm-12 col-xs-12">
-                    <label for="">Staff</label>
+                <div class="col-md-3 col-sm-12 col-xs-12">
+                    <label for="staff">Staff</label>
                     <select class="form-control show-tick" id="staff">
                         <option value="all">All</option>
                         {% for user in users %}
@@ -95,12 +95,19 @@
                     </select>
 
                 </div>
-                <div class="col-md-2 col-sm-12 col-xs-12 buttondown "
+                <div class="col-md-2 col-sm-6 col-xs-6 buttondown "
                      style="margin-top: 26px;text-align: center!important;">
 
                     <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
                             onclick="getData()">Search
                     </button>
+                </div>
+                <div class="col-md-3 col-sm-6 col-xs-6 buttondown "
+                     style="margin-top: 26px;text-align: center!important;">
+
+                      <a href="#" id="reportUrlDownloadExcel" style="background-color: #3fb578ff;color: white;" type="button" class="btn  waves-effect "
+                            onclick="downloadReportsExcel()">Download Report Excel
+            </a>
                 </div>
 
             </div>
@@ -716,6 +723,13 @@
                     }
                 });
             }
+
+        }
+         function downloadReportsExcel(){
+              var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+                    $("#reportUrlDownloadExcel").attr("href", "{% url 'invoiceApp:generate_supplier_collection_excel' %}?startDate=" + startDate + "&endDate=" + endDate);
+
 
         }
 

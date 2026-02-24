@@ -3755,7 +3755,6 @@ def generate_order_time_slot_admin(request):
     HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; }')])
     return response
 
-
 def generate_order_time_slot_admin_excel(request):
     import openpyxl
     from openpyxl.utils import get_column_letter
@@ -3865,5 +3864,116 @@ def generate_order_time_slot_admin_excel(request):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response['Content-Disposition'] = "attachment; filename=time_slot_summary.xlsx"
+    wb.save(response)
+    return response
+
+
+def generate_supplier_collection_excel(request):
+    import openpyxl
+    from openpyxl.utils import get_column_letter
+    from openpyxl.styles import Font, Alignment
+
+    startDate = request.GET.get('startDate')     # DD/MM/YYYY
+    endDate = request.GET.get('endDate')         # DD/MM/YYYY
+    staff_filter = request.GET.get('staff', 'all')
+
+    # Convert dates
+    f_startDate = datetime.strptime(startDate, '%d/%m/%Y')
+    f_endDate = datetime.strptime(endDate, '%d/%m/%Y')
+
+    staff = StaffUser.objects.filter(
+        isDeleted=False,
+        staffTypeID__name__icontains="Supply Team"
+    ).order_by('name')
+    if staff_filter != 'all':
+        staff = staff.filter(pk=int(staff_filter))
+
+    # -------------------------------------------------------
+    # 100% CORRECT SLOT DEFINITIONS (CLOSED–OPEN INTERVALS)
+    # start_time: inclusive (>=)
+    # end_time: exclusive (<)
+    # -------------------------------------------------------
+    time_slots = [
+        ("00:00", "09:00", "0 a.m - 9 a.m"),
+        ("09:00", "11:00", "9 a.m - 11 a.m"),
+        ("11:00", "13:00", "11.00 a.m - 1 p.m"),
+        ("13:00", "15:00", "1.00 p.m - 3 p.m"),
+        ("15:00", "17:00", "3.00 p.m - 5 p.m"),
+        ("17:00", "19:00", "5.00 p.m - 7 p.m"),
+        ("19:00", "23:59", "7 p.m - 12 a.m"),
+    ]
+    # -------------------------------------------------------
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Supplier Collection Time Slot Summary"
+
+    # Heading
+    ws.merge_cells("A1:I1")
+    ws["A1"] = "Report from " + str(startDate) + " to " + str(endDate)
+    ws["A1"].font = Font(size=14, bold=True)
+    ws["A1"].alignment = Alignment(horizontal="center")
+
+    # Header row
+    ws.append([
+        "Employee Name",
+        "0 a.m - 9 a.m",
+        "9 a.m - 11 a.m",
+        "11.00 a.m - 1 p.m",
+        "1.00 p.m - 3 p.m",
+        "3.00 p.m - 5 p.m",
+        "5.00 p.m - 7 p.m",
+        "7 p.m - 12 a.m",
+        "Total Orders",
+    ])
+
+    # MAIN EMPLOYEE LOOP
+    for s in staff:
+        row = [s.name]
+        total_sum = 0
+
+        # SLOT LOOP
+        for start_t, end_t, label in time_slots:
+            slot_total = 0
+            cur_date = f_startDate
+
+            # DATE LOOP — COUNT EXACTLY PER DAY
+            while cur_date <= f_endDate:
+                day_str = cur_date.strftime("%Y-%m-%d")
+
+                # Build correct datetime range
+                sdt = datetime.strptime(str(day_str) + " " + str(start_t), "%Y-%m-%d %H:%M")
+                edt = datetime.strptime(str(day_str) + " " + str(end_t), "%Y-%m-%d %H:%M")
+
+                day_count = SupplierCollection.objects.filter(
+                    datetime__gte=sdt,
+                    datetime__lt=edt,
+                    isDeleted=False,
+                    collectedBy_id=s.id
+                ).exclude(datetime__lt=last_3_month_date).count()
+
+                slot_total += day_count
+                cur_date += timedelta(days=1)
+
+            total_sum += slot_total
+            row.append(slot_total)
+
+        # ADD final total column
+        row.append(total_sum)
+        ws.append(row)
+
+    for col in ws.columns:
+        max_len = 0
+        col_letter = get_column_letter(col[0].column)
+        for cell in col:
+            if cell.value:
+                max_len = max(max_len, len(str(cell.value)))
+        ws.column_dimensions[col_letter].width = max_len + 4
+
+    # Return Excel
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = "attachment; filename=supplier_collection_time_slot_summary.xlsx"
     wb.save(response)
     return response

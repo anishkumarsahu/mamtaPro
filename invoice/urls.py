@@ -112,6 +112,7 @@ urlpatterns = [
     url(r'^generate_order_report_manager/$', generate_order_report_manager, name='generate_order_report_manager'),
     url(r'^generate_order_time_slot_admin/$', generate_order_time_slot_admin, name='generate_order_time_slot_admin'),
     url(r'^generate_order_time_slot_admin_excel/$', generate_order_time_slot_admin_excel, name='generate_order_time_slot_admin_excel'),
+    url(r'^generate_supplier_collection_excel/$', generate_supplier_collection_excel, name='generate_supplier_collection_excel'),
 
 
     url(r'^edit_invoice_by_accountant/$', edit_invoice_by_accountant, name='edit_invoice_by_accountant'),
