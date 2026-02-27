@@ -104,6 +104,12 @@
                     >Monthly Report(SA)
                     </a>
                 </div>
+            <div class="col-md-2 col-sm-6 col-xs-6" style="padding: 2px">
+                      <a href="#" id="reportUrlOrderThreeSections"
+                       style="background-color: #0e4220;color: white;"
+                       type="button" class="btn waves-effect"
+                       onclick="downloadThreeSectionOrderReportPdf()">Order Grouped Report</a>
+                </div>
         </div>
             <hr>
             <div class="row clearfix" style="margin-top: 5px;">
@@ -139,6 +145,7 @@
                     <button style="background-color: #3F51B5;color: white;" type="button" class="btn  waves-effect "
                             onclick="getData()">Search
                     </button>
+
                 </div>
             </div>
             <div class="row clearfix">
@@ -1664,6 +1671,13 @@
             exTab.api().ajax.url('{% url "invoiceApp:ExpenseListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
             staffTab.api().ajax.url('{% url "invoiceApp:StaffAdvanceListJson" %}?staff=' + staff + '&startDate=' + startDate + '&endDate=' + endDate).load();
         }
+
+        function downloadThreeSectionOrderReportPdf() {
+            var companyID = $('#companyID').val();
+            var gDate = $('#gDate').val();
+            $("#reportUrlOrderThreeSections").attr("href", "{% url 'invoiceApp:generate_order_report_three_sections' %}?companyID=" + companyID + "&gDate=" + gDate);
+        }
+
         function getImage(url) {
 
             $('#cImage').attr("src", url);

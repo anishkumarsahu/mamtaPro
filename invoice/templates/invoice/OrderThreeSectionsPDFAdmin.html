@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>123DACN</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 10px; }
+        h3 { margin: 10px 0 6px 0; font-size: 12px; }
+        .meta { margin-bottom: 8px; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 4px;
+        }
+        tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+<div class="meta">
+    <span>Date: {{ date }}</span>
+    <span style="float: right">Order Report ({{ company }})</span>
+</div>
+
+<h3>Field Visit ({{ field_visit_total }})</h3>
+<table>
+    <thead>
+    <tr>
+        <th>OrderTiming</th>
+        <th>Location</th>
+        <th>PartyName</th>
+        <th>OperatorName</th>
+        <th>Town</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in field_visit %}
+        <tr>
+            <td>{{ row.datetime|date:'d-m-Y h:i A' }}</td>
+            <td>{{ row.location }}</td>
+            <td>{{ row.partyName }}</td>
+            <td>{{ row.orderTakenBy.name }}</td>
+            <td>{{ row.town }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h3>Telephonic Order By Customer ({{ telephonic_customer_total }})</h3>
+<table>
+    <thead>
+    <tr>
+        <th>OrderTiming</th>
+        <th>Location</th>
+        <th>PartyName</th>
+        <th>OperatorName</th>
+        <th>Town</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in telephonic_customer %}
+        <tr>
+            <td>{{ row.datetime|date:'d-m-Y h:i A' }}</td>
+            <td>{{ row.location }}</td>
+            <td>{{ row.partyName }}</td>
+            <td>{{ row.orderTakenBy.name }}</td>
+            <td>{{ row.town }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h3>Telephonic Order By Myself ({{ telephonic_myself_total }})</h3>
+<table>
+    <thead>
+    <tr>
+        <th>OrderTiming</th>
+        <th>Location</th>
+        <th>PartyName</th>
+        <th>OperatorName</th>
+        <th>Town</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in telephonic_myself %}
+        <tr>
+            <td>{{ row.datetime|date:'d-m-Y h:i A' }}</td>
+            <td>{{ row.location }}</td>
+            <td>{{ row.partyName }}</td>
+            <td>{{ row.orderTakenBy.name }}</td>
+            <td>{{ row.town }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

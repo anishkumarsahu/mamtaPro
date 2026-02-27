@@ -3623,6 +3623,43 @@ def generate_order_report_admin(request):
     return response
 
 
+def generate_order_report_three_sections(request):
+    companyID = request.GET.get('companyID')
+    gDate = request.GET.get('gDate')
+    date1 = datetime.strptime(gDate, '%d/%m/%Y')
+    day_string = date1.strftime('%Y-%m-%d')
+
+    company = Company.objects.select_related().get(pk=int(companyID))
+
+    queryset = TakeOrder.objects.select_related().filter(
+        datetime__icontains=day_string,
+        companyID_id=int(companyID),
+        isDeleted=False
+    ).exclude(datetime__lt=last_3_month_date).order_by('datetime')
+
+    field_visit = queryset.filter(orderTakenFrom__iexact='Field Visit')
+    telephonic_customer = queryset.filter(orderTakenFrom__iexact='Telephonic Order By Customer')
+    telephonic_myself = queryset.filter(Q(orderTakenFrom__iexact='Telephonic Order By Myself') | Q(orderTakenFrom__iexact='Telephonic'))
+
+    context = {
+        'date': gDate,
+        'company': company.name,
+        'field_visit': field_visit,
+        'telephonic_customer': telephonic_customer,
+        'telephonic_myself': telephonic_myself,
+        'field_visit_total': field_visit.count(),
+        'telephonic_customer_total': telephonic_customer.count(),
+        'telephonic_myself_total': telephonic_myself.count(),
+    }
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = "order_three_sections_report.pdf"
+    html = render_to_string("invoice/OrderThreeSectionsPDFAdmin.html", context)
+
+    HTML(string=html).write_pdf(response, stylesheets=[CSS(string='@page { size: A5; margin: .4cm; }')])
+    return response
+
+
 def generate_order_report_manager(request):
     gDate = request.GET.get('gDate')
     date1 = datetime.strptime(gDate, '%d/%m/%Y')
